@@ -52,10 +52,10 @@ murmurHash(data, input_encoding, seed, output_type)
       default is 'utf8'
 @param {Uint32} seed - murmur hash seed, default is 0
 @param {string} output_type - how to encode output, can be:
-      'number' (only for 32bit version) for an 32-bit integer,
-      'buffer' for Buffer output,
-      'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary' for string output,
-      'int32', 'int16', 'int8', 'uint32', 'uint16', 'uint8' for typed-array,
+      'number' (murmurHash32 only) - 32-bit integer,
+      'buffer' - Buffer output,
+      'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary' - string output,
+      'int32', 'int16', 'int8', 'uint32', 'uint16', 'uint8' - typed-array,
       default is 'number' or 'buffer'
 
 @return {number|Buffer|String|Int8Array|Int16Array|Int32Array|Uint8Array|Uint16Array|Uint32Array}
