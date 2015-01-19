@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+.svn
+*.tmp
+*.log
+*~
+*.lnk
+*.sublime-project
+*.sublime-workspace
+sftp-config.json
+/node_modules
+/tmp
+/build
+*.o
+*.so
