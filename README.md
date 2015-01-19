@@ -26,16 +26,16 @@ murmurHash( 'hash me!', 0x12345789, 'hex' ) // '3555c471'
 
 The following functions are available:
 
-* murmurHash       - MurmurHash v3 32bit
-* murmurHash32     - (an alias of murmurHash)
-* murmurHash128    - MurmurHash v3 128bit platform (x64 or x86) optimized 
-* murmurHash128x64 - MurmurHash v3 128bit x64 optimized
-* murmurHash128x86 - MurmurHash v3 128bit x86 optimized
-* murmurHash64     - MurmurHash v2 64bit platform (x64 or x86) optimized
-* murmurHash64x64  - MurmurHash v2 64bit x64 optimized
-* murmurHash64x86  - MurmurHash v2 64bit x86 optimized
+* `murmurHash`       - MurmurHash v3 32bit
+* `murmurHash32`     - (an alias of murmurHash)
+* `murmurHash128`    - MurmurHash v3 128bit platform (x64 or x86) optimized 
+* `murmurHash128x64` - MurmurHash v3 128bit x64 optimized
+* `murmurHash128x86` - MurmurHash v3 128bit x86 optimized
+* `murmurHash64`     - MurmurHash v2 64bit platform (x64 or x86) optimized
+* `murmurHash64x64`  - MurmurHash v2 64bit x64 optimized
+* `murmurHash64x86`  - MurmurHash v2 64bit x86 optimized
 
-Provided functions have the same signature:
+Provided functions share the following signature:
 
 ```js
 murmurHash(data)
@@ -64,4 +64,4 @@ murmurHash(data, input_encoding, seed, output_type)
 Bugs, limitations, ceveats
 --------------------------
 When working with Buffers, no data is being copied, however for strings this is unavoidable.
-For strings with byte-length < 4096 the static buffer is provided to avoid mem-allocs.
+For strings with byte-length < 1kB the static buffer is provided to avoid mem-allocs.
