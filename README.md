@@ -1,7 +1,7 @@
 MurmurHash bindings for node
 ============================
 
-This library provides non-cryptographic "MurmurHash" hashing algorithm by Austin Appleby in few different flavours.
+This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing algorithm functions in a few different flavours.
 
 Installation:
 -------------
@@ -61,7 +61,9 @@ murmurHash(data, input_encoding, seed, output_type)
 @return {number|Buffer|String|Int8Array|Int16Array|Int32Array|Uint8Array|Uint16Array|Uint32Array}
 ```
 
-Bugs, limitations, ceveats
+Bugs, limitations, caveats
 --------------------------
 When working with Buffers, no data is being copied, however for strings this is unavoidable.
 For strings with byte-length < 1kB the static buffer is provided to avoid mem-allocs.
+
+The hash functions optimized for x64 and x86 produce different results. The same applies to LSB/MSB.
