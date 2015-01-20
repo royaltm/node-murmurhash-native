@@ -25,6 +25,7 @@
     "nan": "~1.3.0"
   },
   "devDependencies": {
-    "tap": "*"
+    "tap": "*",
+    "ben": "*"
   }
 }
