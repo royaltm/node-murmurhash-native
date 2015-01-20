@@ -5,7 +5,6 @@ namespace MurmurHash {
   using v8::Local;
   using v8::Object;
   using v8::String;
-  using node::Buffer;
 
   InputData::InputData() : buffer(NULL), size(0), ownBuffer(false) {}
 
@@ -20,7 +19,7 @@ namespace MurmurHash {
         char *data = EnsureBuffer(size + 1);
         NanDecodeWrite( data, size, key, enc );
       }
-    } else if ( Buffer::HasInstance(key) ) {
+    } else if ( node::Buffer::HasInstance(key) ) {
       InitFromBuffer(key);
     }
   }
@@ -33,7 +32,7 @@ namespace MurmurHash {
       size = (size_t) keyStr->Utf8Length();
       char *data = EnsureBuffer(size + 1);
       keyStr->WriteUtf8(data);
-    } else if ( Buffer::HasInstance(key) ) {
+    } else if ( node::Buffer::HasInstance(key) ) {
       InitFromBuffer(key);
     }
   }
@@ -47,8 +46,8 @@ namespace MurmurHash {
   {
     NanScope();
     Local<Object> bufferObj( key->ToObject() );
-    size = Buffer::Length(bufferObj);
-    buffer = Buffer::Data(bufferObj);
+    size = node::Buffer::Length(bufferObj);
+    buffer = node::Buffer::Data(bufferObj);
     if ( size == 0 )
       EnsureBuffer(0);
   }
