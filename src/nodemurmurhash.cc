@@ -156,10 +156,10 @@ namespace MurmurHash {
     NanScope();
 
     char typeCstr[sizeof("utf-16le")];
-    Local<String> typeString = type->ToString();
+    const Local<String> typeString = type->ToString();
     int length = typeString->Length();
 
-    if ( length > 0 && length <= sizeof(typeCstr) - 1 ) {
+    if ( length > 0 && length <= (int)(sizeof(typeCstr) - 1) ) {
 
       typeString->WriteAscii(typeCstr);
       

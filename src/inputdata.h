@@ -1,9 +1,7 @@
 #if !defined(INPUTDATA_HEADER)
 #define INPUTDATA_HEADER
 
-#include <node.h>
 #include <v8.h>
-#include <nan.h>
 
 #ifndef NODE_MURMURHASH_KEY_BUFFER_SIZE
 #  define NODE_MURMURHASH_KEY_BUFFER_SIZE 1024
@@ -26,9 +24,9 @@ namespace MurmurHash {
       NAN_INLINE static Nan::Encoding DetermineEncoding(const Handle<Value> &encoding_v);
 
     private:
-      bool ownBuffer;
       char *buffer;
       size_t size;
+      bool ownBuffer;
 
       NAN_INLINE void InitFromBuffer(const Handle<Value> &key);
       NAN_INLINE char *EnsureBuffer(size_t bytelength);

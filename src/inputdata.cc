@@ -61,7 +61,7 @@ namespace MurmurHash {
     const Local<String> encString = encoding_v->ToString();
     int length = encString->Length();
 
-    if ( length > 0 && length <= sizeof(encCstr) - 1 ) {
+    if ( length > 0 && length <= (int)(sizeof(encCstr) - 1) ) {
 
       encString->WriteAscii(encCstr);
 
