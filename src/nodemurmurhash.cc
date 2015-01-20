@@ -161,7 +161,7 @@ namespace MurmurHash {
 
     if ( length > 0 && length <= (int)(sizeof(typeCstr) - 1) ) {
 
-      typeString->WriteAscii(typeCstr);
+      typeString->WriteUtf8(typeCstr);
       
       if ( length >= 4 ) {
         if ( strcasecmp(typeCstr, "number") == 0 )
