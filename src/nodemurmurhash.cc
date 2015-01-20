@@ -128,23 +128,25 @@ namespace MurmurHash {
         result = NanNew<Int32>( *((int32_t *) data) );
         break;
       case BinaryOutputType:
-        result = NanEncode( data, length, node::BINARY );
+        result = NanEncode( data, length, Nan::BINARY );
         break;
       case AsciiOutputType:
-        result = NanEncode( data, length, node::ASCII );
+        result = NanEncode( data, length, Nan::ASCII );
         break;
       case HexOutputType:
-        result = NanEncode( data, length, node::HEX );
+        result = NanEncode( data, length, Nan::HEX );
         break;
       case Base64OutputType:
-        result = NanEncode( data, length, node::BASE64 );
+        result = NanEncode( data, length, Nan::BASE64 );
         break;
       case Utf8OutputType:
-        result = NanEncode( data, length, node::UTF8 );
+        result = NanEncode( data, length, Nan::UTF8 );
         break;
       case Ucs2OutputType:
-        result = NanEncode( data, length, node::UCS2 );
+        result = NanEncode( data, length, Nan::UCS2 );
         break;
+      default:
+        void(0);
     }
     return NanEscapeScope(result);
   }

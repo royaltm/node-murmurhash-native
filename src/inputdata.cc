@@ -12,7 +12,7 @@ namespace MurmurHash {
       const Handle<Value> &key, const Handle<Value> &encoding_v)
   {
     if ( key->IsString() ) {
-      const enum node::encoding enc = DetermineEncoding(encoding_v);
+      const enum Nan::Encoding enc = DetermineEncoding(encoding_v);
       ssize_t length = NanDecodeBytes(key, enc);
       if ( length != -1 ) {
         size = (size_t) length;
@@ -52,13 +52,13 @@ namespace MurmurHash {
       EnsureBuffer(0);
   }
 
-  NAN_INLINE const node::encoding InputData::DetermineEncoding(
+  NAN_INLINE Nan::Encoding InputData::DetermineEncoding(
       const Handle<Value> &encoding_v)
   {
     NanScope();
 
     char encCstr[sizeof("utf-16le")];
-    Local<String> encString = encoding_v->ToString();
+    const Local<String> encString = encoding_v->ToString();
     int length = encString->Length();
 
     if ( length > 0 && length <= sizeof(encCstr) - 1 ) {
@@ -68,31 +68,31 @@ namespace MurmurHash {
       if ( length > 6 ) {
         if ( strcasecmp(encCstr, "utf16le") == 0 ||
              strcasecmp(encCstr, "utf-16le") == 0 )
-          return node::UCS2;
+          return Nan::UCS2;
       } else if ( length == 6 ) {
         if ( strcasecmp(encCstr, "base64") == 0 )
-          return node::BASE64;
+          return Nan::BASE64;
         if ( strcasecmp(encCstr, "binary") == 0 )
-          return node::BINARY;
+          return Nan::BINARY;
       } else if ( length >= 5 ) {
         if ( strcasecmp(encCstr, "ascii") == 0 ) {
-          return node::ASCII;
+          return Nan::ASCII;
         } else if ( strcasecmp(encCstr, "utf-8") == 0 ) {
-          return node::UTF8;
+          return Nan::UTF8;
         } else if ( strcasecmp(encCstr, "ucs-2") == 0 ) {
-          return node::UCS2;
+          return Nan::UCS2;
         }
       } else if ( length >= 4 ) {
         if ( strcasecmp(encCstr, "utf8") == 0 ) {
-          return node::UTF8;
+          return Nan::UTF8;
         } else if ( strcasecmp(encCstr, "ucs2") == 0 ) {
-          return node::UCS2;
+          return Nan::UCS2;
         }
       }
       if ( strcasecmp(encCstr, "hex") == 0 )
-        return node::HEX;
+        return Nan::HEX;
     }
-    return node::UTF8;
+    return Nan::UTF8;
   }
  
   size_t InputData::length() const { return size; }

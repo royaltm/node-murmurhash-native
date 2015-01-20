@@ -23,6 +23,7 @@ namespace MurmurHash {
       char* operator*();
       const char* operator*() const;
       ~InputData();
+      NAN_INLINE static Nan::Encoding DetermineEncoding(const Handle<Value> &encoding_v);
 
     private:
       bool ownBuffer;
@@ -30,7 +31,6 @@ namespace MurmurHash {
       size_t size;
 
       NAN_INLINE void InitFromBuffer(const Handle<Value> &key);
-      NAN_INLINE const node::encoding DetermineEncoding(const Handle<Value> &encoding_v);
       NAN_INLINE char *EnsureBuffer(size_t bytelength);
 
       NAN_INLINE static char *EnsureKeyBuffer(size_t bytelength);
