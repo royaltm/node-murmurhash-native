@@ -1,6 +1,12 @@
 var test = require("tap").test
   , hash = require('..')
+  , isNode010 = isNodeAtLeast(0, 10);
 ;
+
+function isNodeAtLeast(major, minor) {
+  var ver = process.versions.node.split('.', 2);
+  return ver[0] > major || (ver[0] == major && ver[1] >= minor);
+}
 
 [
   [4, 'murmurHash', hash.murmurHash, 0, -2114883783, 1364076727,
@@ -72,91 +78,56 @@ var test = require("tap").test
       t.end();
     });
 
-    t.test('should create hex hash from empty data', function(t) {
-      t.strictEqual(murmurHash('', 0, 'hex'), seedZeroHex);
-      t.strictEqual(murmurHash(new Buffer(''), 'hex'), seedZeroHex);
-      t.strictEqual(murmurHash('', -1, 'hex'), seedMinusOneHex);
-      t.strictEqual(murmurHash(new Buffer(''), -1, 'hex'), seedMinusOneHex);
-      t.strictEqual(murmurHash('', 4294967295, 'hex'), seedMinusOneHex);
-      t.strictEqual(murmurHash(new Buffer(''), 4294967295, 'hex'), seedMinusOneHex);
-      t.strictEqual(murmurHash('', 4294967296, 'hex'), seedZeroHex);
-      t.strictEqual(murmurHash(new Buffer(''), 4294967296, 'hex'), seedZeroHex);
-      t.strictEqual(murmurHash('', 1, 'hex'), seedPlusOneHex);
-      t.strictEqual(murmurHash(new Buffer(''), 1, 'hex'), seedPlusOneHex);
-      t.end();
-    });
-
-    t.test('should create typed-array hash', function(t) {
-      var buffer = murmurHash('hello hash!', 0, 'buffer');
-      [
-        ['int8',   size     , true , Int8Array],
-        ['int-8',  size     , true , Int8Array],
-        ['int16',  size / 2 , true , Int16Array],
-        ['int-16', size / 2 , true , Int16Array],
-        ['int32',  size / 4 , true , Int32Array],
-        ['int-32', size / 4 , true , Int32Array],
-        ['uint8',  size     , false, Uint8Array],
-        ['uint-8', size     , false, Uint8Array],
-        ['uint16', size / 2 , false, Uint16Array],
-        ['uint-16',size / 2 , false, Uint16Array],
-        ['uint32', size / 4 , false, Uint32Array],
-        ['uint-32',size / 4 , false, Uint32Array],
-      ].forEach(function(arrayTypes) {
-        var type   = arrayTypes[0]
-          , length = arrayTypes[1]
-          , signed = arrayTypes[2]
-          , klass  = arrayTypes[3]
-          , array = murmurHash('hello hash!', 0, type);
-        t.type(array, klass, 'array is ' + klass.name)
-        t.equals(array.length, length, 'array.length = ' + length)
-        t.equals(array.byteLength, size, 'array.byteLength = ' + size)
-        for(var i=0; i < array.length; ++i) {
-          if (signed) {
-            if ( array[i] < 0 )
-              break;
-          } else
-            t.ok( array[i] >= 0, 'is unsigned');
-        }
-        if (signed && i == array.length)
-          t.fail('should be signed')
-        for(var i=0; i < buffer.length; ++i)
-          t.equals(buffer[i], array.buffer[i])
+    if ( isNode010 ) {
+      t.test('should create hex hash from empty data', function(t) {
+        t.strictEqual(murmurHash('', 0, 'hex'), seedZeroHex);
+        t.strictEqual(murmurHash(new Buffer(''), 'hex'), seedZeroHex);
+        t.strictEqual(murmurHash('', -1, 'hex'), seedMinusOneHex);
+        t.strictEqual(murmurHash(new Buffer(''), -1, 'hex'), seedMinusOneHex);
+        t.strictEqual(murmurHash('', 4294967295, 'hex'), seedMinusOneHex);
+        t.strictEqual(murmurHash(new Buffer(''), 4294967295, 'hex'), seedMinusOneHex);
+        t.strictEqual(murmurHash('', 4294967296, 'hex'), seedZeroHex);
+        t.strictEqual(murmurHash(new Buffer(''), 4294967296, 'hex'), seedZeroHex);
+        t.strictEqual(murmurHash('', 1, 'hex'), seedPlusOneHex);
+        t.strictEqual(murmurHash(new Buffer(''), 1, 'hex'), seedPlusOneHex);
+        t.end();
       });
-      t.end();
-    });
+    }
 
-    t.test('should utilize different string input encodings', function(t) {
-      var string = "\u1220łóżko"
-        , base64 = '4YigxYLDs8W8a28='
-        , hex = 'e188a0c582c3b3c5bc6b6f'
-        , hash = murmurHash(string, 0, 'hex');
-      t.strictEqual(hash,
-         murmurHash(new Buffer(string), 'hex'));
-      t.strictEqual(murmurHash(string, 'ascii', 0, 'hex'),
-         murmurHash(new Buffer(string, 'ascii'), 'hex'));
-      t.strictEqual(murmurHash(string, 'binary', 0, 'hex'),
-         murmurHash(new Buffer(string, 'binary'), 'hex'));
-      t.strictEqual(murmurHash(string, 'utf8', 0, 'hex'), hash);
-      t.strictEqual(murmurHash(string, 'utf8', 0, 'hex'),
-         murmurHash(new Buffer(string, 'utf8'), 'hex'));
-      t.strictEqual(murmurHash(string, 'utf-8', 0, 'hex'),
-         murmurHash(new Buffer(string, 'utf-8'), 'hex'));
-      t.strictEqual(murmurHash(string, 'ucs2', 0, 'hex'),
-         murmurHash(new Buffer(string, 'ucs2'), 'hex'));
-      t.strictEqual(murmurHash(string, 'ucs-2', 0, 'hex'),
-         murmurHash(new Buffer(string, 'ucs-2'), 'hex'));
-      t.strictEqual(murmurHash(string, 'utf16le', 0, 'hex'),
-         murmurHash(new Buffer(string, 'utf16le'), 'hex'));
-      t.strictEqual(murmurHash(string, 'utf-16le', 0, 'hex'),
-         murmurHash(new Buffer(string, 'utf-16le'), 'hex'));
-      t.strictEqual(murmurHash(base64, 'base64', 0, 'hex'), hash);
-      t.strictEqual(murmurHash(base64, 'base64', 0, 'hex'),
-         murmurHash(new Buffer(base64, 'base64'), 'hex'));
-      t.strictEqual(murmurHash(hex, 'hex', 0, 'hex'), hash);
-      t.strictEqual(murmurHash(hex, 'hex', 0, 'hex'),
-         murmurHash(new Buffer(hex, 'hex'), 'hex'));
-      t.end();
-    });
+    if ( isNode010 ) {
+      t.test('should utilize different string input encodings', function(t) {
+        var string = "\u1220łóżko"
+          , base64 = '4YigxYLDs8W8a28='
+          , hex = 'e188a0c582c3b3c5bc6b6f'
+          , hash = murmurHash(string, 0, 'hex');
+        t.strictEqual(hash,
+           murmurHash(new Buffer(string), 'hex'));
+        t.strictEqual(murmurHash(string, 'ascii', 0, 'hex'),
+           murmurHash(new Buffer(string, 'ascii'), 'hex'));
+        t.strictEqual(murmurHash(string, 'binary', 0, 'hex'),
+           murmurHash(new Buffer(string, 'binary'), 'hex'));
+        t.strictEqual(murmurHash(string, 'utf8', 0, 'hex'), hash);
+        t.strictEqual(murmurHash(string, 'utf8', 0, 'hex'),
+           murmurHash(new Buffer(string, 'utf8'), 'hex'));
+        t.strictEqual(murmurHash(string, 'utf-8', 0, 'hex'),
+           murmurHash(new Buffer(string, 'utf-8'), 'hex'));
+        t.strictEqual(murmurHash(string, 'ucs2', 0, 'hex'),
+           murmurHash(new Buffer(string, 'ucs2'), 'hex'));
+        t.strictEqual(murmurHash(string, 'ucs-2', 0, 'hex'),
+           murmurHash(new Buffer(string, 'ucs-2'), 'hex'));
+        t.strictEqual(murmurHash(string, 'utf16le', 0, 'hex'),
+           murmurHash(new Buffer(string, 'utf16le'), 'hex'));
+        t.strictEqual(murmurHash(string, 'utf-16le', 0, 'hex'),
+           murmurHash(new Buffer(string, 'utf-16le'), 'hex'));
+        t.strictEqual(murmurHash(base64, 'base64', 0, 'hex'), hash);
+        t.strictEqual(murmurHash(base64, 'base64', 0, 'hex'),
+           murmurHash(new Buffer(base64, 'base64'), 'hex'));
+        t.strictEqual(murmurHash(hex, 'hex', 0, 'hex'), hash);
+        t.strictEqual(murmurHash(hex, 'hex', 0, 'hex'),
+           murmurHash(new Buffer(hex, 'hex'), 'hex'));
+        t.end();
+      });
+    }
 
     t.test('should create hash from some random data', function(t) {
       var data = '';
@@ -167,12 +138,14 @@ var test = require("tap").test
       t.deepEqual(murmurHash(data, -1), murmurHash(new Buffer(data), -1));
       t.deepEqual(murmurHash(data, -1), murmurHash(new Buffer(data), 4294967295));
       t.deepEqual(murmurHash(data, 4294967295), murmurHash(new Buffer(data), -1));
-      t.strictEqual(murmurHash(data, 0, 'hex'), murmurHash(new Buffer(data), 'buffer').toString('hex'));
-      t.strictEqual(murmurHash(data, 0, 'base64'), murmurHash(new Buffer(data), 'buffer').toString('base64'));
+      if ( isNode010 ) {
+        t.strictEqual(murmurHash(data, 0, 'hex'), murmurHash(new Buffer(data), 'buffer').toString('hex'));
+        t.strictEqual(murmurHash(data, 0, 'base64'), murmurHash(new Buffer(data), 'buffer').toString('base64'));
+        t.strictEqual(murmurHash(data, 0, 'ucs2'), murmurHash(new Buffer(data), 'buffer').toString('ucs2'));
+      }
       t.strictEqual(murmurHash(data, 0, 'ascii'), murmurHash(new Buffer(data), 'buffer').toString('ascii'));
       t.strictEqual(murmurHash(data, 0, 'binary'), murmurHash(new Buffer(data), 'buffer').toString('binary'));
       t.strictEqual(murmurHash(data, 0, 'utf8'), murmurHash(new Buffer(data), 'buffer').toString('utf8'));
-      t.strictEqual(murmurHash(data, 0, 'ucs2'), murmurHash(new Buffer(data), 'buffer').toString('ucs2'));
       var seed = (Math.random()*4294967296)|0;
       t.deepEqual(murmurHash(data, seed), murmurHash(new Buffer(data), seed));
       t.end();

@@ -55,10 +55,9 @@ murmurHash(data, input_encoding, seed, output_type)
       'number' (murmurHash32 only) - 32-bit integer,
       'buffer' - Buffer output,
       'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary' - string output,
-      'int32', 'int16', 'int8', 'uint32', 'uint16', 'uint8' - typed-array,
       default is 'number' or 'buffer'
 
-@return {number|Buffer|String|Int8Array|Int16Array|Int32Array|Uint8Array|Uint16Array|Uint32Array}
+@return {number|Buffer|String}
 ```
 
 Bugs, limitations, caveats

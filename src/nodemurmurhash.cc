@@ -41,14 +41,6 @@ namespace MurmurHash {
   using v8::FunctionTemplate;
   using v8::Persistent;
   using v8::String;
-  using node::Buffer;
-
-  static Persistent<Function> int8ArrayFunction;
-  static Persistent<Function> int16ArrayFunction;
-  static Persistent<Function> int32ArrayFunction;
-  static Persistent<Function> uint8ArrayFunction;
-  static Persistent<Function> uint16ArrayFunction;
-  static Persistent<Function> uint32ArrayFunction;
 
   typedef enum {
     IllegalOutputType,
@@ -59,61 +51,35 @@ namespace MurmurHash {
     AsciiOutputType,
     Utf8OutputType,
     HexOutputType,
-    Base64OutputType,
-    Int8OutputType,
-    Int16OutputType,
-    Int32OutputType,
-    Uint8OutputType,
-    Uint16OutputType,
-    Uint32OutputType
+    Base64OutputType
   } OutputType;
 
-  NAN_INLINE static Local<Object> CreateResultArrayFrom(
-      const Handle<Function> &constr,
-      size_t length,
-      size_t elementsize)
-  {
-    NanEscapableScope();
-    Local<Value> bufargv[] = {
-      NanNew<Uint32>( (uint32_t) (length / elementsize) )
-    };
-    const Local<Object> array(constr->NewInstance(1, bufargv));
-    return NanEscapeScope(array);
-  }
 
-  NAN_INLINE static void *CreateResult(
+  NAN_INLINE static Local<Object> CreateResult(
       const OutputType outputType,
       size_t length,
-      Local<Value> &result)
+      void **out)
   {
+    NanEscapableScope();
+
+    Local<Object> result;
+
     static char buffer[NODE_MURMURHASH_HASH_BUFFER_SIZE];
+
     switch(outputType) {
-      case Int8OutputType:
-        result = CreateResultArrayFrom( int8ArrayFunction, length, 1 );
-        return result.As<Object>()->GetIndexedPropertiesExternalArrayData();
-      case Int16OutputType:
-        result = CreateResultArrayFrom( int16ArrayFunction, length, 2 );
-        return result.As<Object>()->GetIndexedPropertiesExternalArrayData();
-      case Int32OutputType:
-        result = CreateResultArrayFrom( int32ArrayFunction, length, 4 );
-        return result.As<Object>()->GetIndexedPropertiesExternalArrayData();
-      case Uint8OutputType:
-        result = CreateResultArrayFrom( uint8ArrayFunction, length, 1 );
-        return result.As<Object>()->GetIndexedPropertiesExternalArrayData();
-      case Uint16OutputType:
-        result = CreateResultArrayFrom( uint16ArrayFunction, length, 2 );
-        return result.As<Object>()->GetIndexedPropertiesExternalArrayData();
-      case Uint32OutputType:
-        result = CreateResultArrayFrom( uint32ArrayFunction, length, 4 );
-        return result.As<Object>()->GetIndexedPropertiesExternalArrayData();
       case NumberOutputType:
-        if ( length == sizeof(uint32_t) )
+        if ( length == sizeof(uint32_t) ) {
+          *out = buffer;
           break;
+        }
       case BufferOutputType:
         result = NanNewBufferHandle( (uint32_t) length );
-        return Buffer::Data(result);
+        *out = node::Buffer::Data( result );
+        break;
+      default:
+        *out = buffer;
     }
-    return buffer;
+    return NanEscapeScope(result);
   }
 
   NAN_INLINE static Local<Value> GetResultFrom(
@@ -162,52 +128,37 @@ namespace MurmurHash {
     if ( length > 0 && length <= (int)(sizeof(typeCstr) - 1) ) {
 
       typeString->WriteUtf8(typeCstr);
-      
-      if ( length >= 4 ) {
-        if ( strcasecmp(typeCstr, "number") == 0 )
-          return NumberOutputType;
-        if ( strcasecmp(typeCstr, "base64") == 0 )
-          return Base64OutputType;
-        if ( strcasecmp(typeCstr, "binary") == 0 )
-          return BinaryOutputType;
-        if ( strncasecmp(typeCstr, "int", 3) == 0 ) {
-          if ( strcmp(typeCstr + 3, "8") == 0 ||
-               strcmp(typeCstr + 3, "-8") == 0 )
-            return Int8OutputType;
-          if ( strcmp(typeCstr + 3, "16") == 0 ||
-               strcmp(typeCstr + 3, "-16") == 0 )
-            return Int16OutputType;
-          if ( strcmp(typeCstr + 3, "32") == 0 ||
-               strcmp(typeCstr + 3, "-32") == 0 )
-            return Int32OutputType;
-        } else if ( strcasecmp(typeCstr, "utf8") == 0 ) {
-          return Utf8OutputType;
-        } else if ( strcasecmp(typeCstr, "ucs2") == 0 ) {
+
+      if ( length > 6 ) {
+        if ( strcasecmp(typeCstr, "utf16le") == 0 ||
+             strcasecmp(typeCstr, "utf-16le") == 0 )
           return Ucs2OutputType;
-        } else if ( strncasecmp(typeCstr, "uint", 4) == 0 ) {
-          if ( strcmp(typeCstr + 4, "8") == 0 ||
-               strcmp(typeCstr + 4, "-8") == 0 )
-            return Uint8OutputType;
-          if ( strcmp(typeCstr + 4, "16") == 0 ||
-               strcmp(typeCstr + 4, "-16") == 0 )
-            return Uint16OutputType;
-          if ( strcmp(typeCstr + 4, "32") == 0 ||
-               strcmp(typeCstr + 4, "-32") == 0 )
-            return Uint32OutputType;
-        } else if ( strcasecmp(typeCstr, "ascii") == 0 ) {
+      } else if ( length == 6 ) {
+        if ( strcasecmp(typeCstr, "number") == 0 ) {
+          return NumberOutputType;
+        } else if ( strcasecmp(typeCstr, "base64") == 0 ) {
+          return Base64OutputType;
+        } else if ( strcasecmp(typeCstr, "binary") == 0 ) {
+          return BinaryOutputType;
+        }
+      } else if ( length >= 5 ) {
+        if ( strcasecmp(typeCstr, "ascii") == 0 ) {
           return AsciiOutputType;
         } else if ( strcasecmp(typeCstr, "utf-8") == 0 ) {
           return Utf8OutputType;
         } else if ( strcasecmp(typeCstr, "ucs-2") == 0 ) {
           return Ucs2OutputType;
-        } else if ( length > 6 && (
-            strcasecmp(typeCstr, "utf16le") == 0 ||
-            strcasecmp(typeCstr, "utf-16le") == 0
-          ) )
+        }
+      } else if ( length >= 4 ) {
+        if ( strcasecmp(typeCstr, "utf8") == 0 ) {
+          return Utf8OutputType;
+        } else if ( strcasecmp(typeCstr, "ucs2") == 0 ) {
           return Ucs2OutputType;
+        }
       } else if ( strcasecmp(typeCstr, "hex") == 0 )
         return HexOutputType;
     }
+
     return BufferOutputType;
   }
 
@@ -231,10 +182,9 @@ namespace MurmurHash {
    *       'number' (murmurHash32 only) - a 32-bit integer,
    *       'buffer' - Buffer output,
    *       'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary' - string output,
-   *       'int32', 'int16', 'int8', 'uint32', 'uint16', 'uint8' - typed-array,
    *       default is 'number' or 'buffer'
    *
-   * @return {number|Buffer|String|Int8Array|Int16Array|Int32Array|Uint8Array|Uint16Array|Uint32Array}
+   * @return {number|Buffer|String}
   **/
   template<MurmurHashFunctionType HashFunction, size_t HashSize>
   NAN_METHOD(MurmurHash) {
@@ -291,8 +241,8 @@ namespace MurmurHash {
     if ( outputType == IllegalOutputType)
       return NanThrowError("illegal output type");
 
-    Local<Value> result;
-    void *out = CreateResult(outputType, HashSize, result);
+    void *out;
+    Local<Value> result = CreateResult(outputType, HashSize, &out);
 
     HashFunction( (const void *) *data, (int) data.length(), seed, out );
 
@@ -303,25 +253,6 @@ namespace MurmurHash {
   }
 
   void Init(Handle<Object> exports) {
-
-    NanAssignPersistent(int8ArrayFunction,
-      Local<Function>::Cast(NanGetCurrentContext()->Global()->Get(
-        NanNew<String>("Int8Array"))));
-    NanAssignPersistent(int16ArrayFunction,
-      Local<Function>::Cast(NanGetCurrentContext()->Global()->Get(
-        NanNew<String>("Int16Array"))));
-    NanAssignPersistent(int32ArrayFunction,
-      Local<Function>::Cast(NanGetCurrentContext()->Global()->Get(
-        NanNew<String>("Int32Array"))));
-    NanAssignPersistent(uint8ArrayFunction,
-      Local<Function>::Cast(NanGetCurrentContext()->Global()->Get(
-        NanNew<String>("Uint8Array"))));
-    NanAssignPersistent(uint16ArrayFunction,
-      Local<Function>::Cast(NanGetCurrentContext()->Global()->Get(
-        NanNew<String>("Uint16Array"))));
-    NanAssignPersistent(uint32ArrayFunction,
-      Local<Function>::Cast(NanGetCurrentContext()->Global()->Get(
-        NanNew<String>("Uint32Array"))));
 
     exports->Set( NanNew<String>("murmurHash"),
               NanNew<FunctionTemplate>(MurmurHash<MurmurHash3_x86_32, 4>)->GetFunction() );
