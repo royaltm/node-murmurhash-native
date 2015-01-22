@@ -63,7 +63,7 @@ namespace MurmurHash {
 
     if ( length > 0 && length <= (int)(sizeof(encCstr) - 1) ) {
 
-      encString->WriteUtf8(encCstr);
+      NanStringWriteBytes(encString, encCstr);
 
       if ( length > 6 ) {
         if ( strcasecmp(encCstr, "utf16le") == 0 ||

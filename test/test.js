@@ -10,29 +10,34 @@ function isNodeAtLeast(major, minor) {
 
 [
   [4, 'murmurHash', hash.murmurHash, 0, -2114883783, 1364076727,
-      '00000000', '396ff181', 'b7284e51'],
+      '00000000', '396ff181', 'b7284e51',
+      '377f2de7'],
   [8, 'murmurHash64x64', hash.murmurHash64x64,
       new Buffer('0000000000000000', 'hex'),
       new Buffer('313c2fa401422d95', 'hex'),
       new Buffer('dc64d05b93a7a4c6', 'hex'),
-      '0000000000000000', '313c2fa401422d95', 'dc64d05b93a7a4c6'],
+      '0000000000000000', '313c2fa401422d95', 'dc64d05b93a7a4c6',
+      '9fd4eea49cf85e86'],
   [8, 'murmurHash64x86', hash.murmurHash64x86,
       new Buffer('0000000000000000', 'hex'),
       new Buffer('b08ac9f678ca07f1', 'hex'),
       new Buffer('485250799f019fdd', 'hex'),
-      '0000000000000000', 'b08ac9f678ca07f1', '485250799f019fdd'],
+      '0000000000000000', 'b08ac9f678ca07f1', '485250799f019fdd',
+      '6acc55d0bb3be0bc'],
   [16, 'murmurHash128x64', hash.murmurHash128x64,
       new Buffer('00000000000000000000000000000000', 'hex'),
       new Buffer('ecc93b9d4ddff16a6b44e61e12217485', 'hex'),
       new Buffer('b55cff6ee5ab10468335f878aa2d6251', 'hex'),
       '00000000000000000000000000000000', 'ecc93b9d4ddff16a6b44e61e12217485',
-      'b55cff6ee5ab10468335f878aa2d6251'],
+      'b55cff6ee5ab10468335f878aa2d6251',
+      '9b7f998ee773a51875585e59b4c4e90b'],
   [16, 'murmurHash128x86', hash.murmurHash128x86,
       new Buffer('00000000000000000000000000000000', 'hex'),
       new Buffer('a9081e05f7499d98f7499d98f7499d98', 'hex'),
       new Buffer('ecadc488b901d254b901d254b901d254', 'hex'),
       '00000000000000000000000000000000', 'a9081e05f7499d98f7499d98f7499d98',
-      'ecadc488b901d254b901d254b901d254'],
+      'ecadc488b901d254b901d254b901d254',
+      'a00b69cf08b95f0d4d8b97b2eecb778d'],
 ].forEach(function(args) {
 
   var size                = args[0]
@@ -44,6 +49,7 @@ function isNodeAtLeast(major, minor) {
     , seedZeroHex         = args[6]
     , seedMinusOneHex     = args[7]
     , seedPlusOneHex      = args[8]
+    , crashTestHex        = args[9]
 
   test(label, function(t) {
 
@@ -148,6 +154,15 @@ function isNodeAtLeast(major, minor) {
       t.strictEqual(murmurHash(data, 0, 'utf8'), murmurHash(new Buffer(data), 'buffer').toString('utf8'));
       var seed = (Math.random()*4294967296)|0;
       t.deepEqual(murmurHash(data, seed), murmurHash(new Buffer(data), seed));
+      t.end();
+    });
+
+    t.test('should not crash with utf8 characters in encoding string', function(t) {
+      var hash = murmurHash("łabądź",
+                 "\u1010\u1111\u1212\u1313\u1414\u1515\u1616\u1717",
+                 "\u1010\u1111\u1212\u1313\u1414\u1515\u1616\u1717");
+      t.type(hash, Buffer, 'hash is buffer');
+      t.strictEqual(hash.toString('hex'), crashTestHex);
       t.end();
     });
 
