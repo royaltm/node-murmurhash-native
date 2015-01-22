@@ -1,14 +1,15 @@
-#include "nodemurmurhash.h"
-#include "inputdata.h"
+#if !defined(INPUTDATA_HEADER)
+# error 'inputdata_impl.h' is not supposed to be included directly. Include 'inputdata.h' instead.
+#endif
 
 namespace MurmurHash {
   using v8::Local;
   using v8::Object;
   using v8::String;
 
-  InputData::InputData() : buffer(NULL), size(0), ownBuffer(false) {}
+  NAN_INLINE InputData::InputData() : buffer(NULL), size(0), ownBuffer(false) {}
 
-  void InputData::Setup(
+  NAN_INLINE void InputData::Setup(
       const Handle<Value> &key, const Handle<Value> &encoding_v)
   {
     if ( key->IsString() ) {
@@ -24,7 +25,7 @@ namespace MurmurHash {
     }
   }
 
-  void InputData::Setup(const Handle<Value> &key)
+  NAN_INLINE void InputData::Setup(const Handle<Value> &key)
   {
     if ( key->IsString() ) {
       NanScope();
@@ -37,7 +38,7 @@ namespace MurmurHash {
     }
   }
 
-  bool InputData::IsValid(void)
+  NAN_INLINE bool InputData::IsValid(void)
   {
     return buffer != NULL;
   }
@@ -94,14 +95,14 @@ namespace MurmurHash {
     }
     return Nan::UTF8;
   }
- 
-  size_t InputData::length() const { return size; }
- 
-  char* InputData::operator*() { return buffer; }
- 
-  const char* InputData::operator*() const { return buffer; }
- 
-  InputData::~InputData()
+
+  NAN_INLINE size_t InputData::length() const { return size; }
+
+  NAN_INLINE char* InputData::operator*() { return buffer; }
+
+  NAN_INLINE const char* InputData::operator*() const { return buffer; }
+
+  NAN_INLINE InputData::~InputData()
   {
     if ( ownBuffer ) delete[] buffer;
   }

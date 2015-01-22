@@ -5,7 +5,6 @@
       'sources': [
         'src/murmurhash/MurmurHash2.cpp',
         'src/murmurhash/MurmurHash3.cpp',
-        'src/inputdata.cc',
         'src/nodemurmurhash.cc'
       ],
       'include_dirs': [

@@ -1,8 +1,6 @@
 #if !defined(INPUTDATA_HEADER)
 #define INPUTDATA_HEADER
 
-#include <v8.h>
-
 #ifndef NODE_MURMURHASH_KEY_BUFFER_SIZE
 #  define NODE_MURMURHASH_KEY_BUFFER_SIZE 1024
 #endif
@@ -13,14 +11,14 @@ namespace MurmurHash {
 
   class InputData {
     public:
-      InputData();
-      void Setup(const Handle<Value> &key, const Handle<Value> &encoding_v);
-      void Setup(const Handle<Value> &key);
-      bool IsValid(void);
-      size_t length() const;
-      char* operator*();
-      const char* operator*() const;
-      ~InputData();
+      NAN_INLINE InputData();
+      NAN_INLINE void Setup(const Handle<Value> &key, const Handle<Value> &encoding_v);
+      NAN_INLINE void Setup(const Handle<Value> &key);
+      NAN_INLINE bool IsValid(void);
+      NAN_INLINE size_t length() const;
+      NAN_INLINE char* operator*();
+      NAN_INLINE const char* operator*() const;
+      NAN_INLINE ~InputData();
       NAN_INLINE static Nan::Encoding DetermineEncoding(const Handle<Value> &encoding_v);
 
     private:
@@ -39,5 +37,7 @@ namespace MurmurHash {
   };
 
 }
+
+#include "inputdata_impl.h"
 
 #endif
