@@ -51,7 +51,7 @@ murmurHash(data, input_encoding, seed, output_type)
 @param {string} input_encoding - input data string encoding, can be:
       'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary',
       ignored if data is an instance of a Buffer,
-      default is 'utf8'
+      default is 'binary'
 @param {Uint32} seed - murmur hash seed, default is 0
 @param {string} output_type - how to encode output, can be:
       'number' (murmurHash32 only) - 32-bit integer,
