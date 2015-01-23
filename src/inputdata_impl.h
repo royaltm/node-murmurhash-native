@@ -3,38 +3,39 @@
 #endif
 
 namespace MurmurHash {
-  using v8::Local;
-  using v8::Object;
-  using v8::String;
 
   NAN_INLINE InputData::InputData() : buffer(NULL), size(0), ownBuffer(false) {}
 
   NAN_INLINE void InputData::Setup(
-      const Handle<Value> &key, const Handle<Value> &encoding_v)
+      Handle<Value> key, const Handle<String> encodingStr)
   {
     if ( key->IsString() ) {
-      const enum Nan::Encoding enc = DetermineEncoding(encoding_v);
-      ssize_t length = NanDecodeBytes(key, enc);
-      if ( length != -1 ) {
-        size = (size_t) length;
-        char *data = EnsureBuffer(size + 1);
-        NanDecodeWrite( data, size, key, enc );
+      const enum Nan::Encoding enc = DetermineEncoding(encodingStr);
+#if  (NODE_MODULE_VERSION < 0x000B)
+      /* v0.8's node::DecodeWrite returns incorrect utf8 size */
+      ssize_t maxLength = NanDecodeBytes(key, enc);
+#else
+      ssize_t maxLength = enc == Nan::UTF8
+                            ? 3 * key.As<String>()->Length()
+                            : NanDecodeBytes(key, enc);
+#endif
+      if ( maxLength != -1 ) {
+        char *data = EnsureBuffer((size_t) maxLength);
+        size = (size_t) NanDecodeWrite( data, maxLength, key, enc );
       }
     } else if ( node::Buffer::HasInstance(key) ) {
-      InitFromBuffer(key);
+      InitFromBuffer( key.As<Object>() );
     }
   }
 
-  NAN_INLINE void InputData::Setup(const Handle<Value> &key)
+  NAN_INLINE void InputData::Setup(Handle<Value> key)
   {
     if ( key->IsString() ) {
-      NanScope();
-      Local<String> keyStr = key->ToString();
-      size = (size_t) keyStr->Utf8Length();
-      char *data = EnsureBuffer(size + 1);
-      keyStr->WriteUtf8(data);
+      size_t length = (size_t) key.As<String>()->Length();
+      char *data = EnsureBuffer(length);
+      size = (size_t) NanDecodeWrite( data, length, key );
     } else if ( node::Buffer::HasInstance(key) ) {
-      InitFromBuffer(key);
+      InitFromBuffer( key.As<Object>() );
     }
   }
 
@@ -43,28 +44,23 @@ namespace MurmurHash {
     return buffer != NULL;
   }
 
-  NAN_INLINE void InputData::InitFromBuffer(const Handle<Value> &key)
+  NAN_INLINE void InputData::InitFromBuffer(const Handle<Object> keyObject)
   {
-    NanScope();
-    Local<Object> bufferObj( key->ToObject() );
-    size = node::Buffer::Length(bufferObj);
-    buffer = node::Buffer::Data(bufferObj);
+    size = node::Buffer::Length(keyObject);
+    buffer = node::Buffer::Data(keyObject);
     if ( size == 0 )
       EnsureBuffer(0);
   }
 
   NAN_INLINE Nan::Encoding InputData::DetermineEncoding(
-      const Handle<Value> &encoding_v)
+      const Handle<String> encodingStr)
   {
-    NanScope();
-
     char encCstr[sizeof("utf-16le")];
-    const Local<String> encString = encoding_v->ToString();
-    int length = encString->Length();
+    int length = encodingStr->Length();
 
     if ( length > 0 && length <= (int)(sizeof(encCstr) - 1) ) {
 
-      encCstr[NanDecodeWrite(encCstr, sizeof(encCstr) - 1, encString)] = 0;
+      encCstr[NanDecodeWrite(encCstr, sizeof(encCstr) - 1, encodingStr)] = 0;
 
       if ( length > 6 ) {
         if ( strcasecmp(encCstr, "utf16le") == 0 ||
@@ -93,7 +89,7 @@ namespace MurmurHash {
       if ( strcasecmp(encCstr, "hex") == 0 )
         return Nan::HEX;
     }
-    return Nan::UTF8;
+    return Nan::BINARY;
   }
 
   NAN_INLINE size_t InputData::length() const { return size; }

@@ -7,26 +7,29 @@
 
 namespace MurmurHash {
   using v8::Handle;
+  using v8::Local;
   using v8::Value;
+  using v8::Object;
+  using v8::String;
 
   class InputData {
     public:
       NAN_INLINE InputData();
-      NAN_INLINE void Setup(const Handle<Value> &key, const Handle<Value> &encoding_v);
-      NAN_INLINE void Setup(const Handle<Value> &key);
+      NAN_INLINE void Setup(Handle<Value> key, const Handle<String> encodingStr);
+      NAN_INLINE void Setup(Handle<Value> key);
       NAN_INLINE bool IsValid(void);
       NAN_INLINE size_t length() const;
       NAN_INLINE char* operator*();
       NAN_INLINE const char* operator*() const;
       NAN_INLINE ~InputData();
-      NAN_INLINE static Nan::Encoding DetermineEncoding(const Handle<Value> &encoding_v);
+      NAN_INLINE static Nan::Encoding DetermineEncoding(const Handle<String> encodingStr);
 
     private:
       char *buffer;
       size_t size;
       bool ownBuffer;
 
-      NAN_INLINE void InitFromBuffer(const Handle<Value> &key);
+      NAN_INLINE void InitFromBuffer(const Handle<Object> keyObject);
       NAN_INLINE char *EnsureBuffer(size_t bytelength);
 
       NAN_INLINE static char *EnsureKeyBuffer(size_t bytelength);

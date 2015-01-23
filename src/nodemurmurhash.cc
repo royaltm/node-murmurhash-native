@@ -117,29 +117,28 @@ namespace MurmurHash {
     return NanEscapeScope(result);
   }
 
-  static OutputType DetermineOutputType(const Handle<Value> &type)
+  static OutputType DetermineOutputType(const Handle<String> type)
   {
-    NanScope();
-
     char typeCstr[sizeof("utf-16le")];
-    const Local<String> typeString = type->ToString();
-    int length = typeString->Length();
+    int length = type->Length();
 
     if ( length > 0 && length <= (int)(sizeof(typeCstr) - 1) ) {
 
-      typeCstr[NanDecodeWrite(typeCstr, sizeof(typeCstr) - 1, typeString)] = 0;
+      typeCstr[NanDecodeWrite(typeCstr, sizeof(typeCstr) - 1, type)] = 0;
 
       if ( length > 6 ) {
         if ( strcasecmp(typeCstr, "utf16le") == 0 ||
              strcasecmp(typeCstr, "utf-16le") == 0 )
           return Ucs2OutputType;
       } else if ( length == 6 ) {
-        if ( strcasecmp(typeCstr, "number") == 0 ) {
+        if ( strcasecmp(typeCstr, "buffer") == 0 ) {
+          return BufferOutputType;
+        } else if ( strcasecmp(typeCstr, "number") == 0 ) {
           return NumberOutputType;
-        } else if ( strcasecmp(typeCstr, "base64") == 0 ) {
-          return Base64OutputType;
         } else if ( strcasecmp(typeCstr, "binary") == 0 ) {
           return BinaryOutputType;
+        } else if ( strcasecmp(typeCstr, "base64") == 0 ) {
+          return Base64OutputType;
         }
       } else if ( length >= 5 ) {
         if ( strcasecmp(typeCstr, "ascii") == 0 ) {
@@ -159,7 +158,7 @@ namespace MurmurHash {
         return HexOutputType;
     }
 
-    return BufferOutputType;
+    return NumberOutputType;
   }
 
   /**
@@ -176,7 +175,7 @@ namespace MurmurHash {
    * @param {string} input_encoding - input data string encoding, can be:
    *       'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary',
    *       ignored if data is an instance of a Buffer,
-   *       default is 'utf8'
+   *       default is 'binary'
    * @param {Uint32} seed - murmur hash seed, default is 0
    * @param {string} output_type - how to encode output, can be:
    *       'number' (murmurHash32 only) - a 32-bit integer,
@@ -200,29 +199,36 @@ namespace MurmurHash {
 
     switch(argc) {
       case 4:
-        outputType = DetermineOutputType( args[3] );
+        if ( args[3]->IsString() ) {
+          outputType = DetermineOutputType( args[3].As<String>() );
+        }
         seed = args[2]->Uint32Value();
-        data.Setup( args[0], args[1] );
+        if ( args[1]->IsString() ) {
+          data.Setup( args[0], args[1].As<String>() );
+        } else {
+          data.Setup( args[0] );
+        }
         break;
       case 3:
-        if ( args[2]->IsString() ) {
-          outputType = DetermineOutputType( args[2] );
-        } else {
-          seed = args[2]->Uint32Value();
-        }
         if ( args[1]->IsString() ) {
-          data.Setup( args[0], args[1] );
+          data.Setup( args[0], args[1].As<String>() );
         } else {
-          seed = args[1]->Uint32Value();
+          if ( args[1]->IsNumber() )
+            seed = args[1]->Uint32Value();
           data.Setup( args[0] );
+        }
+        if ( args[2]->IsString() ) {
+          outputType = DetermineOutputType( args[2].As<String>() );
+        } else if ( args[2]->IsNumber() ) {
+          seed = args[2]->Uint32Value();
         }
         break;
       case 2:
         if ( args[1]->IsString() ) {
           if ( args[0]->IsString() ) {
-            data.Setup( args[0], args[1] );
+            data.Setup( args[0], args[1].As<String>() );
           } else {
-            outputType = DetermineOutputType( args[1] );
+            outputType = DetermineOutputType( args[1].As<String>() );
             data.Setup( args[0] );
           }
         } else {
