@@ -1,13 +1,3 @@
-#if !defined(NanStringWriteBytes)
-#  if (NODE_MODULE_VERSION > 0x000B)
-#    define NanStringWriteBytes(v8string, ...) \
-            (v8string)->WriteOneByte((uint8_t*)__VA_ARGS__)
-#  else
-#    define NanStringWriteBytes(v8string, ...) \
-            (v8string)->WriteAscii(__VA_ARGS__)
-#  endif
-#endif
-
 #if !defined(NanEncode)
 NAN_INLINE v8::Local<v8::Value> NanEncode(
     const void *buf, size_t len, enum Nan::Encoding encoding = Nan::BINARY) {
