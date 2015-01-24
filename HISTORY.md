@@ -1,3 +1,8 @@
+v0.2.1
+
+* bump nan to 1.6, remove polyfill
+* bench: compare with all crypto hashes
+
 v0.2.0
 
 * default input encoding changed from "utf8" to "binary"
