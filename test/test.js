@@ -8,6 +8,17 @@ function isNodeAtLeast(major, minor) {
   return ver[0] > major || (ver[0] == major && ver[1] >= minor);
 }
 
+test("should have murmurHash functions", function(t) {
+  t.type(hash.murmurHash, 'function');
+  t.type(hash.murmurHash64, 'function');
+  t.type(hash.murmurHash64x64, 'function');
+  t.type(hash.murmurHash64x86, 'function');
+  t.type(hash.murmurHash128x64, 'function');
+  t.type(hash.murmurHash128, 'function');
+  t.type(hash.murmurHash128x86, 'function');
+  t.end();
+});
+
 [
   [4, 'murmurHash', hash.murmurHash, 0, -2114883783, 1364076727,
       '00000000', '396ff181', 'b7284e51',

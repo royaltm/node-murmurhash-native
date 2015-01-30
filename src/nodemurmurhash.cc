@@ -259,23 +259,14 @@ namespace MurmurHash {
   }
 
   void Init(Handle<Object> exports) {
-
-    exports->Set( NanNew<String>("murmurHash"),
-              NanNew<FunctionTemplate>(MurmurHash<MurmurHash3_x86_32, 4>)->GetFunction() );
-    exports->Set( NanNew<String>("murmurHash32"),
-              NanNew<FunctionTemplate>(MurmurHash<MurmurHash3_x86_32, 4>)->GetFunction() );
-    exports->Set( NanNew<String>("murmurHash128"),
-              NanNew<FunctionTemplate>(MurmurHash<MurmurHash3_128, 16>)->GetFunction() );
-    exports->Set( NanNew<String>("murmurHash128x64"),
-              NanNew<FunctionTemplate>(MurmurHash<MurmurHash3_x64_128, 16>)->GetFunction() );
-    exports->Set( NanNew<String>("murmurHash128x86"),
-              NanNew<FunctionTemplate>(MurmurHash<MurmurHash3_x86_128, 16>)->GetFunction() );
-    exports->Set( NanNew<String>("murmurHash64"),
-              NanNew<FunctionTemplate>(MurmurHash<MurmurHash2_64, 8>)->GetFunction() );
-    exports->Set( NanNew<String>("murmurHash64x64"),
-              NanNew<FunctionTemplate>(MurmurHash<MurmurHash2_x64_64, 8>)->GetFunction() );
-    exports->Set( NanNew<String>("murmurHash64x86"),
-              NanNew<FunctionTemplate>(MurmurHash<MurmurHash2_x86_64, 8>)->GetFunction() );
+    NODE_SET_METHOD(exports, "murmurHash",       MurmurHash<MurmurHash3_x86_32, 4>);
+    NODE_SET_METHOD(exports, "murmurHash32",     MurmurHash<MurmurHash3_x86_32, 4>);
+    NODE_SET_METHOD(exports, "murmurHash128",    MurmurHash<MurmurHash3_128, 16>);
+    NODE_SET_METHOD(exports, "murmurHash128x64", MurmurHash<MurmurHash3_x64_128, 16>);
+    NODE_SET_METHOD(exports, "murmurHash128x86", MurmurHash<MurmurHash3_x86_128, 16>);
+    NODE_SET_METHOD(exports, "murmurHash64",     MurmurHash<MurmurHash2_64, 8>);
+    NODE_SET_METHOD(exports, "murmurHash64x64",  MurmurHash<MurmurHash2_x64_64, 8>);
+    NODE_SET_METHOD(exports, "murmurHash64x86",  MurmurHash<MurmurHash2_x86_64, 8>);
 
   }
 }
