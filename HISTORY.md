@@ -1,3 +1,8 @@
+v0.3.0
+
+* output Buffer, offset and length arguments
+* use NODE_SET_METHOD macro to export functions
+
 v0.2.1
 
 * bump nan to 1.6, remove polyfill
