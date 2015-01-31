@@ -6,9 +6,6 @@
 #include "MurmurHash2.h"
 #include "MurmurHash3.h"
 
-#define NODE_MURMURHASH_HASH_BUFFER_SIZE 16
-
-
 #ifdef NODE_MURMURHASH_DEFAULT_32BIT
 #  define MurmurHash2_64  MurmurHash2_x86_64
 #  define MurmurHash3_128 MurmurHash3_x86_128
