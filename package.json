@@ -15,7 +15,7 @@
     "url": "git://github.com/royaltm/node-murmurhash-native.git"
   },
   "scripts": {
-    "test": "tap ./test/test.js"
+    "test": "tap-prettify ./test/test.js"
   },
   "main": "index.js",
   "engines": {
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "tap": "*",
+    "tap-prettify": "*",
     "ben": "*"
   }
 }
