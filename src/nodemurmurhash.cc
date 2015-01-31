@@ -253,20 +253,21 @@ namespace MurmurHash {
           outputType = ProvidedBufferOutputType;
           output_type_index = 1;
         } else {
-          seed = args[1]->Uint32Value();
+          if ( args[1]->IsNumber() )
+            seed = args[1]->Uint32Value();
           output_type_index = 2; // continue from 2
         }
       }
       if ( outputType == DefaultOutputType ) { // output_type or output or seed
         for (; output_type_index < argc; ++output_type_index ) {
-          if ( args[output_type_index]->IsString() ) {
+          if ( args[output_type_index]->IsNumber() ) {
+            seed = args[output_type_index]->Uint32Value();
+          } else if ( args[output_type_index]->IsString() ) {
             outputType = DetermineOutputType( args[output_type_index].As<String>() );
             break;
           } else if ( node::Buffer::HasInstance(args[output_type_index]) ) {
             outputType = ProvidedBufferOutputType;
             break;
-          } else if ( args[output_type_index]->IsNumber() ) {
-            seed = args[output_type_index]->Uint32Value();
           } else
             break;
         }
