@@ -26,6 +26,10 @@ murmurHash( 'hash me!' ) // 2061152078
 murmurHash( new Buffer('hash me!') ) // 2061152078
 murmurHash( 'hash me!', 0x12345789 ) // 1908692277
 murmurHash( 'hash me!', 0x12345789, 'hex' ) // '3555c471'
+murmurHash( 'hash me!', 0x12345789, 'buffer' ) // new Buffer([0x35,0x55,0xc4,0x71])
+var buf = new Buffer('hash me!____')
+murmurHash( buf.slice(0,8), 0x12345789, buf, 8 )
+// <Buffer 68 61 73 68 20 6d 65 21 35 55 c4 71>
 ```
 
 The following functions are available:
