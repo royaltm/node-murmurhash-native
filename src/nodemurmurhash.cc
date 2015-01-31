@@ -183,7 +183,7 @@ namespace MurmurHash {
    * Calculate MurmurHash from data
    * 
    * murmurHash(data)
-   * murmurHash(data, output[, offset])
+   * murmurHash(data, output[, offset[, length]])
    * murmurHash(data{string}, input_encoding)
    * murmurHash(data{Buffer}, output_type)
    * murmurHash(data, seed[, output[, offset[, length]]])
