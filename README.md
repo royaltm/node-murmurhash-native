@@ -5,6 +5,7 @@ This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing al
 
 [![Build Status][BS img]][Build Status]
 
+
 Installation:
 -------------
 
@@ -13,6 +14,7 @@ npm install murmurhash-native
 ```
 
 Tested on Linux (x64), OS X and MS Windows (x64 and x86).
+
 
 Usage:
 ------
@@ -41,26 +43,42 @@ Provided functions share the following signature:
 
 ```js
 murmurHash(data)
-murmurHash(data<string>, input_encoding)
-murmurHash(data<Buffer>, output_type)
+murmurHash(data, output[, offset])
+murmurHash(data{string}, input_encoding)
+murmurHash(data{Buffer}, output_type)
+murmurHash(data, seed[, output[, offset[, length]]])
 murmurHash(data, seed[, output_type])
-murmurHash(data, input_encoding, seed|output_type)
-murmurHash(data, input_encoding, seed, output_type)
+murmurHash(data, input_encoding, output[, offset[, length]])
+murmurHash(data, input_encoding, output_type)
+murmurHash(data, input_encoding, seed[, output[, offset[, length]]])
+murmurHash(data, input_encoding, seed[, output_type])
 
 @param {string|Buffer} data - a byte-string to calculate hash from
-@param {string} input_encoding - input data string encoding, can be:
+@param {string} input_encoding - data string encoding, can be:
       'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary',
       ignored if data is an instance of a Buffer,
       default is 'binary'
-@param {Uint32} seed - murmur hash seed, default is 0
-@param {string} output_type - how to encode output, can be:
-      'number' (murmurHash32 only) - 32-bit integer,
-      'buffer' - Buffer output,
+@param {Uint32} seed - murmur hash seed, 0 by default
+@param {Buffer} output - a Buffer object to write hash bytes to;
+      the same object will be returned
+@param {number} offset - start writing into output at offset byte,
+      negative offset starts from the end of the output buffer
+@param {number} length - a number of bytes to write from calculated hash,
+      negative length starts from the end of the hash
+      if absolute value of length is greater than the size of calculated
+      hash, bytes are written only up to the hash size
+@param {string} output_type - a string indicating return type:
+      'number' (murmurHash32 only) - a 32-bit integer,
+      'buffer' - a new Buffer object,
       'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary' - string output,
       default is 'number' or 'buffer'
 
+data and output arguments might reference the same Buffer object
+or buffers referencing the same memory (views).
+
 @return {number|Buffer|String}
 ```
+
 
 Bugs, limitations, caveats
 --------------------------
