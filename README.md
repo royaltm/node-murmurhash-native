@@ -91,9 +91,7 @@ For strings with byte-length < 1kB the static buffer is provided to avoid mem-al
 
 The hash functions optimized for x64 and x86 produce different results. The same applies to LSB/MSB.
 
-Tested on nodejs: v0.8, v0.10 and v0.11.
-
-FIXME: Trying to use 'hex', 'base64' or 'ucs2' encoding on node v0.8 crashes node::DecodeWrite().
+Tested with nodejs: v0.10, v0.11, v0.12 and iojs.
 
 [Build Status]: https://travis-ci.org/royaltm/node-murmurhash-native
 [BS img]: https://travis-ci.org/royaltm/node-murmurhash-native.svg
