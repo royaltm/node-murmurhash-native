@@ -3,8 +3,9 @@ MurmurHash bindings for node
 
 This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing algorithm functions in a few different flavours.
 
-[![Build Status][BS img]][Build Status]
+[![NPM][NPM img]][NPM Status]
 
+[![Build Status][BS img]][Build Status]
 
 Installation:
 -------------
@@ -95,3 +96,5 @@ Tested with nodejs: v0.10, v0.11, v0.12 and iojs.
 
 [Build Status]: https://travis-ci.org/royaltm/node-murmurhash-native
 [BS img]: https://travis-ci.org/royaltm/node-murmurhash-native.svg
+[NPM img]: https://nodei.co/npm/murmurhash-native.png?compact=true
+[NPM Status]: https://nodei.co/npm/murmurhash-native/
