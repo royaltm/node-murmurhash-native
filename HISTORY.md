@@ -1,3 +1,7 @@
+v0.3.1
+
+* bump nan to 1.8, fixes build with newset io.js
+
 v0.3.0
 
 * output Buffer, offset and length arguments
