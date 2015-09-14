@@ -1,19 +1,26 @@
-language: node_js
-
-node_js:
-  - "0.10"
-  - "0.11"
-  - "0.12"
-  - "iojs"
-
+os:
+  - linux
+  - osx
+sudo: false
+language: cpp
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - gcc-4.8
     - g++-4.8
-
-compiler:
-- clang
-- gcc
+env:
+  matrix:
+  - TRAVIS_NODE_VERSION="0.10"
+  - TRAVIS_NODE_VERSION="0.12"
+  - TRAVIS_NODE_VERSION="iojs-3"
+  - TRAVIS_NODE_VERSION="4"
+install:
+  - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+  - npm install npm
+  - mv node_modules npm
+  - npm/.bin/npm --version
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
+  - $CXX --version
+  - npm/.bin/npm install
+script: node_modules/.bin/tap test/test.js
