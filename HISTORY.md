@@ -1,3 +1,7 @@
+v1.0.0
+
+* bump nan to 2.0.9, fixes build with iojs-3 and node v4
+
 v0.3.1
 
 * bump nan to 1.8, fixes build with newset io.js
