@@ -303,7 +303,7 @@ namespace MurmurHash {
           break;
 
       case BufferOutputType:
-        Nan::NewBuffer( (uint32_t) HashSize ).ToLocal(&result);
+        result = Nan::NewBuffer( (uint32_t) HashSize ).ToLocalChecked();
         HashFunction( (const void *) *data, (int) data.length(), seed,
                       (void *)node::Buffer::Data( result.As<Object>() ) );
         break;
