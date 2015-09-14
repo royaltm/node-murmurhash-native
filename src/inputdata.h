@@ -15,14 +15,14 @@ namespace MurmurHash {
   class InputData {
     public:
       NAN_INLINE InputData();
-      NAN_INLINE void Setup(Handle<Value> key, const Handle<String> encodingStr);
-      NAN_INLINE void Setup(Handle<Value> key);
+      NAN_INLINE void Setup(Local<Value> key, const Local<String> encodingStr);
+      NAN_INLINE void Setup(Local<Value> key);
       NAN_INLINE bool IsValid(void);
       NAN_INLINE size_t length() const;
       NAN_INLINE char* operator*();
       NAN_INLINE const char* operator*() const;
       NAN_INLINE ~InputData();
-      NAN_INLINE static Nan::Encoding DetermineEncoding(const Handle<String> encodingStr);
+      NAN_INLINE static Nan::Encoding DetermineEncoding(const Local<String> encodingStr);
 
     private:
       char *buffer;

@@ -57,46 +57,46 @@ namespace MurmurHash {
   NAN_INLINE static Local<Value> GetResultFrom(
       const OutputType outputType, const char *data, const ssize_t length)
   {
-    NanEscapableScope();
+    Nan::EscapableHandleScope scope;
 
     Local<Value> result;
 
     switch(outputType) {
       case NumberOutputType:
-        result = NanNew<Int32>( *((int32_t *) data) );
+        result = Nan::New<Int32>( *((int32_t *) data) );
         break;
       case BinaryOutputType:
-        result = NanEncode( data, length, Nan::BINARY );
+        result = Nan::Encode( data, length, Nan::BINARY );
         break;
       case AsciiOutputType:
-        result = NanEncode( data, length, Nan::ASCII );
+        result = Nan::Encode( data, length, Nan::ASCII );
         break;
       case HexOutputType:
-        result = NanEncode( data, length, Nan::HEX );
+        result = Nan::Encode( data, length, Nan::HEX );
         break;
       case Base64OutputType:
-        result = NanEncode( data, length, Nan::BASE64 );
+        result = Nan::Encode( data, length, Nan::BASE64 );
         break;
       case Utf8OutputType:
-        result = NanEncode( data, length, Nan::UTF8 );
+        result = Nan::Encode( data, length, Nan::UTF8 );
         break;
       case Ucs2OutputType:
-        result = NanEncode( data, length, Nan::UCS2 );
+        result = Nan::Encode( data, length, Nan::UCS2 );
         break;
       default:
         void(0);
     }
-    return NanEscapeScope(result);
+    return scope.Escape(result);
   }
 
-  static OutputType DetermineOutputType(const Handle<String> type)
+  static OutputType DetermineOutputType(const Local<String> type)
   {
     char typeCstr[sizeof("utf-16le")];
     int length = type->Length();
 
     if ( length > 0 && length <= (int)(sizeof(typeCstr) - 1) ) {
 
-      typeCstr[NanDecodeWrite(typeCstr, sizeof(typeCstr) - 1, type)] = 0;
+      typeCstr[Nan::DecodeWrite(typeCstr, sizeof(typeCstr) - 1, type)] = 0;
 
       if ( length > 6 ) {
         if ( strcasecmp(typeCstr, "utf16le") == 0 ||
@@ -218,8 +218,6 @@ namespace MurmurHash {
   template<MurmurHashFunctionType HashFunction, ssize_t HashSize>
   NAN_METHOD(MurmurHash)
   {
-    NanScope();
-
     InputData data;
 
     OutputType outputType( DefaultOutputType );
@@ -227,45 +225,45 @@ namespace MurmurHash {
     uint32_t seed = 0;
 
     /* parse args */
-    int argc = std::min( 6, args.Length() ), output_type_index = argc;
+    int argc = std::min( 6, info.Length() ), output_type_index = argc;
 
     if ( argc == 1 ) {
 
-      data.Setup( args[0] );
+      data.Setup( info[0] );
 
     } else if ( argc >= 2 ) {
 
-      if ( args[1]->IsString() ) { // input_encoding or output_type
-        if ( args[0]->IsString() ) { // input_encoding
-          data.Setup( args[0], args[1].As<String>() );
+      if ( info[1]->IsString() ) { // input_encoding or output_type
+        if ( info[0]->IsString() ) { // input_encoding
+          data.Setup( info[0], info[1].As<String>() );
           output_type_index = 2; // continue from 2
         } else {
-          data.Setup( args[0] ); // ignore input_encoding
+          data.Setup( info[0] ); // ignore input_encoding
           if ( argc == 2 ) { // output_type
-            outputType = DetermineOutputType( args[1].As<String>() );
+            outputType = DetermineOutputType( info[1].As<String>() );
           } else {
             output_type_index = 2; // continue from 2
           }
         }
       } else { // output or seed
-        data.Setup( args[0] );
-        if ( node::Buffer::HasInstance(args[1]) ) {
+        data.Setup( info[0] );
+        if ( node::Buffer::HasInstance(info[1]) ) {
           outputType = ProvidedBufferOutputType;
           output_type_index = 1;
         } else {
-          if ( args[1]->IsNumber() )
-            seed = args[1]->Uint32Value();
+          if ( info[1]->IsNumber() )
+            seed = info[1]->Uint32Value();
           output_type_index = 2; // continue from 2
         }
       }
       if ( outputType == DefaultOutputType ) { // output_type or output or seed
         for (; output_type_index < argc; ++output_type_index ) {
-          if ( args[output_type_index]->IsNumber() ) {
-            seed = args[output_type_index]->Uint32Value();
-          } else if ( args[output_type_index]->IsString() ) {
-            outputType = DetermineOutputType( args[output_type_index].As<String>() );
+          if ( info[output_type_index]->IsNumber() ) {
+            seed = info[output_type_index]->Uint32Value();
+          } else if ( info[output_type_index]->IsString() ) {
+            outputType = DetermineOutputType( info[output_type_index].As<String>() );
             break;
-          } else if ( node::Buffer::HasInstance(args[output_type_index]) ) {
+          } else if ( node::Buffer::HasInstance(info[output_type_index]) ) {
             outputType = ProvidedBufferOutputType;
             break;
           } else
@@ -276,25 +274,25 @@ namespace MurmurHash {
     }
 
     if ( ! data.IsValid() )
-      return NanThrowTypeError("string or Buffer is required");
+      return Nan::ThrowTypeError("string or Buffer is required");
 
     Local<Value> result;
 
     switch(outputType) {
       case ProvidedBufferOutputType:
-        result = args[output_type_index];
+        result = info[output_type_index];
         MurmurHashBuffer<HashFunction, HashSize>(
               data, seed,
               result.As<Object>(),
               output_type_index + 1 < argc
-                ? (ssize_t) args[output_type_index + 1]->Int32Value()
+                ? (ssize_t) info[output_type_index + 1]->Int32Value()
                 : 0,
               output_type_index + 2 < argc
                 ? std::max(
                       -HashSize,
                       std::min(
                         HashSize,
-                        (ssize_t) args[output_type_index + 2]->Int32Value() ) )
+                        (ssize_t) info[output_type_index + 2]->Int32Value() ) )
                 : HashSize
               );
 
@@ -305,7 +303,7 @@ namespace MurmurHash {
           break;
 
       case BufferOutputType:
-        result = NanNewBufferHandle( (uint32_t) HashSize );
+        Nan::NewBuffer( (uint32_t) HashSize ).ToLocal(&result);
         HashFunction( (const void *) *data, (int) data.length(), seed,
                       (void *)node::Buffer::Data( result.As<Object>() ) );
         break;
@@ -320,19 +318,19 @@ namespace MurmurHash {
       result = GetResultFrom( outputType, outbuf, HashSize );
     }
 
-    NanReturnValue(result);
+    info.GetReturnValue().Set(result);
   }
 
   void Init(Handle<Object> exports)
   {
-    NODE_SET_METHOD(exports, "murmurHash",       MurmurHash<MurmurHash3_x86_32, 4>);
-    NODE_SET_METHOD(exports, "murmurHash32",     MurmurHash<MurmurHash3_x86_32, 4>);
-    NODE_SET_METHOD(exports, "murmurHash128",    MurmurHash<MurmurHash3_128, 16>);
-    NODE_SET_METHOD(exports, "murmurHash128x64", MurmurHash<MurmurHash3_x64_128, 16>);
-    NODE_SET_METHOD(exports, "murmurHash128x86", MurmurHash<MurmurHash3_x86_128, 16>);
-    NODE_SET_METHOD(exports, "murmurHash64",     MurmurHash<MurmurHash2_64, 8>);
-    NODE_SET_METHOD(exports, "murmurHash64x64",  MurmurHash<MurmurHash2_x64_64, 8>);
-    NODE_SET_METHOD(exports, "murmurHash64x86",  MurmurHash<MurmurHash2_x86_64, 8>);
+    Nan::SetMethod(exports, "murmurHash",       MurmurHash<MurmurHash3_x86_32, 4>);
+    Nan::SetMethod(exports, "murmurHash32",     MurmurHash<MurmurHash3_x86_32, 4>);
+    Nan::SetMethod(exports, "murmurHash128",    MurmurHash<MurmurHash3_128, 16>);
+    Nan::SetMethod(exports, "murmurHash128x64", MurmurHash<MurmurHash3_x64_128, 16>);
+    Nan::SetMethod(exports, "murmurHash128x86", MurmurHash<MurmurHash3_x86_128, 16>);
+    Nan::SetMethod(exports, "murmurHash64",     MurmurHash<MurmurHash2_64, 8>);
+    Nan::SetMethod(exports, "murmurHash64x64",  MurmurHash<MurmurHash2_x64_64, 8>);
+    Nan::SetMethod(exports, "murmurHash64x86",  MurmurHash<MurmurHash2_x86_64, 8>);
   }
 
 }
