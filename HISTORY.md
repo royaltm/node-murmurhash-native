@@ -1,3 +1,7 @@
+v1.0.1
+
+* use nan converters instead of soon deprecated ->XValue()
+
 v1.0.0
 
 * bump nan to 2.0.9, fixes build with iojs-3 and node v4
