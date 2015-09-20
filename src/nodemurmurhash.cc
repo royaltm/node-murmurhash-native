@@ -252,14 +252,14 @@ namespace MurmurHash {
           output_type_index = 1;
         } else {
           if ( info[1]->IsNumber() )
-            seed = info[1]->Uint32Value();
+            seed = Nan::To<uint32_t>(info[1]).FromMaybe(0U);
           output_type_index = 2; // continue from 2
         }
       }
       if ( outputType == DefaultOutputType ) { // output_type or output or seed
         for (; output_type_index < argc; ++output_type_index ) {
           if ( info[output_type_index]->IsNumber() ) {
-            seed = info[output_type_index]->Uint32Value();
+            seed = Nan::To<uint32_t>(info[output_type_index]).FromMaybe(0U);
           } else if ( info[output_type_index]->IsString() ) {
             outputType = DetermineOutputType( info[output_type_index].As<String>() );
             break;
@@ -285,14 +285,15 @@ namespace MurmurHash {
               data, seed,
               result.As<Object>(),
               output_type_index + 1 < argc
-                ? (ssize_t) info[output_type_index + 1]->Int32Value()
+                ? (ssize_t) Nan::To<int32_t>(info[output_type_index + 1]).FromMaybe(0)
                 : 0,
               output_type_index + 2 < argc
                 ? std::max(
                       -HashSize,
                       std::min(
                         HashSize,
-                        (ssize_t) info[output_type_index + 2]->Int32Value() ) )
+                        (ssize_t) Nan::To<int32_t>(info[output_type_index + 2]).
+                          FromMaybe(static_cast<int32_t>(HashSize)) ) )
                 : HashSize
               );
 
@@ -321,16 +322,16 @@ namespace MurmurHash {
     info.GetReturnValue().Set(result);
   }
 
-  void Init(Handle<Object> exports)
+  NAN_MODULE_INIT(Init)
   {
-    Nan::SetMethod(exports, "murmurHash",       MurmurHash<MurmurHash3_x86_32, 4>);
-    Nan::SetMethod(exports, "murmurHash32",     MurmurHash<MurmurHash3_x86_32, 4>);
-    Nan::SetMethod(exports, "murmurHash128",    MurmurHash<MurmurHash3_128, 16>);
-    Nan::SetMethod(exports, "murmurHash128x64", MurmurHash<MurmurHash3_x64_128, 16>);
-    Nan::SetMethod(exports, "murmurHash128x86", MurmurHash<MurmurHash3_x86_128, 16>);
-    Nan::SetMethod(exports, "murmurHash64",     MurmurHash<MurmurHash2_64, 8>);
-    Nan::SetMethod(exports, "murmurHash64x64",  MurmurHash<MurmurHash2_x64_64, 8>);
-    Nan::SetMethod(exports, "murmurHash64x86",  MurmurHash<MurmurHash2_x86_64, 8>);
+    Nan::SetMethod(target, "murmurHash",       MurmurHash<MurmurHash3_x86_32, 4>);
+    Nan::SetMethod(target, "murmurHash32",     MurmurHash<MurmurHash3_x86_32, 4>);
+    Nan::SetMethod(target, "murmurHash128",    MurmurHash<MurmurHash3_128, 16>);
+    Nan::SetMethod(target, "murmurHash128x64", MurmurHash<MurmurHash3_x64_128, 16>);
+    Nan::SetMethod(target, "murmurHash128x86", MurmurHash<MurmurHash3_x86_128, 16>);
+    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_64, 8>);
+    Nan::SetMethod(target, "murmurHash64x64",  MurmurHash<MurmurHash2_x64_64, 8>);
+    Nan::SetMethod(target, "murmurHash64x86",  MurmurHash<MurmurHash2_x86_64, 8>);
   }
 
 }
