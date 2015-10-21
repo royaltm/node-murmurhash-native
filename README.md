@@ -73,7 +73,7 @@ murmurHash(data, input_encoding, seed[, output_type])
       if absolute value of length is greater than the size of a calculated
       hash, bytes are written only up to the hash size
 @param {string} output_type - a string indicating return type:
-      'number' (murmurHash32 only) - a 32-bit integer,
+      'number' (murmurHash32 only) - a signed 32-bit integer,
       'buffer' - a new Buffer object,
       'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary' - string output,
       default is 'number' or 'buffer'
@@ -87,6 +87,10 @@ or buffers referencing the same memory (views).
 
 Bugs, limitations, caveats
 --------------------------
+The 32-bit hash function produces a signed integer with the default ("number") output type.
+To receive unsigned integer just convert it using unsigned right shift operator `>>>`, e.g.:
+`(murmurHash(data)>>>0)`.
+
 When working with Buffers, no data is being copied, however for strings this is unavoidable.
 For strings with byte-length < 1kB the static buffer is provided to avoid mem-allocs.
 

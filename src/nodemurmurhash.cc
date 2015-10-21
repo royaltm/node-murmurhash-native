@@ -205,7 +205,7 @@ namespace MurmurHash {
    *       if absolute value of length is greater than the size of a calculated
    *       hash, bytes are written only up to the hash size
    * @param {string} output_type - a string indicating return type:
-   *       'number' (murmurHash32 only) - a 32-bit integer,
+   *       'number' (murmurHash32 only) - a signed 32-bit integer,
    *       'buffer' - a new Buffer object,
    *       'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary' - string output,
    *       default is 'number' or 'buffer'
