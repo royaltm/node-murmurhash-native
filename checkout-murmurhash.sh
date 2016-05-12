@@ -1,6 +1,5 @@
 #!/bin/sh
 
-cd src
-svn checkout http://smhasher.googlecode.com/svn/trunk/ murmurhash --depth empty
-cd murmurhash
-svn update MurmurHash2.cpp MurmurHash2.h MurmurHash3.cpp MurmurHash3.h
+mkdir -p src/murmurhash
+cd src/murmurhash
+exec curl 'https://raw.githubusercontent.com/aappleby/smhasher/master/src/MurmurHash{2,3}.{cpp,h}' -O -f
