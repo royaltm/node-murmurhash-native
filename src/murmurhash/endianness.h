@@ -1,15 +1,18 @@
 /* from node_internals.h */
-
-union EndiannessMix {
-    uint8_t c[2];
-    uint16_t u;
-};
-static constexpr EndiannessMix mix { 1, 0 };
+FORCE_INLINE bool IsBigEndian() {
 #ifndef NODE_MURMURHASH_TEST_BYTESWAP
-constexpr bool IsBigEndian() { return mix.u != 1; }
+  // Constant-folded by the compiler.
+  const union {
+    uint8_t u8[2];
+    uint16_t u16;
+  } u = {
+    { 1, 0 }
+  };
+  return u.u16 != 1;
 #else
-constexpr bool IsBigEndian() { return true; }
+  return true;
 #endif // NODE_MURMURHASH_TEST_BYTESWAP
+}
 
 #if defined(_MSC_VER)
 #  include <stdlib.h>

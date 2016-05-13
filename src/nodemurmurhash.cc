@@ -182,10 +182,10 @@ namespace MurmurHash {
    * 
    * @return {number|Buffer|String}
   **/
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength,
-           ssize_t HashSize = sizeof(HashValueType) * HashLength>
+  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength>
   NAN_METHOD(MurmurHash)
   {
+    const ssize_t HashSize = sizeof(HashValueType) * HashLength;
     InputData data;
 
     OutputType outputType( DefaultOutputType );
