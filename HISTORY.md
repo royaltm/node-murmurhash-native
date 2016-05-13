@@ -1,3 +1,13 @@
+v2.0.0
+
+* output string encoding types removed
+* "number" output type is a hex number for 64 and 128bit hashes
+* "number" output type is the default output type for all hashes
+* consistent hash regardless of platform endian-ness
+* throws TypeError on incorrect encoding or output_type
+* second string argument interpreted as an output type or encoding
+* remove legacy pre v0.10 code
+
 v1.0.2
 
 * bump nan to 2.3.3, fixes node v6 buld
