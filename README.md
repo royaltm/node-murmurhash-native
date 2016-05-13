@@ -26,11 +26,16 @@ var murmurHash = require('murmurhash-native').murmurHash
 murmurHash( 'hash me!' ) // 2061152078
 murmurHash( new Buffer('hash me!') ) // 2061152078
 murmurHash( 'hash me!', 0x12345789 ) // 1908692277
-murmurHash( 'hash me!', 0x12345789, 'hex' ) // '3555c471'
-murmurHash( 'hash me!', 0x12345789, 'buffer' ) // new Buffer([0x35,0x55,0xc4,0x71])
+murmurHash( 'hash me!', 0x12345789, 'buffer' ) // <Buffer 35 55 c4 71>
 var buf = new Buffer('hash me!____')
 murmurHash( buf.slice(0,8), 0x12345789, buf, 8 )
 // <Buffer 68 61 73 68 20 6d 65 21 35 55 c4 71>
+
+var murmurHash128x64 = require('murmurhash-native').murmurHash128x64
+murmurHash128x64( 'hash me!' ) // 'c43668294e89db0ba5772846e5804467'
+
+var murmurHash128x86 = require('murmurhash-native').murmurHash128x86
+murmurHash128x86( 'hash me!' ) // 'c7009299985a5627a9280372a9280372'
 ```
 
 The following functions are available:
