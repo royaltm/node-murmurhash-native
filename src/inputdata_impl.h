@@ -4,7 +4,8 @@
 
 namespace MurmurHash {
 
-  NAN_INLINE InputData::InputData() : buffer(NULL), size(0), ownBuffer(false) {}
+  NAN_INLINE InputData::InputData() : buffer(NULL), size(0), ownBuffer(false),
+                                      error("string or Buffer is required") {}
 
   NAN_INLINE void InputData::Setup(
       Local<Value> key, const Local<String> encodingStr)
@@ -38,7 +39,12 @@ namespace MurmurHash {
     }
   }
 
-  NAN_INLINE bool InputData::IsValid(void)
+  NAN_INLINE const char * InputData::Error(void) const
+  {
+    return error;
+  }
+
+  NAN_INLINE bool InputData::IsValid(void) const
   {
     return buffer != NULL;
   }
@@ -70,7 +76,7 @@ namespace MurmurHash {
           return Nan::BASE64;
         if ( strcasecmp(encCstr, "binary") == 0 )
           return Nan::BINARY;
-      } else if ( length >= 5 ) {
+      } else if ( length == 5 ) {
         if ( strcasecmp(encCstr, "ascii") == 0 ) {
           return Nan::ASCII;
         } else if ( strcasecmp(encCstr, "utf-8") == 0 ) {
@@ -78,7 +84,7 @@ namespace MurmurHash {
         } else if ( strcasecmp(encCstr, "ucs-2") == 0 ) {
           return Nan::UCS2;
         }
-      } else if ( length >= 4 ) {
+      } else if ( length == 4 ) {
         if ( strcasecmp(encCstr, "utf8") == 0 ) {
           return Nan::UTF8;
         } else if ( strcasecmp(encCstr, "ucs2") == 0 ) {
@@ -88,7 +94,7 @@ namespace MurmurHash {
       if ( strcasecmp(encCstr, "hex") == 0 )
         return Nan::HEX;
     }
-    return Nan::BINARY;
+    return Nan::BUFFER;
   }
 
   NAN_INLINE size_t InputData::length() const { return size; }
