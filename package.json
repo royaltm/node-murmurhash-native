@@ -15,7 +15,8 @@
     "url": "git://github.com/royaltm/node-murmurhash-native.git"
   },
   "scripts": {
-    "test": "tap ./test/test.js"
+    "test": "tap ./test/test*.js",
+    "bench": "node ./test/bench.js"
   },
   "main": "index.js",
   "engines": {
