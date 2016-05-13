@@ -13,7 +13,7 @@ FORCE_INLINE bool IsBigEndian() {
   return true;
 #endif // NODE_MURMURHASH_TEST_BYTESWAP
 }
-
+/*
 #if defined(_MSC_VER)
 #  include <stdlib.h>
 #  define BSWAP32(u) _byteswap_ulong(u)
@@ -37,7 +37,7 @@ FORCE_INLINE bool IsBigEndian() {
 #    define BSWAP64(u) __builtin_bswap64(u)
 #  endif // __has_builtin
 #endif // defined(_MSC_VER)
-/*
+*/
 #ifndef BSWAP32
 FORCE_INLINE uint32_t BSWAP32(uint32_t u)
 {
@@ -60,7 +60,7 @@ FORCE_INLINE uint64_t BSWAP64(uint64_t u)
           | ((u & 0x00000000000000ffULL) << 56));
 }
 #endif
-*/
+
 FORCE_INLINE uint32_t getblock32 ( const uint32_t * p, const int i = 0L )
 {
   if (IsBigEndian()) {

@@ -1,3 +1,7 @@
+/*
+  Test byteswap on LE machines
+  requires that NODE_MURMURHASH_TEST_BYTESWAP=1 in binding.gyp
+*/
 "use strict";
 
 var test = require("tap").test
