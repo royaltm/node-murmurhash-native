@@ -13,6 +13,7 @@
         'src'
       ],
       'defines': [
+        'NODE_MURMURHASH_TEST_BYTESWAP=1',
         'NODE_MURMURHASH_KEY_BUFFER_SIZE=1024'
       ],
       'conditions': [

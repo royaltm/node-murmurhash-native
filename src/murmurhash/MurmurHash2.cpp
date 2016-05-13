@@ -22,16 +22,21 @@
 
 #if defined(_MSC_VER)
 
+#define FORCE_INLINE  __forceinline
+
 #define BIG_CONSTANT(x) (x)
 
 // Other compilers
 
 #else	// defined(_MSC_VER)
 
+#define FORCE_INLINE inline __attribute__((always_inline))
+
 #define BIG_CONSTANT(x) (x##LLU)
 
 #endif // !defined(_MSC_VER)
 
+#include "endianness.h"
 //-----------------------------------------------------------------------------
 
 uint32_t MurmurHash2 ( const void * key, int len, uint32_t seed )
@@ -105,7 +110,7 @@ uint64_t MurmurHash64A ( const void * key, int len, uint64_t seed )
 
   while(data != end)
   {
-    uint64_t k = *data++;
+    uint64_t k = getblock64(data++);
 
     k *= m; 
     k ^= k >> r; 
@@ -151,12 +156,12 @@ uint64_t MurmurHash64B ( const void * key, int len, uint64_t seed )
 
   while(len >= 8)
   {
-    uint32_t k1 = *data++;
+    uint32_t k1 = getblock32(data++);
     k1 *= m; k1 ^= k1 >> r; k1 *= m;
     h1 *= m; h1 ^= k1;
     len -= 4;
 
-    uint32_t k2 = *data++;
+    uint32_t k2 = getblock32(data++);
     k2 *= m; k2 ^= k2 >> r; k2 *= m;
     h2 *= m; h2 ^= k2;
     len -= 4;
@@ -164,7 +169,7 @@ uint64_t MurmurHash64B ( const void * key, int len, uint64_t seed )
 
   if(len >= 4)
   {
-    uint32_t k1 = *data++;
+    uint32_t k1 = getblock32(data++);
     k1 *= m; k1 ^= k1 >> r; k1 *= m;
     h1 *= m; h1 ^= k1;
     len -= 4;
