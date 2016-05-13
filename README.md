@@ -94,21 +94,22 @@ or buffers referencing the same memory (views).
 Significant changes in 2.x
 --------------------------
 
-The 1.x output types were very confusing. E.g. "hex" encoding was not what one would expect - it was just an equivalent of `murmurHash(data, "buffer").toString("hex")` which is not the correct representation of a hash as a hexadecimal number. So all the string output type encodings: "utf8", "ucs2", "ascii", "hex", "base64" and "binary"
-were completely removed in 2.0 as being simply useless.
+The 1.x output types were very confusing. E.g. "hex" was not what one would expect - it was just an equivalent of `murmurHash(data, "buffer").toString("hex")` which renders incorrect hexadecimal number. So all the string output type encodings: "utf8", "ucs2", "ascii", "hex", "base64" and "binary" were completely removed in 2.0 as being simply useless.
 
-The "number" output type has been adapted to all hash variants in a way more compatible with other murmurhash [implementations][murmurhash3js]. For 32bit hash the return value is an unsigned 32-bit integer (it was signed integer in 1.x) and for other hashes it's a hexadecimal number.
+The "number" output type has been adapted to all variants in a way more compatible with other murmurhash [implementations][murmurhash3js]. For 32bit hash the return value is an unsigned 32-bit integer (it was signed integer in 1.x) and for other hashes it's a hexadecimal number.
 
-The "buffer" output type and writing a hash to an already initialized buffer wasn't modified except that the default value is now "number" for all the hashes.
+The "buffer" output type wasn't modified except that the default output is now "number" for all of the hashes.
 
-Additionally when `encoding` or `output_type` argument have incorrect value the function throws a `TypeError`.
+Additionally when passing unsupported value to `encoding` or `output_type` argument the function throws `TypeError`.
+
+Another breaking change is for the BE platforms. Starting with 2.0 endian-ness is supported, so hashes should be consistent regardless of the cpu type.
 
 Bugs, limitations, caveats
 --------------------------
 When working with Buffers, no data is being copied, however for strings this is unavoidable.
 For strings with byte-length < 1kB the static buffer is provided to avoid mem-allocs.
 
-The hash functions optimized for x64 and x86 produce different results. The same applies to LSB/MSB.
+The hash functions optimized for x64 and x86 produce different results.
 
 Tested with nodejs: v0.10, v0.11, v0.12, iojs-3, v4, v5 and v6.
 
