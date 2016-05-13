@@ -11,14 +11,13 @@ namespace MurmurHash {
   {
     if ( key->IsString() ) {
       const enum Nan::Encoding enc = DetermineEncoding(encodingStr);
-#if  (NODE_MODULE_VERSION < 0x000B)
-      /* v0.8's node::DecodeWrite returns incorrect utf8 size */
-      ssize_t maxLength = Nan::DecodeBytes(key, enc);
-#else
+      if (enc == Nan::BUFFER) {
+        error = "\"encoding\" must be a valid string encoding";
+        return;
+      }
       ssize_t maxLength = enc == Nan::UTF8
                             ? 3 * key.As<String>()->Length()
                             : Nan::DecodeBytes(key, enc);
-#endif
       if ( maxLength != -1 ) {
         char *data = EnsureBuffer((size_t) maxLength);
         size = (size_t) Nan::DecodeWrite( data, maxLength, key, enc );
