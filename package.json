@@ -26,7 +26,8 @@
     "nan": "^2.3.3"
   },
   "devDependencies": {
-    "tap": "*",
-    "ben": "*"
+    "ben": "*",
+    "murmurhash3js": "^3.0.1",
+    "tap": "*"
   }
 }
