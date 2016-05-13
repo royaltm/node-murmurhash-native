@@ -94,7 +94,7 @@ or buffers referencing the same memory (views).
 Significant changes in 2.x
 --------------------------
 
-The 1.x output types were very confusing. E.g. "hex" was not what one would expect - it was just an equivalent of `murmurHash(data, "buffer").toString("hex")` which renders incorrect hexadecimal number. So all the string output type encodings: "utf8", "ucs2", "ascii", "hex", "base64" and "binary" were completely removed in 2.0 as being simply useless.
+The 1.x output types were very confusing. E.g. "hex" was just an equivalent of `murmurHash(data, "buffer").toString("hex")` which renders incorrect hexadecimal number. So all the string output type encodings: "utf8", "ucs2", "ascii", "hex", "base64" and "binary" were completely removed in 2.0 as being simply useless.
 
 The "number" output type has been adapted to all variants in a way more compatible with other murmurhash [implementations][murmurhash3js]. For 32bit hash the return value is an unsigned 32-bit integer (it was signed integer in 1.x) and for other hashes it's a hexadecimal number.
 
