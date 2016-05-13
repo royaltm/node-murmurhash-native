@@ -1,5 +1,6 @@
 /* from node_internals.h */
-FORCE_INLINE bool IsBigEndian() {
+FORCE_INLINE bool IsBigEndian()
+{
 #ifndef NODE_MURMURHASH_TEST_BYTESWAP
   // Constant-folded by the compiler.
   const union {
@@ -13,7 +14,7 @@ FORCE_INLINE bool IsBigEndian() {
   return true;
 #endif // NODE_MURMURHASH_TEST_BYTESWAP
 }
-/*
+
 #if defined(_MSC_VER)
 #  include <stdlib.h>
 #  define BSWAP32(u) _byteswap_ulong(u)
@@ -37,7 +38,7 @@ FORCE_INLINE bool IsBigEndian() {
 #    define BSWAP64(u) __builtin_bswap64(u)
 #  endif // __has_builtin
 #endif // defined(_MSC_VER)
-*/
+
 #ifndef BSWAP32
 FORCE_INLINE uint32_t BSWAP32(uint32_t u)
 {
