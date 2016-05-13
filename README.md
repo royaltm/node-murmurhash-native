@@ -65,8 +65,8 @@ murmurHash(data{String}, encoding, seed[, output_type])
 
 @param {string|Buffer} data - a byte-string to calculate hash from
 @param {string} encoding - data string encoding, should be:
-      'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary',
-      default is 'binary'
+      'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary';
+      'binary' by default
 @param {Uint32} seed - murmur hash seed, 0 by default
 @param {Buffer} output - a Buffer object to write hash bytes to;
       the same object will be returned
@@ -81,15 +81,14 @@ murmurHash(data{String}, encoding, seed[, output_type])
       'number' - for murmurHash32 an unsigned 32-bit integer,
                  other hashes - a hex number as a string
       'buffer' - a new Buffer object;
-      the default is 'number'
+      'number' by default
 
-the order of bytes written to a Buffer is platform dependent
+The order of bytes written to a Buffer is platform dependent.
 
-data and output arguments might reference the same Buffer object
+`data` and `output` arguments might reference the same Buffer object
 or buffers referencing the same memory (views).
 
 @return {number|Buffer|String}
-
 ```
 
 Significant changes in 2.x
