@@ -52,16 +52,7 @@ inline uint64_t rotl64 ( uint64_t x, int8_t r )
 // Block read - if your platform needs to do endian-swapping or can only
 // handle aligned reads, do the conversion here
 
-FORCE_INLINE uint32_t getblock32 ( const uint32_t * p, int i )
-{
-  return p[i];
-}
-
-FORCE_INLINE uint64_t getblock64 ( const uint64_t * p, int i )
-{
-  return p[i];
-}
-
+#include "endianness.h"
 //-----------------------------------------------------------------------------
 // Finalization mix - force all bits of a hash block to avalanche
 

@@ -17,7 +17,8 @@ namespace MurmurHash {
       NAN_INLINE InputData();
       NAN_INLINE void Setup(Local<Value> key, const Local<String> encodingStr);
       NAN_INLINE void Setup(Local<Value> key);
-      NAN_INLINE bool IsValid(void);
+      NAN_INLINE bool IsValid(void) const;
+      NAN_INLINE const char * Error(void) const;
       NAN_INLINE size_t length() const;
       NAN_INLINE char* operator*();
       NAN_INLINE const char* operator*() const;
@@ -28,6 +29,7 @@ namespace MurmurHash {
       char *buffer;
       size_t size;
       bool ownBuffer;
+      const char *error;
 
       NAN_INLINE void InitFromBuffer(const Handle<Object> keyObject);
       NAN_INLINE char *EnsureBuffer(size_t bytelength);
