@@ -79,7 +79,7 @@ namespace MurmurHash {
 
     switch(outputType_) {
       case ProvidedBufferOutputType:
-        argv[1] = Nan::AsyncWorker::GetFromPersistent(1U);
+        argv[1] = GetFromPersistent(1U);
         break;
 
       case NumberOutputType:
