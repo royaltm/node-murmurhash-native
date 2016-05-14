@@ -4,11 +4,11 @@
 
 namespace MurmurHash {
 
-  NAN_INLINE InputData::InputData() : buffer(NULL), size(0), ownBuffer(false),
-                                      error("string or Buffer is required") {}
+  NAN_INLINE InputData::InputData(bool allowStaticBuffer) : useStatic(allowStaticBuffer),
+                buffer(NULL), size(0), type(Static), error("string or Buffer is required") {}
 
   NAN_INLINE void InputData::Setup(
-      Local<Value> key, const Local<String> encodingStr)
+      Local<Value> key, const Local<String> &encodingStr)
   {
     if ( key->IsString() ) {
       const enum Nan::Encoding enc = DetermineEncoding(encodingStr);
@@ -20,8 +20,9 @@ namespace MurmurHash {
                             ? 3 * key.As<String>()->Length()
                             : Nan::DecodeBytes(key, enc);
       if ( maxLength != -1 ) {
-        char *data = EnsureBuffer((size_t) maxLength);
-        size = (size_t) Nan::DecodeWrite( data, maxLength, key, enc );
+        Type type;
+        char *data = EnsureBuffer((size_t) maxLength, type);
+        reset(data, (size_t) Nan::DecodeWrite( data, maxLength, key, enc ), type);
       }
     } else if ( node::Buffer::HasInstance(key) ) {
       InitFromBuffer( key.As<Object>() );
@@ -32,8 +33,9 @@ namespace MurmurHash {
   {
     if ( key->IsString() ) {
       size_t length = (size_t) key.As<String>()->Length();
-      char *data = EnsureBuffer(length);
-      size = (size_t) Nan::DecodeWrite( data, length, key );
+      Type type;
+      char *data = EnsureBuffer(length, type);
+      reset(data, (size_t) Nan::DecodeWrite( data, length, key ), type);
     } else if ( node::Buffer::HasInstance(key) ) {
       InitFromBuffer( key.As<Object>() );
     }
@@ -49,16 +51,21 @@ namespace MurmurHash {
     return buffer != NULL;
   }
 
+  NAN_INLINE bool InputData::IsFromBuffer(void) const
+  {
+    return type == ExternalBuffer;
+  }
+
   NAN_INLINE void InputData::InitFromBuffer(const Handle<Object> keyObject)
   {
-    size = node::Buffer::Length(keyObject);
-    buffer = node::Buffer::Data(keyObject);
-    if ( size == 0 )
-      EnsureBuffer(0);
+    reset(
+      node::Buffer::Data(keyObject),
+      node::Buffer::Length(keyObject),
+      ExternalBuffer);
   }
 
   NAN_INLINE Nan::Encoding InputData::DetermineEncoding(
-      const Local<String> encodingStr)
+      const Local<String> &encodingStr)
   {
     char encCstr[sizeof("utf-16le")];
     int length = encodingStr->Length();
@@ -99,27 +106,49 @@ namespace MurmurHash {
 
   NAN_INLINE size_t InputData::length() const { return size; }
 
+  NAN_INLINE void InputData::reset(char *buf, size_t siz, Type t)
+  {
+    if ( type == Own ) delete[] buffer;
+
+    if ( siz == 0 || buf == NULL ) {
+      size = 0;
+      if ( t == ExternalBuffer ) {
+        buffer = StaticKeyBuffer();
+        type = t;
+      } else {
+        buffer = buf;
+        type = Static;
+      }
+    } else {
+      buffer = buf;
+      size = siz;
+      type = t;
+    }
+  }
+
   NAN_INLINE char* InputData::operator*() { return buffer; }
 
   NAN_INLINE const char* InputData::operator*() const { return buffer; }
 
   NAN_INLINE InputData::~InputData()
   {
-    if ( ownBuffer ) delete[] buffer;
+    if ( type == Own ) delete[] buffer;
   }
 
-  NAN_INLINE char *InputData::EnsureKeyBuffer(size_t)
+  NAN_INLINE char *InputData::StaticKeyBuffer()
   {
     return keyBuffer;
   }
 
-  NAN_INLINE char *InputData::EnsureBuffer(size_t bytelength)
+  NAN_INLINE char *InputData::EnsureBuffer(size_t bytelength, Type& type)
   {
-    if ( bytelength > NODE_MURMURHASH_KEY_BUFFER_SIZE ) {
-      ownBuffer = true;
-      return buffer = new char[bytelength];
+    if ( useStatic && bytelength <= NODE_MURMURHASH_KEY_BUFFER_SIZE ) {
+      type = Static;
+      return StaticKeyBuffer();
+    } else {
+      type = Own;
+      return new char[bytelength];
     }
-    return buffer = EnsureKeyBuffer(bytelength);
   }
 
   char InputData::keyBuffer[NODE_MURMURHASH_KEY_BUFFER_SIZE];
