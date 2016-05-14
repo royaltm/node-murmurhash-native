@@ -6,13 +6,21 @@ var test = require("tap").test
 
 test("should have murmurHash functions", function(t) {
   t.type(hash.murmurHash, 'function');
+  t.strictEqual(hash.murmurHash.name, 'murmurHash');
   t.type(hash.murmurHash32, 'function');
+  t.strictEqual(hash.murmurHash32.name, 'murmurHash32');
   t.type(hash.murmurHash64, 'function');
+  t.strictEqual(hash.murmurHash64.name, 'murmurHash64');
   t.type(hash.murmurHash64x64, 'function');
+  t.strictEqual(hash.murmurHash64x64.name, 'murmurHash64x64');
   t.type(hash.murmurHash64x86, 'function');
+  t.strictEqual(hash.murmurHash64x86.name, 'murmurHash64x86');
   t.type(hash.murmurHash128x64, 'function');
+  t.strictEqual(hash.murmurHash128x64.name, 'murmurHash128x64');
   t.type(hash.murmurHash128, 'function');
+  t.strictEqual(hash.murmurHash128.name, 'murmurHash128');
   t.type(hash.murmurHash128x86, 'function');
+  t.strictEqual(hash.murmurHash128x86.name, 'murmurHash128x86');
   t.end();
 });
 
@@ -91,26 +99,26 @@ test("should have murmurHash functions", function(t) {
     });
 
     t.test('should create number hash from empty data', function(t) {
-      t.deepEqual(murmurHash(''), seedZeroDefault);
-      t.deepEqual(murmurHash('', 'number'), seedZeroDefault);
-      t.deepEqual(murmurHash(new Buffer('')), seedZeroDefault);
-      t.deepEqual(murmurHash(new Buffer(''), 'number'), seedZeroDefault);
-      t.deepEqual(murmurHash('', -1), seedMinusOneDefault);
-      t.deepEqual(murmurHash('', -1, 'number'), seedMinusOneDefault);
-      t.deepEqual(murmurHash(new Buffer(''), -1), seedMinusOneDefault);
-      t.deepEqual(murmurHash(new Buffer(''), -1, 'number'), seedMinusOneDefault);
-      t.deepEqual(murmurHash('', 4294967295), seedMinusOneDefault);
-      t.deepEqual(murmurHash('', 4294967295, 'number'), seedMinusOneDefault);
-      t.deepEqual(murmurHash(new Buffer(''), 4294967295), seedMinusOneDefault);
-      t.deepEqual(murmurHash(new Buffer(''), 4294967295, 'number'), seedMinusOneDefault);
-      t.deepEqual(murmurHash('', 4294967296), seedZeroDefault);
-      t.deepEqual(murmurHash('', 4294967296, 'number'), seedZeroDefault);
-      t.deepEqual(murmurHash(new Buffer(''), 4294967296), seedZeroDefault);
-      t.deepEqual(murmurHash(new Buffer(''), 4294967296, 'number'), seedZeroDefault);
-      t.deepEqual(murmurHash('', 1), seedPlusOneDefault);
-      t.deepEqual(murmurHash('', 1, 'number'), seedPlusOneDefault);
-      t.deepEqual(murmurHash(new Buffer(''), 1), seedPlusOneDefault);
-      t.deepEqual(murmurHash(new Buffer(''), 1, 'number'), seedPlusOneDefault);
+      t.strictEqual(murmurHash(''), seedZeroDefault);
+      t.strictEqual(murmurHash('', 'number'), seedZeroDefault);
+      t.strictEqual(murmurHash(new Buffer('')), seedZeroDefault);
+      t.strictEqual(murmurHash(new Buffer(''), 'number'), seedZeroDefault);
+      t.strictEqual(murmurHash('', -1), seedMinusOneDefault);
+      t.strictEqual(murmurHash('', -1, 'number'), seedMinusOneDefault);
+      t.strictEqual(murmurHash(new Buffer(''), -1), seedMinusOneDefault);
+      t.strictEqual(murmurHash(new Buffer(''), -1, 'number'), seedMinusOneDefault);
+      t.strictEqual(murmurHash('', 4294967295), seedMinusOneDefault);
+      t.strictEqual(murmurHash('', 4294967295, 'number'), seedMinusOneDefault);
+      t.strictEqual(murmurHash(new Buffer(''), 4294967295), seedMinusOneDefault);
+      t.strictEqual(murmurHash(new Buffer(''), 4294967295, 'number'), seedMinusOneDefault);
+      t.strictEqual(murmurHash('', 4294967296), seedZeroDefault);
+      t.strictEqual(murmurHash('', 4294967296, 'number'), seedZeroDefault);
+      t.strictEqual(murmurHash(new Buffer(''), 4294967296), seedZeroDefault);
+      t.strictEqual(murmurHash(new Buffer(''), 4294967296, 'number'), seedZeroDefault);
+      t.strictEqual(murmurHash('', 1), seedPlusOneDefault);
+      t.strictEqual(murmurHash('', 1, 'number'), seedPlusOneDefault);
+      t.strictEqual(murmurHash(new Buffer(''), 1), seedPlusOneDefault);
+      t.strictEqual(murmurHash(new Buffer(''), 1, 'number'), seedPlusOneDefault);
 
       t.end();
     });
@@ -211,8 +219,8 @@ test("should have murmurHash functions", function(t) {
     });
 
     t.test('should interpret 1 argument properly', function(t) {
-      t.deepEqual(murmurHash(''), seedZeroDefault);
-      t.deepEqual(murmurHash(new Buffer(0)), seedZeroDefault);
+      t.strictEqual(murmurHash(''), seedZeroDefault);
+      t.strictEqual(murmurHash(new Buffer(0)), seedZeroDefault);
 
       t.end();
     });
@@ -246,10 +254,10 @@ test("should have murmurHash functions", function(t) {
       t.strictEqual(murmurHash(new Buffer(0), buf2, 2), buf2);
       t.deepEqual(buf2, Buffer.concat([new Buffer([0,0]), new Buffer(seedZeroHex, 'hex')]));
 
-      var buf3 = new Buffer(size - 1); buf.fill(-1);
+      var buf3 = new Buffer(size - 1); buf3.fill(-1);
       t.strictEqual(murmurHash('', buf3, -size), buf3);
       t.deepEqual(buf3, new Buffer(seedZeroHex, 'hex').slice(1));
-      buf.fill(-1);
+      buf3.fill(-1);
       t.strictEqual(murmurHash(new Buffer(0), buf3, -size), buf3);
       t.deepEqual(buf3, new Buffer(seedZeroHex, 'hex').slice(1));
 

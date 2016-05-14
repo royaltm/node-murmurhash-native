@@ -3,6 +3,11 @@
   "description": "MurmurHash (32,64,128)bit native bindings for nodejs",
   "keywords": [
     "murmurhash",
+    "murmurhash3",
+    "murmurhash128",
+    "murmurhash32",
+    "murmurhash2",
+    "murmurhash64",
     "hash"
   ],
   "version": "2.0.0",
@@ -27,6 +32,7 @@
   },
   "devDependencies": {
     "ben": "*",
+    "bluebird": "^3.3.5",
     "murmurhash3js": "^3.0.1",
     "tap": "*"
   }

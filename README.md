@@ -36,6 +36,9 @@ murmurHash128x64( 'hash me!' ) // 'c43668294e89db0ba5772846e5804467'
 
 var murmurHash128x86 = require('murmurhash-native').murmurHash128x86
 murmurHash128x86( 'hash me!' ) // 'c7009299985a5627a9280372a9280372'
+
+// asynchronous:
+murmurHash( 'hash me!', function(err, hash) { assert.equal(hash, 2061152078) });
 ```
 
 The following functions are available:
@@ -52,16 +55,16 @@ The following functions are available:
 Provided functions share the following signature:
 
 ```js
-murmurHash(data)
-murmurHash(data, output[, offset[, length]])
-murmurHash(data{String}, encoding)
-murmurHash(data, output_type)
-murmurHash(data, seed[, output[, offset[, length]]])
-murmurHash(data, seed[, output_type])
-murmurHash(data{String}, encoding, output[, offset[, length]])
-murmurHash(data{String}, encoding, output_type)
-murmurHash(data{String}, encoding, seed[, output[, offset[, length]]])
-murmurHash(data{String}, encoding, seed[, output_type])
+murmurHash(data[, callback])
+murmurHash(data, output[, offset[, length]][, callback])
+murmurHash(data{String}, encoding[, callback])
+murmurHash(data, output_type[, callback])
+murmurHash(data, seed[, output[, offset[, length]]][, callback])
+murmurHash(data, seed[, output_type][, callback])
+murmurHash(data{String}, encoding, output[, offset[, length]][, callback])
+murmurHash(data{String}, encoding, output_type[, callback])
+murmurHash(data{String}, encoding, seed[, output[, offset[, length]]][, callback])
+murmurHash(data{String}, encoding, seed[, output_type][, callback])
 
 @param {string|Buffer} data - a byte-string to calculate hash from
 @param {string} encoding - data string encoding, should be:
@@ -82,13 +85,19 @@ murmurHash(data{String}, encoding, seed[, output_type])
                  other hashes - a hex number as a string
       'buffer' - a new Buffer object;
       'number' by default
+@param {Function} callback - optional callback(err, result)
+      if provided the hash will be calculated asynchronously using libuv
+      worker queue, the return value in this instance will be `undefined`
+      and the result will be provided to the callback function;
+      Be carefull as reading and writing by multiple threads to the same
+      memory may render undetermined results
 
 The order of bytes written to a Buffer is platform dependent.
 
 `data` and `output` arguments might reference the same Buffer object
 or buffers referencing the same memory (views).
 
-@return {number|Buffer|String}
+@return {number|Buffer|String|undefined}
 ```
 
 Significant changes in 2.x
@@ -103,6 +112,36 @@ The "buffer" output type wasn't modified except that the default output is now "
 Additionally when passing unsupported value to `encoding` or `output_type` argument the function throws `TypeError`.
 
 Another breaking change is for the BE platforms. Starting with 2.0 endian-ness is supported, so hashes should be consistent regardless of the cpu type.
+
+Since v2.1 the callback argument was introduced.
+
+Promises
+--------
+
+The native murmurHash functions run asynchronously if the last argument is a callback.
+However if you wish to use promises there is a promisify wrapper available:
+
+```js
+var mm = require('murmurhash-native/promisify')();
+mm.murmurHash32Async( 'hash me!', 0x12345789 )
+      .then(hash => { assert.equal(hash, 1908692277) });
+// Promise { <pending> }
+```
+
+You may provide your own promise constructor:
+
+```js
+var bluebird = require('bluebird');
+var mm = require('murmurhash-native/promisify')(bluebird);
+mm.murmurHash32Async( 'hash me!', 0x12345789 )
+      .then(hash => { assert.equal(hash, 1908692277) });
+// Promise {
+//   _bitField: 0,
+//   _fulfillmentHandler0: undefined,
+//   _rejectionHandler0: undefined,
+//   _promise0: undefined,
+//   _receiver0: undefined }
+```
 
 Bugs, limitations, caveats
 --------------------------
