@@ -36,6 +36,9 @@ murmurHash128x64( 'hash me!' ) // 'c43668294e89db0ba5772846e5804467'
 
 var murmurHash128x86 = require('murmurhash-native').murmurHash128x86
 murmurHash128x86( 'hash me!' ) // 'c7009299985a5627a9280372a9280372'
+
+// asynchronous:
+murmurHash( 'hash me!', function(err, hash) { assert.equal(hash, 2061152078) });
 ```
 
 The following functions are available:
@@ -110,6 +113,35 @@ Additionally when passing unsupported value to `encoding` or `output_type` argum
 
 Another breaking change is for the BE platforms. Starting with 2.0 endian-ness is supported, so hashes should be consistent regardless of the cpu type.
 
+Since v2.1 the callback argument was introduced.
+
+Promises
+--------
+
+The native murmurHash functions run asynchronously if the last argument is a callback.
+However if you wish to use promises there is a promisify wrapper available:
+
+```js
+var mm = require('murmurhash-native/promisify')();
+mm.murmurHash32Async( 'hash me!', 0x12345789 )
+      .then(hash => { assert.equal(hash, 1908692277) });
+// Promise { <pending> }
+```
+
+You may provide your own promise constructor:
+
+```js
+var bluebird = require('bluebird');
+var mm = require('murmurhash-native/promisify')(bluebird);
+mm.murmurHash32Async( 'hash me!', 0x12345789 )
+      .then(hash => { assert.equal(hash, 1908692277) });
+// Promise {
+//   _bitField: 0,
+//   _fulfillmentHandler0: undefined,
+//   _rejectionHandler0: undefined,
+//   _promise0: undefined,
+//   _receiver0: undefined }
+```
 
 Bugs, limitations, caveats
 --------------------------

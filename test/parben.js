@@ -10,7 +10,7 @@ module.exports = function parben(times, parallel, cb, resultCb) {
     cb(function fn () {
       var fin = now();
       elapsed += fin - t;
-      
+
       if (--pending === 0) {
         resultCb(elapsed / times, (fin - start) / times);
       }
