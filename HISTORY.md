@@ -3,6 +3,7 @@ v2.1.0
 * new ability to calculate hashes asynchronously via libuv
 * ensure correct byte alignment while directly writing to a buffer
 * bench: asynchronous version
+* promisify wrapper
 
 v2.0.0
 
