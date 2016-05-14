@@ -6,13 +6,21 @@ var test = require("tap").test
 
 test("should have murmurHash functions", function(t) {
   t.type(hash.murmurHash, 'function');
+  t.strictEqual(hash.murmurHash.name, 'murmurHash');
   t.type(hash.murmurHash32, 'function');
+  t.strictEqual(hash.murmurHash32.name, 'murmurHash32');
   t.type(hash.murmurHash64, 'function');
+  t.strictEqual(hash.murmurHash64.name, 'murmurHash64');
   t.type(hash.murmurHash64x64, 'function');
+  t.strictEqual(hash.murmurHash64x64.name, 'murmurHash64x64');
   t.type(hash.murmurHash64x86, 'function');
+  t.strictEqual(hash.murmurHash64x86.name, 'murmurHash64x86');
   t.type(hash.murmurHash128x64, 'function');
+  t.strictEqual(hash.murmurHash128x64.name, 'murmurHash128x64');
   t.type(hash.murmurHash128, 'function');
+  t.strictEqual(hash.murmurHash128.name, 'murmurHash128');
   t.type(hash.murmurHash128x86, 'function');
+  t.strictEqual(hash.murmurHash128x86.name, 'murmurHash128x86');
   t.end();
 });
 
