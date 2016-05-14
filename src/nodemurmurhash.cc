@@ -217,11 +217,11 @@ namespace MurmurHash {
    *       'buffer' - a new Buffer object;
    *       'number' by default
    * @param {Function} callback - optional callback(err, result)
-   *       if provided the hash will be calculated asynchronously using thread
+   *       if provided the hash will be calculated asynchronously using libuv
    *       worker queue, the return value in this instance will be `undefined`
    *       and the result will be provided to the callback function;
    *       Be carefull as reading and writing by multiple threads to the same
-   *       Buffer may render undetermined results
+   *       memory may render undetermined results
    * 
    * The order of bytes written to a Buffer is platform dependent.
    * 
