@@ -1,5 +1,5 @@
 #if !defined(ASYNCWORKER_HEADER)
-# error 'asyncworker_impl.h' is not supposed to be included directly. Include 'inputdata.h' instead.
+# error 'asyncworker_impl.h' is not supposed to be included directly. Include 'asyncworker.h' instead.
 #endif
 
 namespace MurmurHash {
