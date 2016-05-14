@@ -65,7 +65,6 @@ namespace MurmurHash {
   using v8::String;
 
   #define HEXSTR_SIZE 2
-  #define HEXSTR_SIZEOF(size) ((size) * HEXSTR_SIZE + 1)
 
   template<typename T>
   NAN_INLINE char *ToHexString(T value, char * const out)
@@ -86,7 +85,7 @@ namespace MurmurHash {
   {
     Nan::EscapableHandleScope scope;
 
-    char str[HEXSTR_SIZEOF(sizeof(HashValueType) * HashLength)];
+    char str[HashSize * HEXSTR_SIZE];
     char *out = str;
 
     const HashValueType * const valt = hash + HashLength;
@@ -94,10 +93,11 @@ namespace MurmurHash {
     while(valp < valt) {
       out = ToHexString( *(valp++), out );
     }
-    *out = '\0';
 
-    return scope.Escape(Nan::New<String>(str).ToLocalChecked());
+    return scope.Escape(Nan::New<String>(str, (int32_t) (HashSize * HEXSTR_SIZE)).ToLocalChecked());
   }
+
+  #undef HEXSTR_SIZE
 
   OutputType DetermineOutputType(const Local<String> type)
   {
@@ -337,11 +337,10 @@ namespace MurmurHash {
         case ProvidedBufferOutputType:
           result = info[outputTypeIndex];
           {
-            Local<Object> buffer = result.As<Object>();
             MurmurHashBuffer<HashFunction, HashValueType, HashLength>(
                   data, seed,
-                  node::Buffer::Data(buffer),
-                  (ssize_t) node::Buffer::Length(buffer),
+                  node::Buffer::Data(result),
+                  (ssize_t) node::Buffer::Length(result),
                   GET_ARG_OFFSET(info, outputTypeIndex, argc),
                   GET_ARG_LENGTH(info, outputTypeIndex, argc, HashSize));
           }
@@ -363,7 +362,7 @@ namespace MurmurHash {
         case BufferOutputType:
           result = Nan::NewBuffer( (uint32_t) HashSize ).ToLocalChecked();
           HashFunction( (const void *) *data, (int) data.length(), seed,
-                        (void *)node::Buffer::Data( result.As<Object>() ) );
+                        (void *)node::Buffer::Data(result) );
           break;
 
         default:
@@ -376,9 +375,6 @@ namespace MurmurHash {
 
   #undef GET_ARG_OFFSET
   #undef GET_ARG_LENGTH
-
-  #undef HEXSTR_SIZE
-  #undef HEXSTR_SIZEOF
 
   NAN_MODULE_INIT(Init)
   {
