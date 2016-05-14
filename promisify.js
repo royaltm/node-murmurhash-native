@@ -1,17 +1,18 @@
 var murmurhash = require('./index');
 
-var util = require('util');
-var isFunction = util.isFunction;
-
 module.exports = function(promise) {
-  if (!isFunction(promise)) {
+  if (!promise) {
     promise = global.Promise;
+  }
+
+  if ('function' !== typeof promise) {
+    throw new Error("Promise constructor required");
   }
 
   var hash = {};
 
   for(var name in murmurhash) {
-    if (murmurhash.hasOwnProperty(name) && isFunction(murmurhash[name])) {
+    if (murmurhash.hasOwnProperty(name) && ('function' === typeof murmurhash[name])) {
       hash[name + 'Async'] = wrap(promise, murmurhash[name]);
     }
   }

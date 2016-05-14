@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "ben": "*",
+    "bluebird": "^3.3.5",
     "murmurhash3js": "^3.0.1",
     "tap": "*"
   }

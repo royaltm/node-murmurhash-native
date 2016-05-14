@@ -1,7 +1,8 @@
 "use strict";
 
 var test = require("tap").test
-  , hash = require('../promisify')()
+  , promisify = require('../promisify')
+  , hash = promisify(global.Promise || require('bluebird'))
 ;
 
 test("should have murmurHash functions", function(t) {
