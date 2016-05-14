@@ -52,16 +52,16 @@ The following functions are available:
 Provided functions share the following signature:
 
 ```js
-murmurHash(data)
-murmurHash(data, output[, offset[, length]])
-murmurHash(data{String}, encoding)
-murmurHash(data, output_type)
-murmurHash(data, seed[, output[, offset[, length]]])
-murmurHash(data, seed[, output_type])
-murmurHash(data{String}, encoding, output[, offset[, length]])
-murmurHash(data{String}, encoding, output_type)
-murmurHash(data{String}, encoding, seed[, output[, offset[, length]]])
-murmurHash(data{String}, encoding, seed[, output_type])
+murmurHash(data[, callback])
+murmurHash(data, output[, offset[, length]][, callback])
+murmurHash(data{String}, encoding[, callback])
+murmurHash(data, output_type[, callback])
+murmurHash(data, seed[, output[, offset[, length]]][, callback])
+murmurHash(data, seed[, output_type][, callback])
+murmurHash(data{String}, encoding, output[, offset[, length]][, callback])
+murmurHash(data{String}, encoding, output_type[, callback])
+murmurHash(data{String}, encoding, seed[, output[, offset[, length]]][, callback])
+murmurHash(data{String}, encoding, seed[, output_type][, callback])
 
 @param {string|Buffer} data - a byte-string to calculate hash from
 @param {string} encoding - data string encoding, should be:
@@ -82,13 +82,19 @@ murmurHash(data{String}, encoding, seed[, output_type])
                  other hashes - a hex number as a string
       'buffer' - a new Buffer object;
       'number' by default
+@param {Function} callback - optional callback(err, result)
+      if provided the hash will be calculated asynchronously using libuv
+      worker queue, the return value in this instance will be `undefined`
+      and the result will be provided to the callback function;
+      Be carefull as reading and writing by multiple threads to the same
+      memory may render undetermined results
 
 The order of bytes written to a Buffer is platform dependent.
 
 `data` and `output` arguments might reference the same Buffer object
 or buffers referencing the same memory (views).
 
-@return {number|Buffer|String}
+@return {number|Buffer|String|undefined}
 ```
 
 Significant changes in 2.x
@@ -103,6 +109,7 @@ The "buffer" output type wasn't modified except that the default output is now "
 Additionally when passing unsupported value to `encoding` or `output_type` argument the function throws `TypeError`.
 
 Another breaking change is for the BE platforms. Starting with 2.0 endian-ness is supported, so hashes should be consistent regardless of the cpu type.
+
 
 Bugs, limitations, caveats
 --------------------------
