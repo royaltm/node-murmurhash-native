@@ -1,4 +1,4 @@
-#if !defined(MURMURHASH_ASYNC_HEADER)
+#if !defined(ASYNCWORKER_HEADER)
 # error 'asyncworker_impl.h' is not supposed to be included directly. Include 'inputdata.h' instead.
 #endif
 

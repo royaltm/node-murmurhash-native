@@ -1,5 +1,5 @@
-#if !defined(MURMURHASH_ASYNC_HEADER)
-#define MURMURHASH_ASYNC_HEADER
+#if !defined(ASYNCWORKER_HEADER)
+#define ASYNCWORKER_HEADER
 
 namespace MurmurHash {
   using v8::Handle;
