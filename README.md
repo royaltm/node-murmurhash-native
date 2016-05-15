@@ -110,6 +110,8 @@ Significant changes in 3.x
 
 The most important change is full platform indifference of rendered output. In 2.x output hash as binary data provided via buffer was endian sensitive. Starting with 3.x the data written to output buffer is always MSB (byte) first.
 
+The "hex", "base64" and "binary" output types has been (re)added, but this time with sane definition.
+
 So in this version the following is true on all platforms:
 
 ```js

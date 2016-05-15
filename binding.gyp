@@ -33,6 +33,39 @@
           }
         }]
       ]
+    },
+    {
+      'target_name': 'murmurhashincremental',
+      'sources': [
+        'src/murmurhash/PMurHash.c',
+        'src/incremental/hasher.cc'
+      ],
+      'include_dirs': [
+        "<!(node -e \"require('nan')\")",
+        'src/murmurhash',
+        'src/incremental',
+        'src'
+      ],
+      'defines': [
+        'NODE_MURMURHASH_KEY_BUFFER_SIZE=1024'
+      ],
+      'conditions': [
+        ['target_arch!="x64"', {
+          'defines': [
+            'NODE_MURMURHASH_DEFAULT_32BIT',
+          ]
+        }],
+        ['OS=="win"', {
+          'msvs_settings': {
+            'VCCLCompilerTool': {
+              'ExceptionHandling': 1,
+              'AdditionalOptions': [
+                '/EHsc' # ExceptionHandling=1 is not enough
+              ]
+            }
+          }
+        }]
+      ]
     }
   ]
 }

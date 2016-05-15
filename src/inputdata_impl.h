@@ -47,7 +47,47 @@ namespace MurmurHash {
     return type == ExternalBuffer;
   }
 
-  NAN_INLINE bool InputData::DetermineEncoding(const char *encCstr, enum Nan::Encoding& enc)
+  NAN_INLINE size_t InputData::length() const { return size; }
+
+  NAN_INLINE void InputData::reset(char *buf, size_t siz, Type t)
+  {
+    if ( type == Own ) delete[] buffer;
+
+    if ( siz == 0 || buf == NULL ) {
+      size = 0;
+      if ( t == ExternalBuffer ) {
+        buffer = StaticKeyBuffer();
+        type = t;
+      } else {
+        buffer = buf;
+        type = Static;
+      }
+    } else {
+      buffer = buf;
+      size = siz;
+      type = t;
+    }
+  }
+
+  NAN_INLINE char* InputData::operator*() { return buffer; }
+
+  NAN_INLINE const char* InputData::operator*() const { return buffer; }
+
+  NAN_INLINE InputData::~InputData()
+  {
+    if ( type == Own ) delete[] buffer;
+  }
+
+  NAN_INLINE void InputData::ReadEncodingString(const Local<String>& type)
+  {
+    size_t length = type->Length();
+    if ( length < sizeof(encCstr) ) {
+      encCstr[Nan::DecodeWrite(encCstr, length, type)] = 0;
+    } else
+      encCstr[0] = 0;
+  }
+
+  bool InputData::DetermineEncoding(enum Nan::Encoding& enc)
   {
     if ( strcasecmp(encCstr, "utf16le") == 0 ||
          strcasecmp(encCstr, "utf-16le") == 0 ) {
@@ -81,35 +121,21 @@ namespace MurmurHash {
     return false;
   }
 
-  NAN_INLINE size_t InputData::length() const { return size; }
-
-  NAN_INLINE void InputData::reset(char *buf, size_t siz, Type t)
+  OutputType InputData::DetermineOutputType()
   {
-    if ( type == Own ) delete[] buffer;
-
-    if ( siz == 0 || buf == NULL ) {
-      size = 0;
-      if ( t == ExternalBuffer ) {
-        buffer = StaticKeyBuffer();
-        type = t;
-      } else {
-        buffer = buf;
-        type = Static;
-      }
-    } else {
-      buffer = buf;
-      size = siz;
-      type = t;
+    if ( strcasecmp(encCstr, "buffer") == 0 ) {
+      return BufferOutputType;
+    } else if ( strcasecmp(encCstr, "number") == 0 ) {
+      return NumberOutputType;
+    } else if ( strcasecmp(encCstr, "base64") == 0 ) {
+      return Base64StringOutputType;
+    } else if ( strcasecmp(encCstr, "binary") == 0 ) {
+      return BinaryStringOutputType;
+    } else if ( strcasecmp(encCstr, "hex") == 0 ) {
+      return HexStringOutputType;
     }
-  }
 
-  NAN_INLINE char* InputData::operator*() { return buffer; }
-
-  NAN_INLINE const char* InputData::operator*() const { return buffer; }
-
-  NAN_INLINE InputData::~InputData()
-  {
-    if ( type == Own ) delete[] buffer;
+    return UnknownOutputType;
   }
 
   NAN_INLINE char *InputData::StaticKeyBuffer()
@@ -129,5 +155,5 @@ namespace MurmurHash {
   }
 
   char InputData::keyBuffer[NODE_MURMURHASH_KEY_BUFFER_SIZE];
-
+  char InputData::encCstr[sizeof("utf-16le")];
 }

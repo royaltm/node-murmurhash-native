@@ -6,10 +6,8 @@
 #endif
 
 namespace MurmurHash {
-  using v8::Handle;
   using v8::Local;
   using v8::Value;
-  using v8::Object;
   using v8::String;
 
   class InputData {
@@ -28,7 +26,9 @@ namespace MurmurHash {
       NAN_INLINE char* operator*();
       NAN_INLINE const char* operator*() const;
       NAN_INLINE ~InputData();
-      NAN_INLINE static bool DetermineEncoding(const char *encCstr, enum Nan::Encoding& enc);
+      NAN_INLINE static void ReadEncodingString(const Local<String>& type);
+      static bool DetermineEncoding(enum Nan::Encoding& enc);
+      static OutputType DetermineOutputType();
 
     private:
       bool useStatic;
@@ -42,6 +42,7 @@ namespace MurmurHash {
 
       NAN_INLINE static char *StaticKeyBuffer();
       static char keyBuffer[NODE_MURMURHASH_KEY_BUFFER_SIZE];
+      static char encCstr[sizeof("utf-16le")];
 
       InputData(const InputData&);
       void operator=(const InputData&);

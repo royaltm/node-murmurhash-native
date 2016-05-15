@@ -2,10 +2,8 @@
 #define ASYNCWORKER_HEADER
 
 namespace MurmurHash {
-  using v8::Handle;
   using v8::Local;
   using v8::Value;
-  using v8::Object;
   using v8::String;
   using v8::Uint32;
 
