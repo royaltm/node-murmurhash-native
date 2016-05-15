@@ -20,8 +20,7 @@ namespace MurmurHash {
       };
 
       NAN_INLINE InputData(bool allowStaticBuffer = true);
-      NAN_INLINE void Setup(Local<Value> key, const Local<String> &encodingStr);
-      NAN_INLINE void Setup(Local<Value> key);
+      NAN_INLINE void Setup(Local<Value> key, const enum Nan::Encoding encoding, const bool validEncoding);
       NAN_INLINE bool IsValid() const;
       NAN_INLINE bool IsFromBuffer() const;
       NAN_INLINE const char * Error() const;
@@ -29,7 +28,7 @@ namespace MurmurHash {
       NAN_INLINE char* operator*();
       NAN_INLINE const char* operator*() const;
       NAN_INLINE ~InputData();
-      NAN_INLINE static Nan::Encoding DetermineEncoding(const Local<String> &encodingStr);
+      NAN_INLINE static bool DetermineEncoding(const char *encCstr, enum Nan::Encoding& enc);
 
     private:
       bool useStatic;
@@ -39,7 +38,6 @@ namespace MurmurHash {
       const char *error;
 
       NAN_INLINE void reset(char *buf = NULL, size_t siz = 0, Type t = Static);
-      NAN_INLINE void InitFromBuffer(const Handle<Object> keyObject);
       NAN_INLINE char *EnsureBuffer(size_t bytelength, Type& type);
 
       NAN_INLINE static char *StaticKeyBuffer();

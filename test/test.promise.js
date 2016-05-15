@@ -89,10 +89,10 @@ test("should have murmurHash functions", function(t) {
       murmurHash("", "1234").catch(function(err) { testerr(err, new TypeError("\"encoding\" must be a valid string encoding") ) });
       murmurHash("", "123").catch(function(err) { testerr(err, new TypeError("\"encoding\" must be a valid string encoding") ) });
       murmurHash("", "").catch(function(err) { testerr(err, new TypeError("\"encoding\" must be a valid string encoding") ) });
-      murmurHash("", 0, "").catch(function(err) { testerr(err, new TypeError("Unknown output type: should be \"number\" or \"buffer\"") ) });
-      murmurHash("", 0, "mumber").catch(function(err) { testerr(err, new TypeError("Unknown output type: should be \"number\" or \"buffer\"") ) });
-      murmurHash("", 0, "xxxxxxx").catch(function(err) { testerr(err, new TypeError("Unknown output type: should be \"number\" or \"buffer\"") ) });
-      murmurHash("", 0, "utf-8").catch(function(err) { testerr(err, new TypeError("Unknown output type: should be \"number\" or \"buffer\"") ) });
+      murmurHash("", 0, "").catch(function(err) { testerr(err, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") ) });
+      murmurHash("", 0, "mumber").catch(function(err) { testerr(err, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") ) });
+      murmurHash("", 0, "xxxxxxx").catch(function(err) { testerr(err, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") ) });
+      murmurHash("", 0, "utf-8").catch(function(err) { testerr(err, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") ) });
     });
 
     t.test('should create number hash from empty data', function(t) {

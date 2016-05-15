@@ -26,10 +26,11 @@ var murmurHash = require('murmurhash-native').murmurHash
 murmurHash( 'hash me!' ) // 2061152078
 murmurHash( new Buffer('hash me!') ) // 2061152078
 murmurHash( 'hash me!', 0x12345789 ) // 1908692277
-murmurHash( 'hash me!', 0x12345789, 'buffer' ) // <Buffer 35 55 c4 71>
+murmurHash( 'hash me!', 0x12345789, 'buffer' ) // <Buffer 71 c4 55 35>
+murmurHash( 'hash me!', 0x12345789, 'hex' ) // '71c45535'
 var buf = new Buffer('hash me!____')
 murmurHash( buf.slice(0,8), 0x12345789, buf, 8 )
-// <Buffer 68 61 73 68 20 6d 65 21 35 55 c4 71>
+// <Buffer 68 61 73 68 20 6d 65 21 71 c4 55 35>
 
 var murmurHash128x64 = require('murmurhash-native').murmurHash128x64
 murmurHash128x64( 'hash me!' ) // 'c43668294e89db0ba5772846e5804467'
@@ -57,10 +58,11 @@ Provided functions share the following signature:
 ```js
 murmurHash(data[, callback])
 murmurHash(data, output[, offset[, length]][, callback])
-murmurHash(data{String}, encoding[, callback])
+murmurHash(data{String}, encoding|output_type[, callback])
 murmurHash(data, output_type[, callback])
 murmurHash(data, seed[, output[, offset[, length]]][, callback])
 murmurHash(data, seed[, output_type][, callback])
+murmurHash(data, output_type, seed[, callback])
 murmurHash(data{String}, encoding, output[, offset[, length]][, callback])
 murmurHash(data{String}, encoding, output_type[, callback])
 murmurHash(data{String}, encoding, seed[, output[, offset[, length]]][, callback])
@@ -82,7 +84,10 @@ murmurHash(data{String}, encoding, seed[, output_type][, callback])
       hash, bytes are written only up to the hash size
 @param {string} output_type - a string indicating return type:
       'number' - for murmurHash32 an unsigned 32-bit integer,
-                 other hashes - a hex number as a string
+                 other hashes - hexadecimal string
+      'hex'    - hexadecimal string
+      'base64' - base64 string
+      'binary' - binary string
       'buffer' - a new Buffer object;
       'number' by default
 @param {Function} callback - optional callback(err, result)
@@ -92,12 +97,24 @@ murmurHash(data{String}, encoding, seed[, output_type][, callback])
       Be carefull as reading and writing by multiple threads to the same
       memory may render undetermined results
 
-The order of bytes written to a Buffer is platform dependent.
+The order of bytes written to a Buffer is platform independent.
 
 `data` and `output` arguments might reference the same Buffer object
 or buffers referencing the same memory (views).
 
 @return {number|Buffer|String|undefined}
+```
+
+Significant changes in 3.x
+--------------------------
+
+The most important change is full platform indifference of rendered output. In 2.x output hash as binary data provided via buffer was endian sensitive. Starting with 3.x the data written to output buffer is always MSB (byte) first.
+
+So in this version the following is true on all platforms:
+
+```js
+assert.strictEqual(murmurHash('foo', 'buffer').toString('hex'), murmurHash('foo', 0, 'hex'));
+assert.strictEqual(murmurHash('foo', 'buffer').toString('base64'), murmurHash('foo', 0, 'base64'));
 ```
 
 Significant changes in 2.x

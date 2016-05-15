@@ -7,37 +7,28 @@ namespace MurmurHash {
   NAN_INLINE InputData::InputData(bool allowStaticBuffer) : useStatic(allowStaticBuffer),
                 buffer(NULL), size(0), type(Static), error("string or Buffer is required") {}
 
-  NAN_INLINE void InputData::Setup(
-      Local<Value> key, const Local<String> &encodingStr)
+  NAN_INLINE void InputData::Setup(Local<Value> key, const enum Nan::Encoding encoding, const bool validEncoding)
   {
-    if ( key->IsString() ) {
-      const enum Nan::Encoding enc = DetermineEncoding(encodingStr);
-      if (enc == Nan::BUFFER) {
-        error = "\"encoding\" must be a valid string encoding";
-        return;
+    if ( !validEncoding ) {
+      error = "\"encoding\" must be a valid string encoding";
+      return;
+    }
+    if ( encoding == Nan::BUFFER) {
+      if ( node::Buffer::HasInstance(key) ) {
+        reset(
+          node::Buffer::Data(key),
+          node::Buffer::Length(key),
+          ExternalBuffer);
       }
-      ssize_t maxLength = enc == Nan::UTF8
-                            ? 3 * key.As<String>()->Length()
-                            : Nan::DecodeBytes(key, enc);
+    } else {
+      ssize_t maxLength = (encoding == Nan::UTF8)
+                          ? 3 * key.As<String>()->Length()
+                          : Nan::DecodeBytes(key, encoding);
       if ( maxLength != -1 ) {
         Type type;
         char *data = EnsureBuffer((size_t) maxLength, type);
-        reset(data, (size_t) Nan::DecodeWrite( data, maxLength, key, enc ), type);
+        reset(data, (size_t) Nan::DecodeWrite( data, maxLength, key, encoding ), type);
       }
-    } else if ( node::Buffer::HasInstance(key) ) {
-      InitFromBuffer( key.As<Object>() );
-    }
-  }
-
-  NAN_INLINE void InputData::Setup(Local<Value> key)
-  {
-    if ( key->IsString() ) {
-      size_t length = (size_t) key.As<String>()->Length();
-      Type type;
-      char *data = EnsureBuffer(length, type);
-      reset(data, (size_t) Nan::DecodeWrite( data, length, key ), type);
-    } else if ( node::Buffer::HasInstance(key) ) {
-      InitFromBuffer( key.As<Object>() );
     }
   }
 
@@ -56,52 +47,38 @@ namespace MurmurHash {
     return type == ExternalBuffer;
   }
 
-  NAN_INLINE void InputData::InitFromBuffer(const Handle<Object> keyObject)
+  NAN_INLINE bool InputData::DetermineEncoding(const char *encCstr, enum Nan::Encoding& enc)
   {
-    reset(
-      node::Buffer::Data(keyObject),
-      node::Buffer::Length(keyObject),
-      ExternalBuffer);
-  }
-
-  NAN_INLINE Nan::Encoding InputData::DetermineEncoding(
-      const Local<String> &encodingStr)
-  {
-    char encCstr[sizeof("utf-16le")];
-    int length = encodingStr->Length();
-
-    if ( length > 0 && length <= (int)(sizeof(encCstr) - 1) ) {
-
-      encCstr[Nan::DecodeWrite(encCstr, sizeof(encCstr) - 1, encodingStr)] = 0;
-
-      if ( length > 6 ) {
-        if ( strcasecmp(encCstr, "utf16le") == 0 ||
-             strcasecmp(encCstr, "utf-16le") == 0 )
-          return Nan::UCS2;
-      } else if ( length == 6 ) {
-        if ( strcasecmp(encCstr, "base64") == 0 )
-          return Nan::BASE64;
-        if ( strcasecmp(encCstr, "binary") == 0 )
-          return Nan::BINARY;
-      } else if ( length == 5 ) {
-        if ( strcasecmp(encCstr, "ascii") == 0 ) {
-          return Nan::ASCII;
-        } else if ( strcasecmp(encCstr, "utf-8") == 0 ) {
-          return Nan::UTF8;
-        } else if ( strcasecmp(encCstr, "ucs-2") == 0 ) {
-          return Nan::UCS2;
-        }
-      } else if ( length == 4 ) {
-        if ( strcasecmp(encCstr, "utf8") == 0 ) {
-          return Nan::UTF8;
-        } else if ( strcasecmp(encCstr, "ucs2") == 0 ) {
-          return Nan::UCS2;
-        }
-      }
-      if ( strcasecmp(encCstr, "hex") == 0 )
-        return Nan::HEX;
+    if ( strcasecmp(encCstr, "utf16le") == 0 ||
+         strcasecmp(encCstr, "utf-16le") == 0 ) {
+      enc = Nan::UCS2;
+      return true;
+    } else if ( strcasecmp(encCstr, "base64") == 0 ) {
+      enc = Nan::BASE64;
+      return true;
+    } else if ( strcasecmp(encCstr, "binary") == 0 ) {
+      enc = Nan::BINARY;
+      return true;
+    } else if ( strcasecmp(encCstr, "ascii") == 0 ) {
+      enc = Nan::ASCII;
+      return true;
+    } else if ( strcasecmp(encCstr, "utf-8") == 0 ) {
+      enc = Nan::UTF8;
+      return true;
+    } else if ( strcasecmp(encCstr, "ucs-2") == 0 ) {
+      enc = Nan::UCS2;
+      return true;
+    } else if ( strcasecmp(encCstr, "utf8") == 0 ) {
+      enc = Nan::UTF8;
+      return true;
+    } else if ( strcasecmp(encCstr, "ucs2") == 0 ) {
+      enc = Nan::UCS2;
+      return true;
+    } else if ( strcasecmp(encCstr, "hex") == 0 ) {
+      enc = Nan::HEX;
+      return true;
     }
-    return Nan::BUFFER;
+    return false;
   }
 
   NAN_INLINE size_t InputData::length() const { return size; }
