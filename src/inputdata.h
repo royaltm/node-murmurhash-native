@@ -18,7 +18,7 @@ namespace MurmurHash {
       };
 
       NAN_INLINE InputData(bool allowStaticBuffer = true);
-      NAN_INLINE void Setup(Local<Value> key, const enum Nan::Encoding encoding, const bool validEncoding);
+      NAN_INLINE void Setup(Local<Value> key, const enum Nan::Encoding encoding, const bool validEncoding = true);
       NAN_INLINE bool IsValid() const;
       NAN_INLINE bool IsFromBuffer() const;
       NAN_INLINE const char * Error() const;
