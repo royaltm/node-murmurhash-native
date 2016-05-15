@@ -3,51 +3,49 @@
 #endif
 
 namespace MurmurHash {
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength>
+  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
   NAN_INLINE MurmurHashWorker<HashFunction,HashValueType,HashLength>
   ::MurmurHashWorker(
                 Nan::Callback *callback)
-              : Nan::AsyncWorker(callback), outputType_(UnknownOutputType), seed_(0), data_(false) {}
+              : Nan::AsyncWorker(callback), data_(false), outputType_(UnknownOutputType), seed_(0) {}
 
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength>
+  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
   NAN_INLINE MurmurHashWorker<HashFunction,HashValueType,HashLength>
   ::MurmurHashWorker(
                 Nan::Callback *callback, OutputType outputType, uint32_t seed,
                 Local<Value> key, const Local<String> &encodingStr)
-              : Nan::AsyncWorker(callback), outputType_(outputType), seed_(seed), data_(false)
-              // bufptr_(NULL), bufsize_(0), offset_(0), length_(0)
+              : Nan::AsyncWorker(callback), data_(false), outputType_(outputType), seed_(seed)
+              // offset_(0), length_(0)
   {
     data_.Setup(key, encodingStr);
     if (data_.IsFromBuffer())
       SaveToPersistent(0U, key);    
   }
 
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength>
+  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
   NAN_INLINE MurmurHashWorker<HashFunction,HashValueType,HashLength>
   ::MurmurHashWorker(
                 Nan::Callback *callback, OutputType outputType, uint32_t seed,
                 Local<Value> key)
-              : Nan::AsyncWorker(callback), outputType_(outputType), seed_(seed), data_(false)
-              // bufptr_(NULL), bufsize_(0), offset_(0), length_(0)
+              : Nan::AsyncWorker(callback), data_(false), outputType_(outputType), seed_(seed)
+              // offset_(0), length_(0)
   {
     data_.Setup(key);
     if (data_.IsFromBuffer())
       SaveToPersistent(0U, key);    
   }
 
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength>
+  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
   NAN_INLINE void MurmurHashWorker<HashFunction,HashValueType,HashLength>
   ::SaveOutputBuffer(
-                const Local<Value> &buffer, ssize_t offset, ssize_t length)
+                const Local<Value> &buffer, int32_t offset, int32_t length)
   {
     SaveToPersistent(1U, buffer);
-    bufptr_ = node::Buffer::Data(buffer);
-    bufsize_ = (ssize_t) node::Buffer::Length(buffer);
     offset_ = offset;
     length_ = length;
   }
 
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength>
+  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
   NAN_INLINE void MurmurHashWorker<HashFunction,HashValueType,HashLength>
   ::Execute()
   {
@@ -56,10 +54,6 @@ namespace MurmurHash {
 
     switch(outputType_) {
       case ProvidedBufferOutputType:
-        MurmurHashBuffer<HashFunction, HashValueType, HashLength>(
-              data_, seed_, bufptr_, bufsize_, offset_, length_);
-        break;
-
       case NumberOutputType:
       case BufferOutputType:
         HashFunction( (const void *) *data_, (int) data_.length(), seed_, (void *)hash_ );
@@ -70,7 +64,7 @@ namespace MurmurHash {
     }
   }
 
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength>
+  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
   NAN_INLINE void MurmurHashWorker<HashFunction,HashValueType,HashLength>
   ::HandleOKCallback()
   {
@@ -80,6 +74,12 @@ namespace MurmurHash {
     switch(outputType_) {
       case ProvidedBufferOutputType:
         argv[1] = GetFromPersistent(1U);
+        WriteHashToBuffer<HashLength>(
+              hash_,
+              node::Buffer::Data(argv[1]),
+              (int32_t) node::Buffer::Length(argv[1]),
+              offset_,
+              length_);
         break;
 
       case NumberOutputType:
@@ -91,7 +91,8 @@ namespace MurmurHash {
         break;
 
       case BufferOutputType:
-        argv[1] = Nan::CopyBuffer((char *) hash_, (uint32_t) HashSize).ToLocalChecked();
+        argv[1] = Nan::NewBuffer( HashSize ).ToLocalChecked();
+        WriteHashBytes<HashLength>(hash_, (uint8_t *) node::Buffer::Data(argv[1]));
         break;
 
       default:
@@ -101,7 +102,7 @@ namespace MurmurHash {
     callback->Call(2, argv);
   }
 
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength>
+  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
   NAN_INLINE void MurmurHashWorker<HashFunction,HashValueType,HashLength>
   ::HandleErrorCallback() {
     Nan::HandleScope scope;

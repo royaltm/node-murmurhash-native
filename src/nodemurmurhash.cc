@@ -8,7 +8,7 @@
 
 typedef void (*MurmurHashFunctionType)(const void *, int, uint32_t, void *);
 
-#define HashSize ((ssize_t) (sizeof(HashValueType) * HashLength))
+#define HashSize ((int32_t) (sizeof(HashValueType) * HashLength))
 
 namespace MurmurHash {
   typedef enum {
@@ -19,11 +19,14 @@ namespace MurmurHash {
     DefaultOutputType = NumberOutputType
   } OutputType;
 
-  template<ssize_t HashLength, typename HashValueType>
+  template<int32_t HashLength, typename HashValueType>
   Local<Value> HashToHexString(const HashValueType *);
 
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength>
-  void MurmurHashBuffer(InputData &, uint32_t, char *, ssize_t, ssize_t, ssize_t);
+  template<int32_t HashLength, typename HashValueType>
+  void WriteHashBytes(const HashValueType *, uint8_t *, int32_t = HashSize, int32_t = 0);
+
+  template<int32_t HashLength, typename HashValueType>
+  NAN_INLINE void WriteHashToBuffer(const HashValueType *, char *, int32_t, int32_t, int32_t);
 }
 
 #include "asyncworker.h"
@@ -67,20 +70,20 @@ namespace MurmurHash {
   #define HEXSTR_SIZE 2
 
   template<typename T>
-  NAN_INLINE char *ToHexString(T value, char * const out)
+  NAN_INLINE char *WriteHexString(T value, char * const out)
   {
     static const char hex[]= "0123456789abcdef";
     char * const endp = out + (sizeof(value) * HEXSTR_SIZE);
     for(char * ptr = endp ; ; value >>= 4) {
-      *(--ptr) = hex[value & 0xf];
+      *(--ptr) = hex[value & 0x0f];
       value >>= 4;
-      *(--ptr) = hex[value & 0xf];
+      *(--ptr) = hex[value & 0x0f];
       if (ptr == out) break;
     }
     return endp;
   }
 
-  template<ssize_t HashLength, typename HashValueType>
+  template<int32_t HashLength, typename HashValueType>
   Local<Value> HashToHexString(const HashValueType * hash)
   {
     Nan::EscapableHandleScope scope;
@@ -91,13 +94,44 @@ namespace MurmurHash {
     const HashValueType * const valt = hash + HashLength;
     const HashValueType * valp = hash;
     while(valp < valt) {
-      out = ToHexString( *(valp++), out );
+      out = WriteHexString( *(valp++), out );
     }
 
-    return scope.Escape(Nan::New<String>(str, (int32_t) (HashSize * HEXSTR_SIZE)).ToLocalChecked());
+    return scope.Escape(Nan::New<String>(str, (HashSize * HEXSTR_SIZE)).ToLocalChecked());
   }
 
   #undef HEXSTR_SIZE
+
+  template<int32_t HashLength, typename HashValueType>
+  void WriteHashBytes(const HashValueType * hashp, uint8_t * out, int32_t length, int32_t skip)
+  {
+    // sanity check
+    if (length <= 0) return;
+    // normalize skip
+    skip &= HashSize - 1;
+    // normalize length
+    length = std::min(length, HashSize - skip);
+    // let hashp point to the last hash value
+    hashp += (length + skip - 1) / (int32_t) sizeof(HashValueType);
+    // get first hash value
+    HashValueType val = *(hashp--);
+    // preliminary shift value when length is not aligned with hash value type
+    int shift = ((-(length + skip)) & ((int32_t) sizeof(HashValueType) - 1));
+    val >>= 8 * shift;
+    // set byte pointer at the end of output
+    uint8_t * outp = out + length;
+    // get initial number of bytes to write for a single value
+    length = std::min(length, (int32_t) sizeof(HashValueType) - shift);
+
+    for(;; val = *(hashp--)) {
+      for(;; val >>= 8) {
+        *(--outp) = (uint8_t) (val & 0x0ff);
+        if (--length == 0) break;
+      }
+      length = std::min((int32_t)(outp - out), (int32_t) sizeof(HashValueType));
+      if (length == 0) break;
+    }
+  }
 
   OutputType DetermineOutputType(const Local<String> type)
   {
@@ -119,69 +153,48 @@ namespace MurmurHash {
     return UnknownOutputType;
   }
 
-  #define IS_ALIGNED(POINTER, TYPE) \
-    ((((uintptr_t)(const void *)(POINTER)) & (sizeof(TYPE) - 1)) == 0)
-
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength>
-  void MurmurHashBuffer(InputData &data, uint32_t seed,
-                                   char *buffer, ssize_t bufLength,
-                                   ssize_t bufOffset, ssize_t bufHashLength)
+  template<int32_t HashLength, typename HashValueType>
+  NAN_INLINE void WriteHashToBuffer(const HashValueType * hash,
+                                    char *bufptr, int32_t bufsize,
+                                    int32_t offset, int32_t length)
   {
-    ssize_t hashOffset = 0;
+    int32_t skip = 0;
 
-    if ( bufHashLength < 0 ) { // from the end of hash
-      hashOffset = bufHashLength + HashSize;
-      bufHashLength = -bufHashLength;
+    // normalize
+    length = std::max(-HashSize, std::min(HashSize, length));
+
+    // negative length is counted from the end of the hash
+    if (length < 0) {
+      skip = length;
+      length = -length;
     }
 
-    if ( bufOffset < 0 ) { // from the end of buffer
-      bufOffset += bufLength;
+    // negative offset is counted from the end of the buffer
+    if ( offset < 0 ) {
+      offset += bufsize;
     }
 
-    if ( bufHashLength == 0 || bufLength <= 0 ||
-         bufOffset <= -bufHashLength || bufOffset >= bufLength )
-      return; // don't bother
-
-    char *dest = buffer + bufOffset;
-
-    if ( bufHashLength == HashSize && bufOffset >= 0
-                                   && bufOffset + HashSize <= bufLength
-                                   && IS_ALIGNED(dest, HashValueType)) {
-      /* calculate hash directly into the buffer */
-      HashFunction( (const void *) *data, (int) data.length(), seed, (void *)dest);
-    } else {
-      /* calculate hash and copy into the buffer */
-      HashValueType hash[HashLength];
-      HashFunction( (const void *) *data, (int) data.length(), seed, (void *)hash );
-      if ( bufOffset < 0 ) {
-        memcpy( (void *) buffer,
-                (void *)((char *)hash + hashOffset - bufOffset),
-                std::min(bufOffset + bufHashLength, bufLength) );
-      } else {
-        memcpy( (void *) dest,
-                (void *)((char *)hash + hashOffset),
-                std::min(bufHashLength, bufLength - bufOffset) );
-      }
+    // still negative
+    if ( offset < 0 ) {
+      length += offset;
+      skip -= offset;
+      offset = 0;
     }
 
+    length = std::min(length, bufsize - offset);
+    WriteHashBytes<HashLength>(hash, (uint8_t *) bufptr + offset, length, skip);
   }
 
-  #undef IS_ALIGNED
-
-  #define GET_ARG_OFFSET(INFO,INDEX,ARGC)                                  \
-            ((INDEX) + 1 < (ARGC)                                          \
-            ? (ssize_t) Nan::To<int32_t>((INFO)[(INDEX) + 1]).FromMaybe(0) \
+  #define GET_ARG_OFFSET(INFO,INDEX,ARGC)                        \
+            ((INDEX) + 1 < (ARGC)                                \
+            ? Nan::To<int32_t>((INFO)[(INDEX) + 1]).FromMaybe(0) \
             : 0)
 
-  #define GET_ARG_LENGTH(INFO,INDEX,ARGC,MAX)                        \
-            ((INDEX) + 2 < (ARGC)                                    \
-            ? std::max(                                              \
-                  -(MAX),                                            \
-                  std::min(                                          \
-                    (MAX),                                           \
-                    (ssize_t) Nan::To<int32_t>((INFO)[(INDEX) + 2]). \
-                      FromMaybe(static_cast<int32_t>(MAX)) ))        \
-            : (MAX))
+  #define GET_ARG_LENGTH(INFO,INDEX,ARGC,DEF)              \
+            ((INDEX) + 2 < (ARGC)                          \
+            ? Nan::To<int32_t>((INFO)[(INDEX) + 2]).       \
+                      FromMaybe(static_cast<int32_t>(DEF)) \
+            : (DEF))
 
   /**
    * Calculate MurmurHash from data
@@ -230,7 +243,7 @@ namespace MurmurHash {
    * 
    * @return {number|Buffer|String|undefined}
   **/
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, ssize_t HashLength>
+  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
   NAN_METHOD(MurmurHash)
   {
     InputData data;
@@ -333,36 +346,33 @@ namespace MurmurHash {
 
       Local<Value> result;
 
+      HashValueType hash[HashLength];
+
       switch(outputType) {
         case ProvidedBufferOutputType:
+          HashFunction( (const void *) *data, (int) data.length(), seed, (void *)hash );
           result = info[outputTypeIndex];
-          {
-            MurmurHashBuffer<HashFunction, HashValueType, HashLength>(
-                  data, seed,
-                  node::Buffer::Data(result),
-                  (ssize_t) node::Buffer::Length(result),
-                  GET_ARG_OFFSET(info, outputTypeIndex, argc),
-                  GET_ARG_LENGTH(info, outputTypeIndex, argc, HashSize));
-          }
+          WriteHashToBuffer<HashLength>(
+                hash,
+                node::Buffer::Data(result),
+                (int32_t) node::Buffer::Length(result),
+                GET_ARG_OFFSET(info, outputTypeIndex, argc),
+                GET_ARG_LENGTH(info, outputTypeIndex, argc, HashSize));
           break;
 
         case NumberOutputType:
-          {
-            HashValueType hash[HashLength];
-            HashFunction( (const void *) *data, (int) data.length(), seed, (void *)hash );
-
-            if (HashSize == sizeof(uint32_t)) {
-              result = Nan::New<Uint32>( (uint32_t) (*hash) );
-            } else {
-              result = HashToHexString<HashLength>( hash );
-            }
+          HashFunction( (const void *) *data, (int) data.length(), seed, (void *)hash );
+          if (HashSize == sizeof(uint32_t)) {
+            result = Nan::New<Uint32>( (uint32_t) (*hash) );
+          } else {
+            result = HashToHexString<HashLength>( hash );
           }
           break;
 
         case BufferOutputType:
-          result = Nan::NewBuffer( (uint32_t) HashSize ).ToLocalChecked();
-          HashFunction( (const void *) *data, (int) data.length(), seed,
-                        (void *)node::Buffer::Data(result) );
+          HashFunction( (const void *) *data, (int) data.length(), seed, (void *)hash );
+          result = Nan::NewBuffer( HashSize ).ToLocalChecked();
+          WriteHashBytes<HashLength>(hash, (uint8_t *) node::Buffer::Data(result));
           break;
 
         default:
