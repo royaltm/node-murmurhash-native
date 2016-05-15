@@ -368,7 +368,7 @@ test("should have murmurHash functions", function(t) {
                     murmurHash(new Buffer('\u1234', 'binary'), 0, 'buffer'));
       t.deepEqual(murmurHash('\u1234', 'utf8', 'buffer', -1),
                     murmurHash(new Buffer('\u1234', 'utf8'), 0, 'buffer'));
-      t.deepEqual(murmurHash(new Buffer('\u1234', 'binary'), 'buffer', 'ignore', -1),
+      t.deepEqual(murmurHash(new Buffer('\u1234', 'binary'), 'ignore', 'buffer', -1),
                     murmurHash(new Buffer('\u1234', 'binary'), 0, 'buffer'));
       t.deepEqual(murmurHash('\u1234', null, 'buffer'),
                     murmurHash(new Buffer('\u1234', 'binary'), 0, 'buffer'));

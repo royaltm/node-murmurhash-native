@@ -484,7 +484,7 @@ test("should have murmurHash functions", function(t) {
                     cbfactory2(new Buffer('\u1234', 'binary'), 0, 'buffer')));
       t.strictEqual(undefined, murmurHash('\u1234', 'utf8', 'buffer', -1,
                     cbfactory2(new Buffer('\u1234', 'utf8'), 0, 'buffer')));
-      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'buffer', 'ignore', -1,
+      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'ignore', 'buffer', -1,
                     cbfactory2(new Buffer('\u1234', 'binary'), 0, 'buffer')));
       t.strictEqual(undefined, murmurHash('\u1234', null, 'buffer',
                     cbfactory2(new Buffer('\u1234', 'binary'), 0, 'buffer')));

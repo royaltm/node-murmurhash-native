@@ -53,12 +53,11 @@ namespace MurmurHash {
    * murmurHash(data[, callback])
    * murmurHash(data, output[, offset[, length]][, callback])
    * murmurHash(data{String}, encoding|output_type[, callback])
-   * murmurHash(data, output_type[, callback])
+   * murmurHash(data, output_type[, seed][, callback])
    * murmurHash(data, seed[, output[, offset[, length]]][, callback])
    * murmurHash(data, seed[, output_type][, callback])
-   * murmurHash(data, output_type, seed[, callback])
+   * murmurHash(data, encoding, output_type[, callback])
    * murmurHash(data{String}, encoding, output[, offset[, length]][, callback])
-   * murmurHash(data{String}, encoding, output_type[, callback])
    * murmurHash(data{String}, encoding, seed[, output[, offset[, length]]][, callback])
    * murmurHash(data{String}, encoding, seed[, output_type][, callback])
    * 
@@ -127,8 +126,8 @@ namespace MurmurHash {
       if ( argc >= 2 ) {
 
         if ( info[1]->IsString() ) { // input_encoding or output_type
-          InputData::ReadEncodingString( info[1].As<String>() );
           if ( argc == 2 ) { // try output_type
+            InputData::ReadEncodingString( info[1].As<String>() );
             outputType = InputData::DetermineOutputType();
             switch(outputType) {
               case HexStringOutputType:
@@ -145,9 +144,17 @@ namespace MurmurHash {
                 void(0); // unambiguous - "number" or "buffer"
             }
           } else if (encoding == Nan::BUFFER) { // output_type
+            if ( info[2]->IsNumber() ) {
+              InputData::ReadEncodingString( info[1].As<String>() );
+              seed = Nan::To<uint32_t>(info[2]).FromMaybe(0U);
+            } else if ( info[2]->IsString() ) {
+              InputData::ReadEncodingString( info[2].As<String>() );
+            } else {
+              InputData::ReadEncodingString( info[1].As<String>() );
+            }
             outputType = InputData::DetermineOutputType();
-            if ( info[2]->IsNumber() ) seed = Nan::To<uint32_t>(info[2]).FromMaybe(0U);
           } else { // try input_encoding
+            InputData::ReadEncodingString( info[1].As<String>() );
             if ( !(validEncoding = InputData::DetermineEncoding( encoding )) ) {
               outputType = InputData::DetermineOutputType(); // try output_type
               if (outputType == UnknownOutputType) {
