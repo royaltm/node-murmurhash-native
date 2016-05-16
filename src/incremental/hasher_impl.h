@@ -31,11 +31,11 @@ namespace MurmurHash {
       }
       NAN_INLINE void Update(void *data, int32_t length)
       {
-        PMurHash128x64_Process((MH_UINT64 *)h, (MH_UINT64 *)carry, data, (int) length);
+        PMurHash128x64_Process((uint64_t *)h, (uint64_t *)carry, data, (int) length);
       }
       NAN_INLINE void Digest(uint64_t *hash, int32_t total)
       {
-        PMurHash128x64_Result((MH_UINT64 *)h, (MH_UINT64 *)carry, (MH_UINT32) total, (void *)hash);
+        PMurHash128x64_Result((uint64_t *)h, (uint64_t *)carry, (uint32_t) total, (void *)hash);
       }
     private:
       uint64_t h[2], carry[2];

@@ -1,15 +1,12 @@
-/* from node_internals.h */
+const union {
+  uint8_t u8[2];
+  uint16_t u16;
+} EndianMix = { 1, 0 };
 FORCE_INLINE bool IsBigEndian()
 {
 #ifndef NODE_MURMURHASH_TEST_BYTESWAP
   // Constant-folded by the compiler.
-  const union {
-    uint8_t u8[2];
-    uint16_t u16;
-  } u = {
-    { 1, 0 }
-  };
-  return u.u16 != 1;
+  return EndianMix.u16 != 1;
 #else
   return true;
 #endif // NODE_MURMURHASH_TEST_BYTESWAP
@@ -30,7 +27,7 @@ FORCE_INLINE bool IsBigEndian()
 #  elif defined(__GNUC__) && ( \
                     __GNUC__ > 4 || ( \
                       __GNUC__ == 4 && ( \
-                        __GNUC_MINOR__ > 3 || (__GNUC_MINOR__ == 3) \
+                        __GNUC_MINOR__ >= 3 \
                       ) \
                     ) \
                   )
@@ -62,7 +59,7 @@ FORCE_INLINE uint64_t BSWAP64(uint64_t u)
 }
 #endif
 
-FORCE_INLINE uint32_t getblock32 ( const uint32_t * p, const int i = 0L )
+FORCE_INLINE uint32_t getblock32 ( const uint32_t * const p, const int i = 0L )
 {
   if (IsBigEndian()) {
     return BSWAP32(p[i]);
@@ -71,7 +68,7 @@ FORCE_INLINE uint32_t getblock32 ( const uint32_t * p, const int i = 0L )
   }
 }
 
-FORCE_INLINE uint64_t getblock64 ( const uint64_t * p, const int i = 0L )
+FORCE_INLINE uint64_t getblock64 ( const uint64_t * const p, const int i = 0L )
 {
   if (IsBigEndian()) {
     return BSWAP64(p[i]);

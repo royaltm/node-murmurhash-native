@@ -2,10 +2,8 @@
  * MurmurHash3 was written by Austin Appleby, and is placed in the public
  * domain.
  *
- * This implementation was written by Shane Day, and is also public domain.
- *
- * This is a portable ANSI C implementation of MurmurHash3_x86_32 (Murmur3A)
- * with support for progressive processing.
+ * This is a c++ implementation of MurmurHash3_128 with support for progressive
+ * processing based on PMurHash implementation written by Shane Day.
  */
 
 /*-----------------------------------------------------------------------------
@@ -22,45 +20,23 @@ does not fit in memory or when the data is streamed through the application.
 Also useful when hashing a number of strings with a common prefix. A partial
 hash of a prefix string can be generated and reused for each suffix string.
 
-2. Portability. Plain old C so that it should compile on any old compiler.
-Both CPU endian and access-alignment neutral, but avoiding inefficient code
-when possible depending on CPU capabilities.
-
-3. Drop in. I personally like nice self contained public domain code, making it
-easy to pilfer without loads of refactoring to work properly in the existing
-application code & makefile structure and mucking around with licence files.
-Just copy PMurHash.h and PMurHash.c and you're ready to go.
-
-
 How does it work?
 
-We can only process entire 32 bit chunks of input, except for the very end
+We can only process entire 128 bit chunks of input, except for the very end
 that may be shorter. So along with the partial hash we need to give back to
-the caller a carry containing up to 3 bytes that we were unable to process.
+the caller a carry containing up to 15 bytes that we were unable to process.
 This carry also needs to record the number of bytes the carry holds. I use
-the low 2 bits as a count (0..3) and the carry bytes are shifted into the
+the low 4 bits as a count (0..15) and the carry bytes are shifted into the
 high byte in stream order.
 
 To handle endianess I simply use a macro that reads a uint32_t and define
 that macro to be a direct read on little endian machines, a read and swap
-on big endian machines, or a byte-by-byte read if the endianess is unknown.
+on big endian machines.
 
 -----------------------------------------------------------------------------*/
 
 
 #include "PMurHash128.h"
-
-/* I used ugly type names in the header to avoid potential conflicts with
- * application or system typedefs & defines. Since I'm not including any more
- * headers below here I can rename these so that the code reads like C99 */
-#undef uint64_t
-#define uint64_t MH_UINT64
-#undef uint32_t
-#define uint32_t MH_UINT32
-#undef uint16_t
-#define uint16_t MH_UINT16
-#undef uint8_t
-#define uint8_t  MH_UINT8
 
 /* MSVC warnings we choose to ignore */
 #if defined(_MSC_VER)
@@ -139,35 +115,38 @@ FORCE_INLINE uint64_t fmix64 ( uint64_t k )
 
 /* This is the main processing body of the algorithm. It operates
  * on each full 128-bits of input. */
-#define DOBLOCK128(h1, h2, k1, k2) do{ \
-      k1 *= C1; k1  = ROTL64(k1,31); k1 *= C2; h1 ^= k1; \
-      \
-      h1 = ROTL64(h1,27); h1 += h2; h1 = h1*5+0x52dce729; \
-      \
-      k2 *= C2; k2  = ROTL64(k2,33); k2 *= C1; h2 ^= k2; \
-      \
-      h2 = ROTL64(h2,31); h2 += h1; h2 = h2*5+0x38495ab5; \
-    }while(0)
+FORCE_INLINE void doblock128(uint64_t &h1, uint64_t &h2, uint64_t &k1, uint64_t &k2)
+{
+  k1 *= C1; k1  = ROTL64(k1,31); k1 *= C2; h1 ^= k1;
+ 
+  h1 = ROTL64(h1,27); h1 += h2; h1 = h1*5+0x52dce729;
+ 
+  k2 *= C2; k2  = ROTL64(k2,33); k2 *= C1; h2 ^= k2;
+ 
+  h2 = ROTL64(h2,31); h2 += h1; h2 = h2*5+0x38495ab5;
+}
 
 /* Append unaligned bytes to carry, forcing hash churn if we have 16 bytes */
 /* cnt=bytes to process, h1,h2=name of h1,h2 var, k1,k2=carry, n=bytes in carry, ptr/len=payload */
-#define DOBYTES128(cnt, h1, h2, k1, k2, n, ptr, len) do{ \
-    int _i = cnt; \
-    while(_i-- > 0) { \
-      if (n < 8) { \
-        k1 = k1>>8 | (uint64_t)*ptr++<<56; \
-        n++; len--; \
-      } else \
-        do { \
-          k2 = k2>>8 | (uint64_t)*ptr++<<56; \
-          n++; len--; \
-          if(n==16) { \
-              DOBLOCK128(h1, h2, k1, k2); \
-              n = 0; \
-              break; \
-          } \
-        } while(_i--); \
-    } }while(0)
+FORCE_INLINE void dobytes128(int cnt, uint64_t &h1, uint64_t &h2, uint64_t &k1, uint64_t &k2,
+                             int &n, const uint8_t *&ptr, int &len)
+{
+  while(cnt-- > 0) {
+    if (n < 8) {
+      k1 = k1>>8 | (uint64_t)*ptr++<<56;
+      n++; len--;
+    } else
+      do {
+        k2 = k2>>8 | (uint64_t)*ptr++<<56;
+        n++; len--;
+        if(n==16) {
+            doblock128(h1, h2, k1, k2);
+            n = 0;
+            break;
+        }
+      } while(cnt--);
+  }
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -187,14 +166,13 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   /* Extract carry count from low 4 bits of c value */
   int n = k2 & 15;
 
-#if defined(UNALIGNED_SAFE)
-
+#if defined(UNALIGNED_SAFE) && NODE_MURMURHASH_TEST_ALIGNED != 1
   /* This CPU handles unaligned word access */
-
+#pragma message ( "UNALIGNED_SAFE" )
   /* Consume any carry bytes */
   int i = (16-n) & 15;
   if(i && i <= len) {
-    DOBYTES128(i, h1, h2, k1, k2, n, ptr, len);
+    dobytes128(i, h1, h2, k1, k2, n, ptr, len);
   }
 
   /* Process 128-bit chunks */
@@ -202,16 +180,16 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   for( ; ptr < end ; ptr+=16) {
     k1 = READ_UINT64(ptr, 0);
     k2 = READ_UINT64(ptr, 1);
-    DOBLOCK128(h1, h2, k1, k2);
+    doblock128(h1, h2, k1, k2);
   }
 
 #else /*UNALIGNED_SAFE*/
   /* This CPU does not handle unaligned word access */
-
+#pragma message ( "ALIGNED" )
   /* Consume enough so that the next data byte is word aligned */
   int i = -(intptr_t)(void *)ptr & 7;
   if(i && i <= len) {
-    DOBYTES128(i, h1, h2, k1, k2, n, ptr, len);
+    dobytes128(i, h1, h2, k1, k2, n, ptr, len);
   }
   /* We're now aligned. Process in aligned blocks. Specialise for each possible carry count */
   end = ptr + (len & ~15);
@@ -222,7 +200,7 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
     for( ; ptr < end ; ptr+=16) {
       k1 = READ_UINT64(ptr, 0);
       k2 = READ_UINT64(ptr, 1);
-      DOBLOCK128(h1, h2, k1, k2);
+      doblock128(h1, h2, k1, k2);
     }
     break;
   case 1: case 2: case 3: case 4: case 5: case 6: case 7: /*
@@ -235,7 +213,7 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
         c |= k2<<lshift;
         k1 = READ_UINT64(ptr, 1);
         k2 = k2>>rshift | k1<<lshift;
-        DOBLOCK128(h1, h2, c, k2);
+        doblock128(h1, h2, c, k2);
       }
     }
     break;
@@ -243,7 +221,7 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   k1=[76543210] k2=[--------] w=[fedcba98 nmlkjihg] b=[76543210 fedcba98] k1`=[nmlkjihg] */
     for( ; ptr < end ; ptr+=16) {
       k2 = READ_UINT64(ptr, 0);
-      DOBLOCK128(h1, h2, k1, k2);
+      doblock128(h1, h2, k1, k2);
       k1 = READ_UINT64(ptr, 1);
     }
     break;
@@ -255,7 +233,7 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
         uint64_t c = k2 >> rshift;
         k2 = READ_UINT64(ptr, 0);
         c |= k2 << lshift;
-        DOBLOCK128(h1, h2, k1, c);
+        doblock128(h1, h2, k1, c);
         k1 = k2 >> rshift;
         k2 = READ_UINT64(ptr, 1);
         k1 |= k2 << lshift;
@@ -268,7 +246,7 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   len -= len & ~15;
 
   /* Append any remaining bytes into carry */
-  DOBYTES128(len, h1, h2, k1, k2, n, ptr, len);
+  dobytes128(len, h1, h2, k1, k2, n, ptr, len);
  
   /* Copy out new running hash and carry */
   ph[0] = h1;

@@ -187,7 +187,7 @@ void PMurHash32_Process(uint32_t *ph1, uint32_t *pcarry, const void *key, int le
   /* Extract carry count from low 2 bits of c value */
   int n = c & 3;
 
-#if defined(UNALIGNED_SAFE)
+#if defined(UNALIGNED_SAFE) && NODE_MURMURHASH_TEST_ALIGNED != 1
   /* This CPU handles unaligned word access */
 
   /* Consume any carry bytes */
