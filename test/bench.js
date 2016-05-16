@@ -58,7 +58,7 @@ function bench(size, inputStr, iters) {
             : fillrandom(new Buffer(size));
   funmatrix.forEach(function(args) {
     var fun = args[0], name = args[1]
-    measure("string", fun, name, iters, size, input);
+    measure(inputStr ? "string" : "buffer", fun, name, iters, size, input);
   });
 }
 
