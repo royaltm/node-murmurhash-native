@@ -1,7 +1,7 @@
 const union {
   uint8_t u8[2];
   uint16_t u16;
-} EndianMix = { 1, 0 };
+} EndianMix = {{ 1, 0 }};
 FORCE_INLINE bool IsBigEndian()
 {
 #ifndef NODE_MURMURHASH_TEST_BYTESWAP
