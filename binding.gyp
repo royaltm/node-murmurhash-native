@@ -14,7 +14,7 @@
       ],
       'defines': [
         # 'NODE_MURMURHASH_TEST_BYTESWAP=1',
-        # 'NODE_MURMURHASH_TEST_ALIGNED=1',
+        'NODE_MURMURHASH_TEST_ALIGNED=1',
         'NODE_MURMURHASH_KEY_BUFFER_SIZE=1024'
       ],
       'conditions': [
@@ -50,7 +50,7 @@
       ],
       'defines': [
         # 'NODE_MURMURHASH_TEST_BYTESWAP=1',
-        # 'NODE_MURMURHASH_TEST_ALIGNED=1',
+        'NODE_MURMURHASH_TEST_ALIGNED=1',
         'NODE_MURMURHASH_KEY_BUFFER_SIZE=1024'
       ],
       'conditions': [
