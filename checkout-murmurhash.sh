@@ -6,7 +6,9 @@ for file in \
     MurmurHash2.cpp \
     MurmurHash2.h \
     MurmurHash3.cpp \
-    MurmurHash3.h
+    MurmurHash3.h \
+    PMurHash.c \
+    PMurHash.h
 do
   if [ ! -e "$file" ]
   then curl "https://raw.githubusercontent.com/aappleby/smhasher/master/src/$file" -O -f
