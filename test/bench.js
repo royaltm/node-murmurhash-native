@@ -30,6 +30,7 @@ var funmatrix = [
   [hash.murmurHash128x86,              'murmurHash128x86        '],
   [hash.murmurHash128x64,              'murmurHash128x64        '],
   [incremental(incr.MurmurHash),       'MurmurHash              '],
+  [incremental(incr.MurmurHash128x86), 'MurmurHash128x86        '],
   [incremental(incr.MurmurHash128x64), 'MurmurHash128x64        ']
 ];
 
