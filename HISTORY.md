@@ -1,3 +1,10 @@
+v3.0.0
+
+* results in buffers always in network order MSB (byte)
+* restored output types: "hex" "base64" and "binary"
+* incremental MurmurHash 3: 32bit, 128bit x86 and x64
+* stream wrapper for incremental MurmurHash
+
 v2.1.0
 
 * new ability to calculate hashes asynchronously via libuv
