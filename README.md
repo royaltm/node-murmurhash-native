@@ -7,6 +7,15 @@ This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing al
 
 [![Build Status][BS img]][Build Status]
 
+Key features:
+
+* fast `npm run bench`
+* portable (platform independend network byte order output of hashes in binary form)
+* both blocking and asynchronous api interfaces
+* additional MurmurHash3 32 and 128 bit incremental implementations based on [PMurHash][PMurHash]
+* stream wrapper for incremental hasher with [crypto.Hash-like][crypto.Hash] bi-api interface
+* promise wrapper
+
 Installation:
 -------------
 
@@ -38,7 +47,7 @@ murmurHash128x64( 'hash me!' ) // 'c43668294e89db0ba5772846e5804467'
 var murmurHash128x86 = require('murmurhash-native').murmurHash128x86
 murmurHash128x86( 'hash me!' ) // 'c7009299985a5627a9280372a9280372'
 
-// asynchronous:
+// asynchronous
 murmurHash( 'hash me!', function(err, hash) { assert.equal(hash, 2061152078) });
 ```
 
@@ -133,6 +142,24 @@ Another breaking change is for the BE platforms. Starting with 2.0 endian-ness i
 
 Since v2.1 the callback argument was introduced.
 
+Streaming and incremental
+-------------------------
+
+The Hi-level dual-api interface for incremenrtal MurmurHash3 is available as a submodule:
+
+```js
+var murmur = require('murmurhash-native/stream');
+
+var hasher = murmur.createHash('murmurhash128x86');
+hasher.update('hash').update(' me!').digest('hex'); // 'c7009299985a5627a9280372a9280372';
+
+var stream = murmur.createHash('murmurhash32', {seed: 123, encoding: 'hex'});
+fs.readFileSync('README.md').pipe(stream);
+stream.on('readable', () => console.log(stream.read()) );
+```
+
+Low-level native incremental module available at `murmurhash-native/incremental`.
+
 Promises
 --------
 
@@ -175,3 +202,5 @@ Tested with nodejs: v0.10, v0.11, v0.12, iojs-3, v4, v5 and v6.
 [NPM img]: https://nodei.co/npm/murmurhash-native.png?compact=true
 [NPM Status]: https://nodei.co/npm/murmurhash-native/
 [murmurhash3js]: https://www.npmjs.com/package/murmurhash3js
+[PMurHash]: https://github.com/aappleby/smhasher/blob/master/src/PMurHash.c
+[crypto.Hash]: https://nodejs.org/dist/latest-v6.x/docs/api/crypto.html#crypto_class_hash
