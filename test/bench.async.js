@@ -4,7 +4,7 @@ var os             = require('os')
 ,   parben         = require('./parben')
 ,   hash           = require('..')
 ,   assert         = require('assert')
-,   iters          = 20000
+,   iters          = 40000
 ,   stringEncoding = process.argv[2]
 
 if (stringEncoding)
@@ -40,14 +40,14 @@ funmatrix.forEach(function(args) {
 
 funmatrix.forEach(function(args) {
   var fun = args[0], name = args[1]
-    , size = 128*1024
+    , size = 64*1024
     , string = randomstring(size);
   queue(measure, "string", fun, name, iters, size, string);
 })
 
 funmatrix.forEach(function(args) {
   var fun = args[0], name = args[1]
-    , size = 128*1024
+    , size = 64*1024
     , buffer = fillrandom(new Buffer(size));
   queue(measure, "buffer", fun, name, iters, size, buffer);
 })
