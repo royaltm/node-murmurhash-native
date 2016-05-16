@@ -29,7 +29,7 @@ This carry also needs to record the number of bytes the carry holds. I use
 the low 4 bits as a count (0..15) and the carry bytes are shifted into the
 high byte in stream order.
 
-To handle endianess I simply use a macro that reads a uint32_t and define
+To handle endianess I simply use a macro that reads an uint and define
 that macro to be a direct read on little endian machines, a read and swap
 on big endian machines.
 
@@ -38,25 +38,20 @@ on big endian machines.
 
 #include "PMurHash128.h"
 
-/* MSVC warnings we choose to ignore */
-#if defined(_MSC_VER)
-  #pragma warning(disable: 4127) /* conditional expression is constant */
-#endif
-
 /*-----------------------------------------------------------------------------
  * Endianess, misalignment capabilities and util macros
  *
  * The following 5 macros are defined in this section. The other macros defined
  * are only needed to help derive these 5.
  *
+ * READ_UINT32(x,i) Read a little endian unsigned 32-bit int at index
  * READ_UINT64(x,i) Read a little endian unsigned 64-bit int at index
- * UNALIGNED_SAFE   Defined if READ_UINT64 works on non-word boundaries
+ * UNALIGNED_SAFE   Defined if READ_UINTXX works on non-word boundaries
+ * ROTL32(x,r)      Rotate x left by r bits
  * ROTL64(x,r)      Rotate x left by r bits
  * BIG_CONSTANT
  * FORCE_INLINE
  */
-
-/* Convention is to define __BYTE_ORDER == to one of these values */
 
 /* I386 or AMD64 */
 #if defined(_M_I86) || defined(_M_IX86) || defined(_X86_) || defined(__i386__) || defined(__i386) || defined(i386) \
@@ -64,7 +59,7 @@ on big endian machines.
   #define UNALIGNED_SAFE
 #endif
 
-/* Find best way to ROTL64 */
+/* Find best way to ROTL */
 #if defined(_MSC_VER)
   #define FORCE_INLINE  __forceinline
   #include <stdlib.h>  /* Microsoft put _rotl declaration in here */
@@ -83,6 +78,7 @@ on big endian machines.
 
 #define READ_UINT64(ptr,i) getblock64((uint64_t *)ptr,i)
 #define READ_UINT32(ptr,i) getblock32((uint32_t *)ptr,i)
+
 //-----------------------------------------------------------------------------
 // Finalization mix - force all bits of a hash block to avalanche
 
@@ -110,6 +106,9 @@ FORCE_INLINE uint64_t fmix64 ( uint64_t k )
   return k;
 }
 
+/*-----------------------------------------------------------------------------*
+                                 PMurHash128x64
+ *-----------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------
  * Core murmurhash algorithm macros */
 
@@ -151,15 +150,19 @@ FORCE_INLINE void dobytes128x86(int cnt, uint32_t &h1, uint32_t &h2, uint32_t &h
       case  0: case  1: case  2: case  3:
         k1 = k1>>8 | (uint32_t)*ptr++<<24;
         ++n; break;
+
       case  4: case  5: case  6: case  7:
         k2 = k2>>8 | (uint32_t)*ptr++<<24;
         ++n; break;
+
       case  8: case  9: case 10: case 11:
         k3 = k3>>8 | (uint32_t)*ptr++<<24;
         ++n; break;
+
       case 12: case 13: case 14:
         k4 = k4>>8 | (uint32_t)*ptr++<<24;
         ++n; break;
+
       case 15:
         k4 = k4>>8 | (uint32_t)*ptr++<<24;
         doblock128x86(h1, h2, h3, h4, k1, k2, k3, k4);
@@ -168,7 +171,7 @@ FORCE_INLINE void dobytes128x86(int cnt, uint32_t &h1, uint32_t &h2, uint32_t &h
   }
 }
 
-/* Finalize a hash. To match the original Murmur3_128x64 the total_length must be provided */
+/* Finalize a hash. To match the original Murmur3_128x86 the total_length must be provided */
 void PMurHash128x86_Result(const uint32_t *ph, const uint32_t *pcarry, uint32_t total_length, uint32_t *out)
 {
   uint32_t h1 = ph[0];
@@ -182,29 +185,33 @@ void PMurHash128x86_Result(const uint32_t *ph, const uint32_t *pcarry, uint32_t 
   switch(n) {
     case  1: case  2: case  3: case  4:
       k1 = pcarry[0] >> (4-n)*8;
-      goto finrotk1;
+      goto finrot_k1;
+
     case  5: case  6: case  7: case  8:
       k2 = pcarry[1] >> (8-n)*8;
-      goto finrotk21;
+      goto finrot_k21;
+
     case  9: case 10: case 11: case 12:
       k3 = pcarry[2] >> (12-n)*8;
-      goto finrotk321;
+      goto finrot_k321;
+
     case 13: case 14: case 15:
       k4 >>= (16-n)*8;
-      goto finrotk4321;
+      goto finrot_k4321;
+
     default:
       goto skiprot;
   }
-finrotk4321:
+finrot_k4321:
   k4 *= C4; k4  = ROTL32(k4,18); k4 *= C1; h4 ^= k4;
   k3 = pcarry[2];
-finrotk321:
+finrot_k321:
   k3 *= C3; k3  = ROTL32(k3,17); k3 *= C4; h3 ^= k3;
   k2 = pcarry[1];
-finrotk21:
+finrot_k21:
   k2 *= C2; k2  = ROTL32(k2,16); k2 *= C3; h2 ^= k2;
   k1 = pcarry[0];
-finrotk1:
+finrot_k1:
   k1 *= C1; k1  = ROTL32(k1,15); k1 *= C2; h1 ^= k1;
 skiprot:
 
@@ -238,9 +245,9 @@ skiprot:
 
 /*---------------------------------------------------------------------------*/
 
-/* Main hashing function. Initialise carry[2] to {0,0,0,0} and h[4] to an initial {seed,seed,seed,seed}
+/* Main hashing function. Initialise carry[4] to {0,0,0,0} and h[4] to an initial {seed,seed,seed,seed}
  * if wanted. Both ph and pcarry are required arguments. */
-void PMurHash128x86_Process(uint32_t *ph, uint32_t *pcarry, const void *key, int len)
+void PMurHash128x86_Process(uint32_t * const ph, uint32_t * const pcarry, const void * const key, int len)
 {
   uint32_t h1 = ph[0];
   uint32_t h2 = ph[1];
@@ -283,54 +290,120 @@ void PMurHash128x86_Process(uint32_t *ph, uint32_t *pcarry, const void *key, int
   /* Consume enough so that the next data byte is word aligned */
   int i = -(intptr_t)(void *)ptr & 3;
   if(i && i <= len) {
-    dobytes128x64(i, h1, h2, k1, k2, n, ptr, len);
+    dobytes128x86(i, h1, h2, h3, h4, k1, k2, k3, k4, n, ptr, len);
   }
   /* We're now aligned. Process in aligned blocks. Specialise for each possible carry count */
   end = ptr + (len & ~15);
 
   switch(n) { /* how many bytes in c */
   case 0: /*
-    k1=[--------] k2=[--------] w=[76543210 fedcba98] b=[76543210 fedcba98] */
+  k1=[----] k2=[----] k2=[----] k4=[----] w=[3210 7654 ba98 fedc] b=[3210 7654 ba98 fedc] */
     for( ; ptr < end ; ptr+=16) {
-      k1 = READ_UINT64(ptr, 0);
-      k2 = READ_UINT64(ptr, 1);
-      doblock128x64(h1, h2, k1, k2);
+      k1 = READ_UINT32(ptr, 0);
+      k2 = READ_UINT32(ptr, 1);
+      k3 = READ_UINT32(ptr, 2);
+      k4 = READ_UINT32(ptr, 3);
+      doblock128x86(h1, h2, h3, h4, k1, k2, k3, k4);
     }
     break;
-  case 1: case 2: case 3: case 4: case 5: case 6: case 7: /*
-    k1=[10------] k2=[--------] w=[98765432 hgfedcba] b=[76543210 fedcba98] k1'=[hg------] */
+  case 1: case 2: case 3: /*
+  k1=[10--] k2=[----] k3=[----] k4=[----] w=[5432 9876 dcba hgfe] b=[3210 7654 ba98 fedc] k1'=[hg--] */
     {
-      const int lshift = n*8, rshift = 64-lshift;
+      const int lshift = n*8, rshift = 32-lshift;
       for( ; ptr < end ; ptr+=16) {
-        uint64_t c = k1>>rshift;
-        k2 = READ_UINT64(ptr, 0);
-        c |= k2<<lshift;
-        k1 = READ_UINT64(ptr, 1);
-        k2 = k2>>rshift | k1<<lshift;
-        doblock128x64(h1, h2, c, k2);
+        uint32_t c = k1>>rshift;      // --10
+        k2 = READ_UINT32(ptr, 0);     // 5432
+        c |= k2<<lshift;              // 3210.
+        k1 = READ_UINT32(ptr, 1);     // 9876
+        k2 = k1<<lshift | k2>>rshift; // 7654.
+        k4 = READ_UINT32(ptr, 2);     // dcba
+        k3 = k4<<lshift | k1>>rshift; // ba98.
+        k1 = READ_UINT32(ptr, 3);     // hgfe.
+        k4 = k1<<lshift | k4>>rshift; // fedc.
+        doblock128x86(h1, h2, h3, h4, c, k2, k3, k4);
       }
     }
     break;
-  case 8: /*
-  k1=[76543210] k2=[--------] w=[fedcba98 nmlkjihg] b=[76543210 fedcba98] k1`=[nmlkjihg] */
+  case 4: /*
+  k1=[3210] k2=[----] k3=[----] k4=[----] w=[7654 ba98 fedc jihg] b=[3210 7654 ba98 fedc] k1'=[jihg] */
     for( ; ptr < end ; ptr+=16) {
-      k2 = READ_UINT64(ptr, 0);
-      doblock128x64(h1, h2, k1, k2);
-      k1 = READ_UINT64(ptr, 1);
+      k2 = READ_UINT32(ptr, 0);
+      k3 = READ_UINT32(ptr, 1);
+      k4 = READ_UINT32(ptr, 2);
+      doblock128x86(h1, h2, h3, h4, k1, k2, k3, k4);
+      k1 = READ_UINT32(ptr, 3);
     }
     break;
-  default: /* 8 < n <= 15
-  k1=[76543210] k2=[98------] w=[hgfedcba ponmlkji] b=[76543210 fedcba98] k1`=[nmlkjihg] k2`=[po------] */
+  case 5: case 6: case 7: /*
+  k1=[3210] k2=[54--] k3=[----] k4=[----] w=[9876 dcba hgfe lkji] b=[3210 7654 ba98 fedc] k1'=[jihg] k2'=[lk--] */
     {
-      const int lshift = n*8-64, rshift = 64-lshift;
+      const int lshift = n*8-32, rshift = 32-lshift;
       for( ; ptr < end ; ptr+=16) {
-        uint64_t c = k2 >> rshift;
-        k2 = READ_UINT64(ptr, 0);
-        c |= k2 << lshift;
-        doblock128x64(h1, h2, k1, c);
-        k1 = k2 >> rshift;
-        k2 = READ_UINT64(ptr, 1);
-        k1 |= k2 << lshift;
+        uint32_t c = k2>>rshift;      // --54
+        k3 = READ_UINT32(ptr, 0);     // 9876
+        c |= k3<<lshift;              // 7654.
+        k4 = READ_UINT32(ptr, 1);     // dcba
+        k3 = k4<<lshift | k3>>rshift; // ba98.
+        k2 = READ_UINT32(ptr, 2);     // hgfe
+        k4 = k2<<lshift | k4>>rshift; // fedc.
+        doblock128x86(h1, h2, h3, h4, k1, c, k3, k4);
+        k1 = k2>>rshift;              // --hg
+        k2 = READ_UINT32(ptr, 3);     // lkji.
+        k1 |= k2<<lshift;             // jihg.
+      }
+    }
+  case 8: /*
+  k1=[3210] k2=[7654] k3=[----] k4=[----] w=[ba98 fedc jihg nmlk] b=[3210 7654 ba98 fedc] k1'=[jihg] k2'=[nmlk] */
+    for( ; ptr < end ; ptr+=16) {
+      k3 = READ_UINT32(ptr, 0);
+      k4 = READ_UINT32(ptr, 1);
+      doblock128x86(h1, h2, h3, h4, k1, k2, k3, k4);
+      k1 = READ_UINT32(ptr, 2);
+      k2 = READ_UINT32(ptr, 3);
+    }
+    break;
+  case 9: case 10: case 11: /*
+  k1=[3210] k2=[7654] k3=[98--] k4=[----] w=[dcba hgfe lkji ponm] b=[3210 7654 ba98 fedc] k1'=[jihg] k2'=[nmlk] k3'=[po--] */
+    {
+      const int lshift = n*8-64, rshift = 32-lshift;
+      for( ; ptr < end ; ptr+=16) {
+        uint32_t c = k3>>rshift;      // --98
+        k4 = READ_UINT32(ptr, 0);     // dcba
+        c |= k4<<lshift;              // ba98.
+        k3 = READ_UINT32(ptr, 1);     // hgfe
+        k4 = k3<<lshift | k4>>rshift; // fedc.
+        doblock128x86(h1, h2, h3, h4, k1, k2, c, k4);
+        k2 = READ_UINT32(ptr, 2);     // lkji
+        k1 = k2<<lshift | k3>>rshift; // jihg.
+        k3 = READ_UINT32(ptr, 3);     // ponm.
+        k2 = k3<<lshift | k2>>rshift; // nmlk.
+      }
+    }
+  case 12: /*
+  k1=[3210] k2=[7654] k3=[ba98] k4=[----] w=[fedc jihg nmlk rqpo] b=[3210 7654 ba98 fedc] k1'=[jihg] k2'=[nmlk] k3'=[rqpo] */
+    for( ; ptr < end ; ptr+=16) {
+      k4 = READ_UINT32(ptr, 0);
+      doblock128x86(h1, h2, h3, h4, k1, k2, k3, k4);
+      k1 = READ_UINT32(ptr, 1);
+      k2 = READ_UINT32(ptr, 2);
+      k3 = READ_UINT32(ptr, 3);
+    }
+    break;
+  default: /* 12 < n <= 15
+  k1=[3210] k2=[7654] k3=[ba98] k4=[dc--] w=[hgfe lkji ponm tsrq] b=[3210 7654 ba98 fedc] k1'=[jihg] k2'=[nmlk] k3'=[rqpo] k3'=[ts--] */
+    {
+      const int lshift = n*8-96, rshift = 32-lshift;
+      for( ; ptr < end ; ptr+=16) {
+        uint32_t c = k4>>rshift;      // --dc
+        k4 = READ_UINT32(ptr, 0);     // hgfe
+        c |= k4<<lshift;              // fedc.
+        doblock128x86(h1, h2, h3, h4, k1, k2, k3, c);
+        k3 = READ_UINT32(ptr, 1);     // lkji
+        k1 = k3<<lshift | k4>>rshift; // jihg.
+        c  = READ_UINT32(ptr, 2);     // ponm
+        k2 = c<<lshift | k3>>rshift;  // nmlk.
+        k4 = READ_UINT32(ptr, 3);     // tsrq.
+        k3 = k4<<lshift | c>>rshift;  // rqpo.
       }
     }
   }
@@ -353,7 +426,11 @@ void PMurHash128x86_Process(uint32_t *ph, uint32_t *pcarry, const void *key, int
   pcarry[3] = (k4 & ~0xff) | n;
 } 
 
-/*-----------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------*
+                                 PMurHash128x64
+ *-----------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------
+ * Core murmurhash algorithm macros */
 
 #define C1L BIG_CONSTANT(0x87c37b91114253d5)
 #define C2L BIG_CONSTANT(0x4cf5ad432745937f)
@@ -363,16 +440,16 @@ void PMurHash128x86_Process(uint32_t *ph, uint32_t *pcarry, const void *key, int
 FORCE_INLINE void doblock128x64(uint64_t &h1, uint64_t &h2, uint64_t &k1, uint64_t &k2)
 {
   k1 *= C1L; k1  = ROTL64(k1,31); k1 *= C2L; h1 ^= k1;
- 
+
   h1 = ROTL64(h1,27); h1 += h2; h1 = h1*5+0x52dce729;
- 
+
   k2 *= C2L; k2  = ROTL64(k2,33); k2 *= C1L; h2 ^= k2;
- 
+
   h2 = ROTL64(h2,31); h2 += h1; h2 = h2*5+0x38495ab5;
 }
 
 /* Append unaligned bytes to carry, forcing hash churn if we have 16 bytes */
-/* cnt=bytes to process, h1,h2=name of h1,h2 var, k1,k2=carry, n=bytes in carry, ptr/len=payload */
+/* cnt=bytes to process, h1,h2=hash k1,k2=carry, n=bytes in carry, ptr/len=payload */
 FORCE_INLINE void dobytes128x64(int cnt, uint64_t &h1, uint64_t &h2, uint64_t &k1, uint64_t &k2,
                                 int &n, const uint8_t *&ptr, int &len)
 {
@@ -382,10 +459,12 @@ FORCE_INLINE void dobytes128x64(int cnt, uint64_t &h1, uint64_t &h2, uint64_t &k
       case  4: case  5: case  6: case  7:
         k1 = k1>>8 | (uint64_t)*ptr++<<56;
         n++; break;
+
       case  8: case  9: case 10: case 11:
       case 12: case 13: case 14:
         k2 = k2>>8 | (uint64_t)*ptr++<<56;
         n++; break;
+
       case 15:
         k2 = k2>>8 | (uint64_t)*ptr++<<56;
         doblock128x64(h1, h2, k1, k2);
@@ -395,7 +474,8 @@ FORCE_INLINE void dobytes128x64(int cnt, uint64_t &h1, uint64_t &h2, uint64_t &k
 }
 
 /* Finalize a hash. To match the original Murmur3_128x64 the total_length must be provided */
-void PMurHash128x64_Result(const uint64_t *ph, const uint64_t *pcarry, uint32_t total_length, uint64_t *out)
+void PMurHash128x64_Result(const uint64_t * const ph, const uint64_t * const pcarry,
+                           const uint32_t total_length, uint64_t * const out)
 {
   uint64_t h1 = ph[0];
   uint64_t h2 = ph[1];
@@ -440,7 +520,7 @@ void PMurHash128x64_Result(const uint64_t *ph, const uint64_t *pcarry, uint32_t 
 
 /* Main hashing function. Initialise carry[2] to {0,0} and h[2] to an initial {seed,seed}
  * if wanted. Both ph and pcarry are required arguments. */
-void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int len)
+void PMurHash128x64_Process(uint64_t * const ph, uint64_t * const pcarry, const void * const key, int len)
 {
   uint64_t h1 = ph[0];
   uint64_t h2 = ph[1];

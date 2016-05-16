@@ -22,16 +22,6 @@ does not fit in memory or when the data is streamed through the application.
 Also useful when hashing a number of strings with a common prefix. A partial
 hash of a prefix string can be generated and reused for each suffix string.
 
-2. Portability. Plain old C so that it should compile on any old compiler.
-Both CPU endian and access-alignment neutral, but avoiding inefficient code
-when possible depending on CPU capabilities.
-
-3. Drop in. I personally like nice self contained public domain code, making it
-easy to pilfer without loads of refactoring to work properly in the existing
-application code & makefile structure and mucking around with licence files.
-Just copy PMurHash.h and PMurHash.c and you're ready to go.
-
-
 How does it work?
 
 We can only process entire 32 bit chunks of input, except for the very end
@@ -50,18 +40,10 @@ on big endian machines, or a byte-by-byte read if the endianess is unknown.
 
 #include "PMurHash.h"
 
-/* I used ugly type names in the header to avoid potential conflicts with
- * application or system typedefs & defines. Since I'm not including any more
- * headers below here I can rename these so that the code reads like C99 */
-#undef uint32_t
-#define uint32_t MH_UINT32
-#undef uint8_t
-#define uint8_t  MH_UINT8
-
-/* MSVC warnings we choose to ignore */
-#if defined(_MSC_VER)
-  #pragma warning(disable: 4127) /* conditional expression is constant */
-#endif
+// /* MSVC warnings we choose to ignore */
+// #if defined(_MSC_VER)
+//   #pragma warning(disable: 4127) /* conditional expression is constant */
+// #endif
 
 /*-----------------------------------------------------------------------------
  * Endianess, misalignment capabilities and util macros
@@ -74,71 +56,31 @@ on big endian machines, or a byte-by-byte read if the endianess is unknown.
  * ROTL32(x,r)      Rotate x left by r bits
  */
 
-/* Convention is to define __BYTE_ORDER == to one of these values */
-#if !defined(__BIG_ENDIAN)
-  #define __BIG_ENDIAN 4321
-#endif
-#if !defined(__LITTLE_ENDIAN)
-  #define __LITTLE_ENDIAN 1234
-#endif
-
 /* I386 or AMD64 */
 #if defined(_M_I86) || defined(_M_IX86) || defined(_X86_) || defined(__i386__) || defined(__i386) || defined(i386) \
  || defined(_M_X64) || defined(__x86_64__) || defined(__x86_64) || defined(__amd64__) || defined(__amd64)
-  #define __BYTE_ORDER __LITTLE_ENDIAN
+  #define UNALIGNED_SAFE
+#endif
+/* I386 or AMD64 */
+#if defined(_M_I86) || defined(_M_IX86) || defined(_X86_) || defined(__i386__) || defined(__i386) || defined(i386) \
+ || defined(_M_X64) || defined(__x86_64__) || defined(__x86_64) || defined(__amd64__) || defined(__amd64)
   #define UNALIGNED_SAFE
 #endif
 
-/* gcc 'may' define __LITTLE_ENDIAN__ or __BIG_ENDIAN__ to 1 (Note the trailing __),
- * or even _LITTLE_ENDIAN or _BIG_ENDIAN (Note the single _ prefix) */
-#if !defined(__BYTE_ORDER)
-  #if defined(__LITTLE_ENDIAN__) && __LITTLE_ENDIAN__==1 || defined(_LITTLE_ENDIAN) && _LITTLE_ENDIAN==1
-    #define __BYTE_ORDER __LITTLE_ENDIAN
-  #elif defined(__BIG_ENDIAN__) && __BIG_ENDIAN__==1 || defined(_BIG_ENDIAN) && _BIG_ENDIAN==1
-    #define __BYTE_ORDER __BIG_ENDIAN
-  #endif
-#endif
-
-/* gcc (usually) defines xEL/EB macros for ARM and MIPS endianess */
-#if !defined(__BYTE_ORDER)
-  #if defined(__ARMEL__) || defined(__MIPSEL__)
-    #define __BYTE_ORDER __LITTLE_ENDIAN
-  #endif
-  #if defined(__ARMEB__) || defined(__MIPSEB__)
-    #define __BYTE_ORDER __BIG_ENDIAN
-  #endif
-#endif
-
-/* Now find best way we can to READ_UINT32 */
-#if __BYTE_ORDER==__LITTLE_ENDIAN
-  /* CPU endian matches murmurhash algorithm, so read 32-bit word directly */
-  #define READ_UINT32(ptr)   (*((uint32_t*)(ptr)))
-#elif __BYTE_ORDER==__BIG_ENDIAN
-  /* TODO: Add additional cases below where a compiler provided bswap32 is available */
-  #if defined(__GNUC__) && (__GNUC__>4 || (__GNUC__==4 && __GNUC_MINOR__>=3))
-    #define READ_UINT32(ptr)   (__builtin_bswap32(*((uint32_t*)(ptr))))
-  #else
-    /* Without a known fast bswap32 we're just as well off doing this */
-    #define READ_UINT32(ptr)   (ptr[0]|ptr[1]<<8|ptr[2]<<16|ptr[3]<<24)
-    #define UNALIGNED_SAFE
-  #endif
-#else
-  /* Unknown endianess so last resort is to read individual bytes */
-  #define READ_UINT32(ptr)   (ptr[0]|ptr[1]<<8|ptr[2]<<16|ptr[3]<<24)
-
-  /* Since we're not doing word-reads we can skip the messing about with realignment */
-  #define UNALIGNED_SAFE
-#endif
-
-/* Find best way to ROTL32 */
+/* Find best way to ROTL */
 #if defined(_MSC_VER)
+  #define FORCE_INLINE  __forceinline
   #include <stdlib.h>  /* Microsoft put _rotl declaration in here */
-  #define ROTL32(x,r)  _rotl(x,r)
+  #define ROTL32(x,y)  _rotl(x,y)
 #else
+  #define FORCE_INLINE inline __attribute__((always_inline))
   /* gcc recognises this code and generates a rotate instruction for CPUs with one */
   #define ROTL32(x,r)  (((uint32_t)x << r) | ((uint32_t)x >> (32 - r)))
 #endif
 
+#include "endianness.h"
+
+#define READ_UINT32(ptr) getblock32((uint32_t *)ptr)
 
 /*-----------------------------------------------------------------------------
  * Core murmurhash algorithm macros */
@@ -148,29 +90,31 @@ on big endian machines, or a byte-by-byte read if the endianess is unknown.
 
 /* This is the main processing body of the algorithm. It operates
  * on each full 32-bits of input. */
-#define DOBLOCK(h1, k1) do{ \
-        k1 *= C1; \
-        k1 = ROTL32(k1,15); \
-        k1 *= C2; \
-        \
-        h1 ^= k1; \
-        h1 = ROTL32(h1,13); \
-        h1 = h1*5+0xe6546b64; \
-    }while(0)
+FORCE_INLINE void doblock(uint32_t &h1, uint32_t &k1)
+{
+  k1 *= C1;
+  k1 = ROTL32(k1,15);
+  k1 *= C2;
 
+  h1 ^= k1;
+  h1 = ROTL32(h1,13);
+  h1 = h1*5+0xe6546b64;
+}
 
 /* Append unaligned bytes to carry, forcing hash churn if we have 4 bytes */
 /* cnt=bytes to process, h1=name of h1 var, c=carry, n=bytes in c, ptr/len=payload */
-#define DOBYTES(cnt, h1, c, n, ptr, len) do{ \
-    int _i = cnt; \
-    while(_i--) { \
-        c = c>>8 | *ptr++<<24; \
-        n++; len--; \
-        if(n==4) { \
-            DOBLOCK(h1, c); \
-            n = 0; \
-        } \
-    } }while(0)
+FORCE_INLINE void dobytes(int cnt, uint32_t &h1, uint32_t &c, int &n,
+                          const uint8_t *&ptr, int &len)
+{
+  while(cnt--) {
+    c = c>>8 | (uint32_t)*ptr++<<24;
+    n++; len--;
+    if(n==4) {
+        doblock(h1, c);
+        n = 0;
+    }
+  }
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -189,36 +133,36 @@ void PMurHash32_Process(uint32_t *ph1, uint32_t *pcarry, const void *key, int le
 
 #if defined(UNALIGNED_SAFE) && NODE_MURMURHASH_TEST_ALIGNED != 1
   /* This CPU handles unaligned word access */
-
+#pragma message ( "UNALIGNED_SAFE" )
   /* Consume any carry bytes */
   int i = (4-n) & 3;
   if(i && i <= len) {
-    DOBYTES(i, h1, c, n, ptr, len);
+    dobytes(i, h1, c, n, ptr, len);
   }
 
   /* Process 32-bit chunks */
-  end = ptr + len/4*4;
+  end = ptr + (len & ~3);
   for( ; ptr < end ; ptr+=4) {
     uint32_t k1 = READ_UINT32(ptr);
-    DOBLOCK(h1, k1);
+    doblock(h1, k1);
   }
 
 #else /*UNALIGNED_SAFE*/
   /* This CPU does not handle unaligned word access */
-
+#pragma message ( "ALIGNED" )
   /* Consume enough so that the next data byte is word aligned */
-  int i = -(long)ptr & 3;
+  int i = -(intptr_t)(void *)ptr & 3;
   if(i && i <= len) {
-      DOBYTES(i, h1, c, n, ptr, len);
+      dobytes(i, h1, c, n, ptr, len);
   }
 
   /* We're now aligned. Process in aligned blocks. Specialise for each possible carry count */
-  end = ptr + len/4*4;
+  end = ptr + (len & ~3);
   switch(n) { /* how many bytes in c */
   case 0: /* c=[----]  w=[3210]  b=[3210]=w            c'=[----] */
     for( ; ptr < end ; ptr+=4) {
       uint32_t k1 = READ_UINT32(ptr);
-      DOBLOCK(h1, k1);
+      doblock(h1, k1);
     }
     break;
   case 1: /* c=[0---]  w=[4321]  b=[3210]=c>>24|w<<8   c'=[4---] */
@@ -226,7 +170,7 @@ void PMurHash32_Process(uint32_t *ph1, uint32_t *pcarry, const void *key, int le
       uint32_t k1 = c>>24;
       c = READ_UINT32(ptr);
       k1 |= c<<8;
-      DOBLOCK(h1, k1);
+      doblock(h1, k1);
     }
     break;
   case 2: /* c=[10--]  w=[5432]  b=[3210]=c>>16|w<<16  c'=[54--] */
@@ -234,7 +178,7 @@ void PMurHash32_Process(uint32_t *ph1, uint32_t *pcarry, const void *key, int le
       uint32_t k1 = c>>16;
       c = READ_UINT32(ptr);
       k1 |= c<<16;
-      DOBLOCK(h1, k1);
+      doblock(h1, k1);
     }
     break;
   case 3: /* c=[210-]  w=[6543]  b=[3210]=c>>8|w<<24   c'=[654-] */
@@ -242,16 +186,16 @@ void PMurHash32_Process(uint32_t *ph1, uint32_t *pcarry, const void *key, int le
       uint32_t k1 = c>>8;
       c = READ_UINT32(ptr);
       k1 |= c<<24;
-      DOBLOCK(h1, k1);
+      doblock(h1, k1);
     }
   }
 #endif /*UNALIGNED_SAFE*/
 
   /* Advance over whole 32-bit chunks, possibly leaving 1..3 bytes */
-  len -= len/4*4;
+  len -= len & ~3;
 
   /* Append any remaining bytes into carry */
-  DOBYTES(len, h1, c, n, ptr, len);
+  dobytes(len, h1, c, n, ptr, len);
 
   /* Copy out new running hash and carry */
   *ph1 = h1;
@@ -280,39 +224,3 @@ uint32_t PMurHash32_Result(uint32_t h, uint32_t carry, uint32_t total_length)
 
   return h;
 }
-
-/*---------------------------------------------------------------------------*/
-
-/* Murmur3A compatable all-at-once */
-uint32_t PMurHash32(uint32_t seed, const void *key, int len)
-{
-  uint32_t h1=seed, carry=0;
-  PMurHash32_Process(&h1, &carry, key, len);
-  return PMurHash32_Result(h1, carry, len);
-}
-
-/*---------------------------------------------------------------------------*/
-
-/* Provide an API suitable for smhasher */
-void PMurHash32_test(const void *key, int len, uint32_t seed, void *out)
-{
-  uint32_t h1=seed, carry=0;
-  const uint8_t *ptr = (uint8_t*)key;
-  const uint8_t *end = ptr + len;
-
-#if 0 /* Exercise the progressive processing */
-  while(ptr < end) {
-    //const uint8_t *mid = ptr + rand()%(end-ptr)+1;
-    const uint8_t *mid = ptr + (rand()&0xF);
-    mid = mid<end?mid:end;
-    PMurHash32_Process(&h1, &carry, ptr, mid-ptr);
-    ptr = mid;
-  }
-#else
-  PMurHash32_Process(&h1, &carry, ptr, (int)(end-ptr));
-#endif
-  h1 = PMurHash32_Result(h1, carry, len);
-  *(uint32_t*)out = h1;
-}
-
-/*---------------------------------------------------------------------------*/

@@ -38,7 +38,7 @@
     {
       'target_name': 'murmurhashincremental',
       'sources': [
-        'src/murmurhash/PMurHash.c',
+        'src/murmurhash/PMurHash.cpp',
         'src/murmurhash/PMurHash128.cpp',
         'src/incremental/hasher.cc'
       ],

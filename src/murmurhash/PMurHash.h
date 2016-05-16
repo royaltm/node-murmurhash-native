@@ -4,61 +4,28 @@
  *
  * This implementation was written by Shane Day, and is also public domain.
  *
- * This is a portable ANSI C implementation of MurmurHash3_x86_32 (Murmur3A)
- * with support for progressive processing.
+ * This implementation was modified to match PMurHash128.cpp.
  */
 
 /* ------------------------------------------------------------------------- */
-/* Determine what native type to use for uint32_t */
 
-/* We can't use the name 'uint32_t' here because it will conflict with
- * any version provided by the system headers or application. */
+// Microsoft Visual Studio
 
-/* First look for special cases */
-#if defined(_MSC_VER)
-  #define MH_UINT32 unsigned long
-#endif
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
 
-/* If the compiler says it's C99 then take its word for it */
-#if !defined(MH_UINT32) && ( \
-     defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L )
-  #include <stdint.h>
-  #define MH_UINT32 uint32_t
-#endif
+typedef unsigned char uint8_t;
+typedef unsigned int uint32_t;
 
-/* Otherwise try testing against max value macros from limit.h */
-#if !defined(MH_UINT32)
-  #include  <limits.h>
-  #if   (USHRT_MAX == 0xffffffffUL)
-    #define MH_UINT32 unsigned short
-  #elif (UINT_MAX == 0xffffffffUL)
-    #define MH_UINT32 unsigned int
-  #elif (ULONG_MAX == 0xffffffffUL)
-    #define MH_UINT32 unsigned long
-  #endif
-#endif
+// Other compilers
 
-#if !defined(MH_UINT32)
-  #error Unable to determine type name for unsigned 32-bit int
-#endif
+#else // defined(_MSC_VER)
 
-/* I'm yet to work on a platform where 'unsigned char' is not 8 bits */
-#define MH_UINT8  unsigned char
+#include <stdint.h>
 
+#endif // !defined(_MSC_VER)
 
 /* ------------------------------------------------------------------------- */
 /* Prototypes */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void PMurHash32_Process(MH_UINT32 *ph1, MH_UINT32 *pcarry, const void *key, int len);
-MH_UINT32 PMurHash32_Result(MH_UINT32 h1, MH_UINT32 carry, MH_UINT32 total_length);
-MH_UINT32 PMurHash32(MH_UINT32 seed, const void *key, int len);
-
-void PMurHash32_test(const void *key, int len, MH_UINT32 seed, void *out);
-
-#ifdef __cplusplus
-}
-#endif
+void PMurHash32_Process(uint32_t *ph1, uint32_t *pcarry, const void *key, int len);
+uint32_t PMurHash32_Result(uint32_t h1, uint32_t carry, uint32_t total_length);
