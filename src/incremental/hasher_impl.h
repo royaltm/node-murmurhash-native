@@ -24,7 +24,11 @@ namespace MurmurHash {
 
   class IncrementalMurmurHash128x64 {
     public:
-      NAN_INLINE IncrementalMurmurHash128x64(uint32_t seed) : h{seed, seed}, carry() {}
+      NAN_INLINE IncrementalMurmurHash128x64(uint32_t seed) : carry() {
+        /* could h{seed, seed} but clang with node 0.x bails */
+        h[0] = seed;
+        h[1] = seed;
+      }
       NAN_INLINE void Update(void *data, int32_t length)
       {
         PMurHash128x64_Process((MH_UINT64 *)h, (MH_UINT64 *)carry, data, (int) length);
