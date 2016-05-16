@@ -162,7 +162,7 @@ fs.createReadStream('README.md').pipe(stream);
 stream.on('readable', () => console.log(stream.read()) );
 ```
 
-Low-level native incremental module is available at `murmurhash-native/incremental`.
+The low-level native incremental module is available at `murmurhash-native/incremental`.
 
 
 Promises
