@@ -1,5 +1,6 @@
 var test = require("tap").test
   , incr = require('../incremental')
+  , strm = require('../stream')
   , hash = require('..')
 ;
 
@@ -9,22 +10,52 @@ test("should have murmurHash constructors", function(t) {
   t.end();
 });
 
+function wrapStream(name) {
+  return function(seed) {
+    var hasher = new strm.MurmurHash(name, seed);
+    Object.defineProperty(hasher, 'total', {
+      get: function() {
+        return this._handle.total;
+      }
+    });
+    return hasher;
+  }
+}
+
 [
-  [4, 'MurmurHash', incr.MurmurHash, hash.murmurHash, 0, 2180083513, 1364076727,
+  [4, 'MurmurHash', incr.MurmurHash, incr.MurmurHash, hash.murmurHash,
+               0, 2180083513, 1364076727,
       '00000000', '81f16f39', '514e28b7',
       'e72d7f37'],
+  [4, 'MurmurHash (stream)', wrapStream('MurmurHash'), strm.MurmurHash, hash.murmurHash,
+               0, 2180083513, 1364076727,
+      '00000000', '81f16f39', '514e28b7',
+      'e72d7f37'],
+  [16, 'MurmurHash128x64', incr.MurmurHash128x64, incr.MurmurHash128x64, hash.murmurHash128x64,
+      '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
+      '4610abe56eff5cb551622daa78f83583',
+      '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
+      '4610abe56eff5cb551622daa78f83583',
+      '18a573e78e997f9b0be9c4b4595e5875'],
+  [16, 'MurmurHash128x64 (stream)', wrapStream('MurmurHash128x64'), strm.MurmurHash, hash.murmurHash128x64,
+      '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
+      '4610abe56eff5cb551622daa78f83583',
+      '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
+      '4610abe56eff5cb551622daa78f83583',
+      '18a573e78e997f9b0be9c4b4595e5875'],
 ].forEach(function(args)  {
   var size                = args[ 0]
     , label               = args[ 1]
     , MurmurHash          = args[ 2]
-    , murmurHash          = args[ 3]
-    , seedZeroNumber      = args[ 4]
-    , seedMinusOneNumber  = args[ 5]
-    , seedPlusOneNumber   = args[ 6]
-    , seedZeroHex         = args[ 7]
-    , seedMinusOneHex     = args[ 8]
-    , seedPlusOneHex      = args[ 9]
-    , crashTestHex        = args[10]
+    , klass               = args[ 3]
+    , murmurHash          = args[ 4]
+    , seedZeroNumber      = args[ 5]
+    , seedMinusOneNumber  = args[ 6]
+    , seedPlusOneNumber   = args[ 7]
+    , seedZeroHex         = args[ 8]
+    , seedMinusOneHex     = args[ 9]
+    , seedPlusOneHex      = args[10]
+    , crashTestHex        = args[11]
     , seedZeroBuffer      = new Buffer(seedZeroHex,  'hex')
     , seedMinusOneBuffer  = new Buffer(seedMinusOneHex, 'hex')
     , seedPlusOneBuffer   = new Buffer(seedPlusOneHex,  'hex')
@@ -42,10 +73,11 @@ test("should have murmurHash constructors", function(t) {
     t.test("should create hasher", function(t) {
       var hasher = new MurmurHash();
       t.type(hasher, 'object');
-      t.type(hasher, MurmurHash);
+      t.type(hasher, klass);
       t.type(hasher.update, 'function');
       t.type(hasher.digest, 'function');
       t.strictEqual(hasher.total, 0);
+
       t.end();
     });
 
@@ -311,6 +343,7 @@ test("should have murmurHash constructors", function(t) {
       t.deepEqual(hash, match);
       t.type(hash, Buffer, 'hash is buffer');
       t.deepEqual(hash, new Buffer(crashTestHex, 'hex'));
+
       t.end();
     });
 
@@ -371,6 +404,7 @@ test("should have murmurHash constructors", function(t) {
       t.strictEqual(dS, new MurmurHash(seed).update(data, 'binary').digest('number'));
       t.strictEqual(dS, murmurHash(buffer, seed));
       t.strictEqual(dS, murmurHash(data, seed));
+
       t.end();
     });
 

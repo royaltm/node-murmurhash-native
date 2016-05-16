@@ -160,33 +160,36 @@ namespace MurmurHash {
   }
 
 
+  #define INIT_HASHER(NAME,H,HashValueType,HashLength) do { \
+    Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>( \
+        IncrementalHasher<H,HashValueType,HashLength>::New); \
+    tpl->SetClassName( Nan::New<String>(NAME).ToLocalChecked() ); \
+    \
+    Local<ObjectTemplate> i_t = tpl->InstanceTemplate(); \
+    i_t->SetInternalFieldCount(1); \
+    \
+    Nan::SetAccessor( i_t, Nan::New<String>("total").ToLocalChecked(), \
+        IncrementalHasher<H,HashValueType,HashLength>::GetTotal ); \
+    \
+    Nan::SetPrototypeMethod(tpl, "update", \
+      IncrementalHasher<H,HashValueType,HashLength>::Update); \
+    Nan::SetPrototypeMethod(tpl, "digest", \
+      IncrementalHasher<H,HashValueType,HashLength>::Digest); \
+    \
+    IncrementalHasher<H,HashValueType,HashLength>::constructor.Reset( \
+        Nan::GetFunction(tpl).ToLocalChecked() ); \
+    Nan::Set(target, Nan::New<String>(NAME).ToLocalChecked(), \
+                     Nan::GetFunction(tpl).ToLocalChecked()); \
+  } while(0)
+
   NAN_MODULE_INIT(Init)
   {
-    Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(
-        IncrementalHasher<IncrementalMurmurHash3A,uint32_t,1>::New);
-    tpl->SetClassName( Nan::New<String>("MurmurHash").ToLocalChecked() );
-
-    Local<ObjectTemplate> i_t = tpl->InstanceTemplate();
-    i_t->SetInternalFieldCount(1);
-
-    Nan::SetAccessor( i_t, Nan::New<String>("total").ToLocalChecked(),
-        IncrementalHasher<IncrementalMurmurHash3A,uint32_t,1>::GetTotal );
-
-    Nan::SetPrototypeMethod(tpl, "update", IncrementalHasher<IncrementalMurmurHash3A,uint32_t,1>::Update);
-    Nan::SetPrototypeMethod(tpl, "digest", IncrementalHasher<IncrementalMurmurHash3A,uint32_t,1>::Digest);
-
-    IncrementalHasher<IncrementalMurmurHash3A,uint32_t,1>::constructor.Reset(
-        Nan::GetFunction(tpl).ToLocalChecked() );
-    Nan::Set(target, Nan::New<String>("MurmurHash").ToLocalChecked(),
-                     Nan::GetFunction(tpl).ToLocalChecked());
+    INIT_HASHER("MurmurHash",       IncrementalMurmurHash3A,     uint32_t, 1);
+    INIT_HASHER("MurmurHash128x64", IncrementalMurmurHash128x64, uint64_t, 2);
   }
+
+  #undef INIT_HASHER
 
 }
 
 NODE_MODULE(murmurhashincremental, MurmurHash::Init)
-/*
-
-Hash.prototype.update = function(data, encoding[, callback])
-Hash.prototype.digest = function(encoding)
-
-*/

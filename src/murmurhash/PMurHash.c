@@ -82,8 +82,9 @@ on big endian machines, or a byte-by-byte read if the endianess is unknown.
   #define __LITTLE_ENDIAN 1234
 #endif
 
-/* I386 */
-#if defined(_M_IX86) || defined(__i386__) || defined(__i386) || defined(i386)
+/* I386 or AMD64 */
+#if defined(_M_I86) || defined(_M_IX86) || defined(_X86_) || defined(__i386__) || defined(__i386) || defined(i386) \
+ || defined(_M_X64) || defined(__x86_64__) || defined(__x86_64) || defined(__amd64__) || defined(__amd64)
   #define __BYTE_ORDER __LITTLE_ENDIAN
   #define UNALIGNED_SAFE
 #endif
