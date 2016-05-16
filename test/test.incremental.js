@@ -349,7 +349,7 @@ function wrapStream(name) {
 
     t.test('should create hash from some random data incrementally', function(t) {
       var maxchunksize = 100;
-      var buffer = new Buffer(100000);
+      var buffer = new Buffer(10015);
       var seed = (Math.random()*4294967296)|0;
       var hasher0 = new MurmurHash(0);
       var hasher1 = new MurmurHash(1);
@@ -372,6 +372,7 @@ function wrapStream(name) {
         hasher1str.update(buffer.slice(p, n).toString('binary'),'binary');
         hasherSstr.update(buffer.slice(p, n).toString('binary'),'binary');
       }
+      t.equal(hasher0str.total, buffer.length);
       var data = buffer.toString('binary');
       t.equal(new MurmurHash().update(data, 'binary').digest().length, size);
       t.equal(new MurmurHash().update(data, 'binary').total, buffer.length);

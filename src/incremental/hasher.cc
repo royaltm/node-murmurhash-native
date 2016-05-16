@@ -159,6 +159,7 @@ namespace MurmurHash {
     info.GetReturnValue().Set( Nan::New<Int32>(hasher->total) );
   }
 
+  #undef SINGLE_ARG
 
   #define INIT_HASHER(NAME,H,HashValueType,HashLength) do { \
     Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>( \
@@ -189,7 +190,6 @@ namespace MurmurHash {
   }
 
   #undef INIT_HASHER
-
 }
 
 NODE_MODULE(murmurhashincremental, MurmurHash::Init)

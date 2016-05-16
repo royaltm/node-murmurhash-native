@@ -1,5 +1,3 @@
-// #include "stdlib.h"
-// #include "stdio.h"
 /*-----------------------------------------------------------------------------
  * MurmurHash3 was written by Austin Appleby, and is placed in the public
  * domain.
@@ -84,14 +82,10 @@ on big endian machines, or a byte-by-byte read if the endianess is unknown.
 
 /* Convention is to define __BYTE_ORDER == to one of these values */
 
-/* I386 */
-#if defined(_M_I86) || defined(_M_IX86) || defined(_X86_) || defined(__i386__) || defined(__i386) || defined(i386)
+/* I386 or AMD64 */
+#if defined(_M_I86) || defined(_M_IX86) || defined(_X86_) || defined(__i386__) || defined(__i386) || defined(i386) \
+ || defined(_M_X64) || defined(__x86_64__) || defined(__x86_64) || defined(__amd64__) || defined(__amd64)
   #define UNALIGNED_SAFE
-/* AMD64 */
-#elif defined(_M_X64) || defined(__x86_64__) || defined(__x86_64) || defined(__amd64__) || defined(__amd64)
-  #define UNALIGNED_SAFE
-#else
-  #error UNIMPLEMENTED
 #endif
 
 /* Find best way to ROTL64 */
@@ -159,22 +153,25 @@ FORCE_INLINE uint64_t fmix64 ( uint64_t k )
 /* cnt=bytes to process, h1,h2=name of h1,h2 var, k1,k2=carry, n=bytes in carry, ptr/len=payload */
 #define DOBYTES128(cnt, h1, h2, k1, k2, n, ptr, len) do{ \
     int _i = cnt; \
-    while(n < 8 && _i--) { \
+    while(_i-- > 0) { \
+      if (n < 8) { \
         k1 = k1>>8 | (uint64_t)*ptr++<<56; \
         n++; len--; \
-    }  \
-    while(_i-- > 0) { \
-        k2 = k2>>8 | (uint64_t)*ptr++<<56; \
-        n++; len--; \
-        if(n==16) { \
-            DOBLOCK128(h1, h2, k1, k2); \
-            n = 0; \
-        } \
+      } else \
+        do { \
+          k2 = k2>>8 | (uint64_t)*ptr++<<56; \
+          n++; len--; \
+          if(n==16) { \
+              DOBLOCK128(h1, h2, k1, k2); \
+              n = 0; \
+              break; \
+          } \
+        } while(_i--); \
     } }while(0)
 
 /*---------------------------------------------------------------------------*/
 
-/* Main hashing function. Initialise carry[2] to 0 and h[2] to 0 or an initial seed
+/* Main hashing function. Initialise carry[2] to {0,0} and h[2] to an initial {seed,seed}
  * if wanted. Both ph and pcarry are required arguments. */
 void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int len)
 {
@@ -183,16 +180,15 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   
   uint64_t k1 = pcarry[0];
   uint64_t k2 = pcarry[1];
-// printf("DOBYTES128 %llu %llu %llu %llu\n", h1, h2, k1, k2);
 
   const uint8_t *ptr = (uint8_t*)key;
   const uint8_t *end;
 
   /* Extract carry count from low 4 bits of c value */
   int n = k2 & 15;
-// printf("DOBYTES128 len %d n: %d ptr: %p\n", len, n, ptr);
 
 #if defined(UNALIGNED_SAFE)
+
   /* This CPU handles unaligned word access */
 
   /* Consume any carry bytes */
@@ -202,65 +198,78 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   }
 
   /* Process 128-bit chunks */
-  end = ptr + len/16*16;
+  end = ptr + (len & ~15);
   for( ; ptr < end ; ptr+=16) {
-    uint64_t k1 = READ_UINT64(ptr, 0);
-    uint64_t k2 = READ_UINT64(ptr, 1);
+    k1 = READ_UINT64(ptr, 0);
+    k2 = READ_UINT64(ptr, 1);
     DOBLOCK128(h1, h2, k1, k2);
   }
 
 #else /*UNALIGNED_SAFE*/
-//  /* This CPU does not handle unaligned word access */
-//
-//  /* Consume enough so that the next data byte is word aligned */
-//  int i = -(long)ptr & 3;
-//  if(i && i <= len) {
-//      DOBYTES(i, h1, c, n, ptr, len);
-//  }
-//
-//  /* We're now aligned. Process in aligned blocks. Specialise for each possible carry count */
-//  end = ptr + len/4*4;
-//  switch(n) { /* how many bytes in c */
-//  case 0: /* c=[----]  w=[3210]  b=[3210]=w            c'=[----] */
-//    for( ; ptr < end ; ptr+=4) {
-//      uint32_t k1 = READ_UINT32(ptr);
-//      DOBLOCK(h1, k1);
-//    }
-//    break;
-//  case 1: /* c=[0---]  w=[4321]  b=[3210]=c>>24|w<<8   c'=[4---] */
-//    for( ; ptr < end ; ptr+=4) {
-//      uint32_t k1 = c>>24;
-//      c = READ_UINT32(ptr);
-//      k1 |= c<<8;
-//      DOBLOCK(h1, k1);
-//    }
-//    break;
-//  case 2: /* c=[10--]  w=[5432]  b=[3210]=c>>16|w<<16  c'=[54--] */
-//    for( ; ptr < end ; ptr+=4) {
-//      uint32_t k1 = c>>16;
-//      c = READ_UINT32(ptr);
-//      k1 |= c<<16;
-//      DOBLOCK(h1, k1);
-//    }
-//    break;
-//  case 3: /* c=[210-]  w=[6543]  b=[3210]=c>>8|w<<24   c'=[654-] */
-//    for( ; ptr < end ; ptr+=4) {
-//      uint32_t k1 = c>>8;
-//      c = READ_UINT32(ptr);
-//      k1 |= c<<24;
-//      DOBLOCK(h1, k1);
-//    }
-//  }
+  /* This CPU does not handle unaligned word access */
+
+  /* Consume enough so that the next data byte is word aligned */
+  int i = -(intptr_t)(void *)ptr & 7;
+  if(i && i <= len) {
+    DOBYTES128(i, h1, h2, k1, k2, n, ptr, len);
+  }
+  /* We're now aligned. Process in aligned blocks. Specialise for each possible carry count */
+  end = ptr + (len & ~15);
+
+  switch(n) { /* how many bytes in c */
+  case 0: /*
+    k1=[--------] k2=[--------] w=[76543210 fedcba98] b=[76543210 fedcba98] */
+    for( ; ptr < end ; ptr+=16) {
+      k1 = READ_UINT64(ptr, 0);
+      k2 = READ_UINT64(ptr, 1);
+      DOBLOCK128(h1, h2, k1, k2);
+    }
+    break;
+  case 1: case 2: case 3: case 4: case 5: case 6: case 7: /*
+    k1=[10------] k2=[--------] w=[98765432 hgfedcba] b=[76543210 fedcba98] k1'=[hg------] */
+    {
+      int lshift = n*8, rshift = 64-lshift;
+      for( ; ptr < end ; ptr+=16) {
+        uint64_t c = k1>>rshift;
+        k2 = READ_UINT64(ptr, 0);
+        c |= k2<<lshift;
+        k1 = READ_UINT64(ptr, 1);
+        k2 = k2>>rshift | k1<<lshift;
+        DOBLOCK128(h1, h2, c, k2);
+      }
+    }
+    break;
+  case 8: /*
+  k1=[76543210] k2=[--------] w=[fedcba98 nmlkjihg] b=[76543210 fedcba98] k1`=[nmlkjihg] */
+    for( ; ptr < end ; ptr+=16) {
+      k2 = READ_UINT64(ptr, 0);
+      DOBLOCK128(h1, h2, k1, k2);
+      k1 = READ_UINT64(ptr, 1);
+    }
+    break;
+  default: /*
+  k1=[76543210] k2=[98------] w=[hgfedcba ponmlkji] b=[76543210 fedcba98] k1`=[nmlkjihg] k2`=[po------] */
+    {
+      int lshift = n*8-64, rshift = 64-lshift;
+      for( ; ptr < end ; ptr+=16) {
+        uint64_t c = k2 >> rshift;
+        k2 = READ_UINT64(ptr, 0);
+        c |= k2 << lshift;
+        DOBLOCK128(h1, h2, k1, c);
+        k1 = k2 >> rshift;
+        k2 = READ_UINT64(ptr, 1);
+        k1 |= k2 << lshift;
+      }
+    }
+  }
 #endif /*UNALIGNED_SAFE*/
 
   /* Advance over whole 128-bit chunks, possibly leaving 1..15 bytes */
-  len -= len/16*16;
+  len -= len & ~15;
 
   /* Append any remaining bytes into carry */
-// printf("DOBYTES128 %016llx %016llx %016llx %016llx\n", h1, h2, k1, k2);
-// printf("DOBYTES128 len %d n: %d ptr: %p\n", len, n, ptr);
   DOBYTES128(len, h1, h2, k1, k2, n, ptr, len);
-
+ 
   /* Copy out new running hash and carry */
   ph[0] = h1;
   ph[1] = h2;
