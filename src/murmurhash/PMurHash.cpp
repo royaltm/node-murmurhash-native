@@ -133,7 +133,7 @@ void PMurHash32_Process(uint32_t *ph1, uint32_t *pcarry, const void *key, int le
 
 #if defined(UNALIGNED_SAFE) && NODE_MURMURHASH_TEST_ALIGNED != 1
   /* This CPU handles unaligned word access */
-#pragma message ( "UNALIGNED_SAFE" )
+// #pragma message ( "UNALIGNED_SAFE" )
   /* Consume any carry bytes */
   int i = (4-n) & 3;
   if(i && i <= len) {
@@ -149,7 +149,7 @@ void PMurHash32_Process(uint32_t *ph1, uint32_t *pcarry, const void *key, int le
 
 #else /*UNALIGNED_SAFE*/
   /* This CPU does not handle unaligned word access */
-#pragma message ( "ALIGNED" )
+// #pragma message ( "ALIGNED" )
   /* Consume enough so that the next data byte is word aligned */
   int i = -(intptr_t)(void *)ptr & 3;
   if(i && i <= len) {
