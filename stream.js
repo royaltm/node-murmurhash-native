@@ -16,7 +16,7 @@ Object.keys(binding).forEach(function(name) {
   }
 });
 
-algorithms['murmurhash3A'] = algorithms['murmurhash32'] = algorithms['murmurhash32x86']
+algorithms['murmurhash3A'] = algorithms['murmurhash32'] = algorithms['murmurhash32x86'] = algorithms['murmurhash']
 
 /* from nodejs lib/crypto.js */
 
