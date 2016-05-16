@@ -68,11 +68,13 @@ on big endian machines.
 #if defined(_MSC_VER)
   #define FORCE_INLINE  __forceinline
   #include <stdlib.h>  /* Microsoft put _rotl declaration in here */
+  #define ROTL32(x,y)  _rotl(x,y)
   #define ROTL64(x,y)  _rotl64(x,y)
   #define BIG_CONSTANT(x) (x)
 #else
   #define FORCE_INLINE inline __attribute__((always_inline))
   /* gcc recognises this code and generates a rotate instruction for CPUs with one */
+  #define ROTL32(x,r)  (((uint32_t)x << r) | ((uint32_t)x >> (32 - r)))
   #define ROTL64(x,r)  (((uint64_t)x << r) | ((uint64_t)x >> (64 - r)))
   #define BIG_CONSTANT(x) (x##LLU)
 #endif
@@ -80,6 +82,7 @@ on big endian machines.
 #include "endianness.h"
 
 #define READ_UINT64(ptr,i) getblock64((uint64_t *)ptr,i)
+#define READ_UINT32(ptr,i) getblock32((uint32_t *)ptr,i)
 //-----------------------------------------------------------------------------
 // Finalization mix - force all bits of a hash block to avalanche
 
@@ -110,43 +113,328 @@ FORCE_INLINE uint64_t fmix64 ( uint64_t k )
 /*-----------------------------------------------------------------------------
  * Core murmurhash algorithm macros */
 
-#define C1  BIG_CONSTANT(0x87c37b91114253d5);
-#define C2  BIG_CONSTANT(0x4cf5ad432745937f);
+#define C1 0x239b961b
+#define C2 0xab0e9789
+#define C3 0x38b34ae5
+#define C4 0xa1e38b93
 
 /* This is the main processing body of the algorithm. It operates
  * on each full 128-bits of input. */
-FORCE_INLINE void doblock128(uint64_t &h1, uint64_t &h2, uint64_t &k1, uint64_t &k2)
+FORCE_INLINE void doblock128x86(uint32_t &h1, uint32_t &h2, uint32_t &h3, uint32_t &h4,
+                                uint32_t &k1, uint32_t &k2, uint32_t &k3, uint32_t &k4)
 {
-  k1 *= C1; k1  = ROTL64(k1,31); k1 *= C2; h1 ^= k1;
+  k1 *= C1; k1  = ROTL32(k1,15); k1 *= C2; h1 ^= k1;
+
+  h1 = ROTL32(h1,19); h1 += h2; h1 = h1*5+0x561ccd1b;
+
+  k2 *= C2; k2  = ROTL32(k2,16); k2 *= C3; h2 ^= k2;
+
+  h2 = ROTL32(h2,17); h2 += h3; h2 = h2*5+0x0bcaa747;
+
+  k3 *= C3; k3  = ROTL32(k3,17); k3 *= C4; h3 ^= k3;
+
+  h3 = ROTL32(h3,15); h3 += h4; h3 = h3*5+0x96cd1c35;
+
+  k4 *= C4; k4  = ROTL32(k4,18); k4 *= C1; h4 ^= k4;
+
+  h4 = ROTL32(h4,13); h4 += h1; h4 = h4*5+0x32ac3b17;
+}
+
+/* Append unaligned bytes to carry, forcing hash churn if we have 16 bytes */
+/* cnt=bytes to process, h1-h4=hash k1-k4=carry, n=bytes in carry, ptr/len=payload */
+FORCE_INLINE void dobytes128x86(int cnt, uint32_t &h1, uint32_t &h2, uint32_t &h3, uint32_t &h4,
+                                         uint32_t &k1, uint32_t &k2, uint32_t &k3, uint32_t &k4,
+                                         int &n, const uint8_t *&ptr, int &len)
+{
+  for(;cnt--; len--) {
+    switch(n) {
+      case  0: case  1: case  2: case  3:
+        k1 = k1>>8 | (uint32_t)*ptr++<<24;
+        ++n; break;
+      case  4: case  5: case  6: case  7:
+        k2 = k2>>8 | (uint32_t)*ptr++<<24;
+        ++n; break;
+      case  8: case  9: case 10: case 11:
+        k3 = k3>>8 | (uint32_t)*ptr++<<24;
+        ++n; break;
+      case 12: case 13: case 14:
+        k4 = k4>>8 | (uint32_t)*ptr++<<24;
+        ++n; break;
+      case 15:
+        k4 = k4>>8 | (uint32_t)*ptr++<<24;
+        doblock128x86(h1, h2, h3, h4, k1, k2, k3, k4);
+        n = 0; break;
+    }
+  }
+}
+
+/* Finalize a hash. To match the original Murmur3_128x64 the total_length must be provided */
+void PMurHash128x86_Result(const uint32_t *ph, const uint32_t *pcarry, uint32_t total_length, uint32_t *out)
+{
+  uint32_t h1 = ph[0];
+  uint32_t h2 = ph[1];
+  uint32_t h3 = ph[2];
+  uint32_t h4 = ph[3];
+
+  uint32_t k1, k2, k3, k4 = pcarry[3];
+
+  int n = k4 & 15;
+  switch(n) {
+    case  1: case  2: case  3: case  4:
+      k1 = pcarry[0] >> (4-n)*8;
+      goto finrotk1;
+    case  5: case  6: case  7: case  8:
+      k2 = pcarry[1] >> (8-n)*8;
+      goto finrotk21;
+    case  9: case 10: case 11: case 12:
+      k3 = pcarry[2] >> (12-n)*8;
+      goto finrotk321;
+    case 13: case 14: case 15:
+      k4 >>= (16-n)*8;
+      goto finrotk4321;
+    default:
+      goto skiprot;
+  }
+finrotk4321:
+  k4 *= C4; k4  = ROTL32(k4,18); k4 *= C1; h4 ^= k4;
+  k3 = pcarry[2];
+finrotk321:
+  k3 *= C3; k3  = ROTL32(k3,17); k3 *= C4; h3 ^= k3;
+  k2 = pcarry[1];
+finrotk21:
+  k2 *= C2; k2  = ROTL32(k2,16); k2 *= C3; h2 ^= k2;
+  k1 = pcarry[0];
+finrotk1:
+  k1 *= C1; k1  = ROTL32(k1,15); k1 *= C2; h1 ^= k1;
+skiprot:
+
+  //----------
+  // finalization
+
+  h1 ^= total_length; h2 ^= total_length;
+  h3 ^= total_length; h4 ^= total_length;
+
+  h1 += h2; h1 += h3; h1 += h4;
+  h2 += h1; h3 += h1; h4 += h1;
+
+  h1 = fmix32(h1);
+  h2 = fmix32(h2);
+  h3 = fmix32(h3);
+  h4 = fmix32(h4);
+
+  h1 += h2; h1 += h3; h1 += h4;
+  h2 += h1; h3 += h1; h4 += h1;
+
+  out[0] = h1;
+  out[1] = h2;
+  out[2] = h3;
+  out[3] = h4;
+}
+
+#undef C1
+#undef C2
+#undef C3
+#undef C4
+
+/*---------------------------------------------------------------------------*/
+
+/* Main hashing function. Initialise carry[2] to {0,0,0,0} and h[4] to an initial {seed,seed,seed,seed}
+ * if wanted. Both ph and pcarry are required arguments. */
+void PMurHash128x86_Process(uint32_t *ph, uint32_t *pcarry, const void *key, int len)
+{
+  uint32_t h1 = ph[0];
+  uint32_t h2 = ph[1];
+  uint32_t h3 = ph[2];
+  uint32_t h4 = ph[3];
+  
+  uint32_t k1 = pcarry[0];
+  uint32_t k2 = pcarry[1];
+  uint32_t k3 = pcarry[2];
+  uint32_t k4 = pcarry[3];
+
+  const uint8_t *ptr = (uint8_t*)key;
+  const uint8_t *end;
+
+  /* Extract carry count from low 4 bits of c value */
+  int n = k4 & 15;
+
+#if defined(UNALIGNED_SAFE) && NODE_MURMURHASH_TEST_ALIGNED != 1
+  /* This CPU handles unaligned word access */
+#pragma message ( "UNALIGNED_SAFE" )
+  /* Consume any carry bytes */
+  int i = (16-n) & 15;
+  if(i && i <= len) {
+    dobytes128x86(i, h1, h2, h3, h4, k1, k2, k3, k4, n, ptr, len);
+  }
+
+  /* Process 128-bit chunks */
+  end = ptr + (len & ~15);
+  for( ; ptr < end ; ptr+=16) {
+    k1 = READ_UINT32(ptr, 0);
+    k2 = READ_UINT32(ptr, 1);
+    k3 = READ_UINT32(ptr, 2);
+    k4 = READ_UINT32(ptr, 3);
+    doblock128x86(h1, h2, h3, h4, k1, k2, k3, k4);
+  }
+
+#else /*UNALIGNED_SAFE*/
+  /* This CPU does not handle unaligned word access */
+#pragma message ( "ALIGNED" )
+  /* Consume enough so that the next data byte is word aligned */
+  int i = -(intptr_t)(void *)ptr & 3;
+  if(i && i <= len) {
+    dobytes128x64(i, h1, h2, k1, k2, n, ptr, len);
+  }
+  /* We're now aligned. Process in aligned blocks. Specialise for each possible carry count */
+  end = ptr + (len & ~15);
+
+  switch(n) { /* how many bytes in c */
+  case 0: /*
+    k1=[--------] k2=[--------] w=[76543210 fedcba98] b=[76543210 fedcba98] */
+    for( ; ptr < end ; ptr+=16) {
+      k1 = READ_UINT64(ptr, 0);
+      k2 = READ_UINT64(ptr, 1);
+      doblock128x64(h1, h2, k1, k2);
+    }
+    break;
+  case 1: case 2: case 3: case 4: case 5: case 6: case 7: /*
+    k1=[10------] k2=[--------] w=[98765432 hgfedcba] b=[76543210 fedcba98] k1'=[hg------] */
+    {
+      const int lshift = n*8, rshift = 64-lshift;
+      for( ; ptr < end ; ptr+=16) {
+        uint64_t c = k1>>rshift;
+        k2 = READ_UINT64(ptr, 0);
+        c |= k2<<lshift;
+        k1 = READ_UINT64(ptr, 1);
+        k2 = k2>>rshift | k1<<lshift;
+        doblock128x64(h1, h2, c, k2);
+      }
+    }
+    break;
+  case 8: /*
+  k1=[76543210] k2=[--------] w=[fedcba98 nmlkjihg] b=[76543210 fedcba98] k1`=[nmlkjihg] */
+    for( ; ptr < end ; ptr+=16) {
+      k2 = READ_UINT64(ptr, 0);
+      doblock128x64(h1, h2, k1, k2);
+      k1 = READ_UINT64(ptr, 1);
+    }
+    break;
+  default: /* 8 < n <= 15
+  k1=[76543210] k2=[98------] w=[hgfedcba ponmlkji] b=[76543210 fedcba98] k1`=[nmlkjihg] k2`=[po------] */
+    {
+      const int lshift = n*8-64, rshift = 64-lshift;
+      for( ; ptr < end ; ptr+=16) {
+        uint64_t c = k2 >> rshift;
+        k2 = READ_UINT64(ptr, 0);
+        c |= k2 << lshift;
+        doblock128x64(h1, h2, k1, c);
+        k1 = k2 >> rshift;
+        k2 = READ_UINT64(ptr, 1);
+        k1 |= k2 << lshift;
+      }
+    }
+  }
+#endif /*UNALIGNED_SAFE*/
+
+  /* Advance over whole 128-bit chunks, possibly leaving 1..15 bytes */
+  len -= len & ~15;
+
+  /* Append any remaining bytes into carry */
+  dobytes128x86(len, h1, h2, h3, h4, k1, k2, k3, k4, n, ptr, len);
+ 
+  /* Copy out new running hash and carry */
+  ph[0] = h1;
+  ph[1] = h2;
+  ph[2] = h3;
+  ph[3] = h4;
+  pcarry[0] = k1;
+  pcarry[1] = k2;
+  pcarry[2] = k3;
+  pcarry[3] = (k4 & ~0xff) | n;
+} 
+
+/*-----------------------------------------------------------------------------*/
+
+#define C1L BIG_CONSTANT(0x87c37b91114253d5)
+#define C2L BIG_CONSTANT(0x4cf5ad432745937f)
+
+/* This is the main processing body of the algorithm. It operates
+ * on each full 128-bits of input. */
+FORCE_INLINE void doblock128x64(uint64_t &h1, uint64_t &h2, uint64_t &k1, uint64_t &k2)
+{
+  k1 *= C1L; k1  = ROTL64(k1,31); k1 *= C2L; h1 ^= k1;
  
   h1 = ROTL64(h1,27); h1 += h2; h1 = h1*5+0x52dce729;
  
-  k2 *= C2; k2  = ROTL64(k2,33); k2 *= C1; h2 ^= k2;
+  k2 *= C2L; k2  = ROTL64(k2,33); k2 *= C1L; h2 ^= k2;
  
   h2 = ROTL64(h2,31); h2 += h1; h2 = h2*5+0x38495ab5;
 }
 
 /* Append unaligned bytes to carry, forcing hash churn if we have 16 bytes */
 /* cnt=bytes to process, h1,h2=name of h1,h2 var, k1,k2=carry, n=bytes in carry, ptr/len=payload */
-FORCE_INLINE void dobytes128(int cnt, uint64_t &h1, uint64_t &h2, uint64_t &k1, uint64_t &k2,
-                             int &n, const uint8_t *&ptr, int &len)
+FORCE_INLINE void dobytes128x64(int cnt, uint64_t &h1, uint64_t &h2, uint64_t &k1, uint64_t &k2,
+                                int &n, const uint8_t *&ptr, int &len)
 {
-  while(cnt-- > 0) {
-    if (n < 8) {
-      k1 = k1>>8 | (uint64_t)*ptr++<<56;
-      n++; len--;
-    } else
-      do {
+  for(;cnt--; len--) {
+    switch(n) {
+      case  0: case  1: case  2: case  3:
+      case  4: case  5: case  6: case  7:
+        k1 = k1>>8 | (uint64_t)*ptr++<<56;
+        n++; break;
+      case  8: case  9: case 10: case 11:
+      case 12: case 13: case 14:
         k2 = k2>>8 | (uint64_t)*ptr++<<56;
-        n++; len--;
-        if(n==16) {
-            doblock128(h1, h2, k1, k2);
-            n = 0;
-            break;
-        }
-      } while(cnt--);
+        n++; break;
+      case 15:
+        k2 = k2>>8 | (uint64_t)*ptr++<<56;
+        doblock128x64(h1, h2, k1, k2);
+        n = 0; break;
+    }
   }
 }
+
+/* Finalize a hash. To match the original Murmur3_128x64 the total_length must be provided */
+void PMurHash128x64_Result(const uint64_t *ph, const uint64_t *pcarry, uint32_t total_length, uint64_t *out)
+{
+  uint64_t h1 = ph[0];
+  uint64_t h2 = ph[1];
+
+  uint64_t k1;
+  uint64_t k2 = pcarry[1];
+
+  int n = k2 & 15;
+  if (n) {
+    k1 = pcarry[0];
+    if (n > 8) {
+      k2 >>= (16-n)*8;
+      k2 *= C2L; k2  = ROTL64(k2,33); k2 *= C1L; h2 ^= k2;
+    } else {
+      k1 >>= (8-n)*8;
+    }
+    k1 *= C1L; k1  = ROTL64(k1,31); k1 *= C2L; h1 ^= k1;
+  }
+
+  //----------
+  // finalization
+
+  h1 ^= total_length; h2 ^= total_length;
+
+  h1 += h2;
+  h2 += h1;
+
+  h1 = fmix64(h1);
+  h2 = fmix64(h2);
+
+  h1 += h2;
+  h2 += h1;
+
+  out[0] = h1;
+  out[1] = h2;
+}
+
+#undef C1L
+#undef C2L
 
 /*---------------------------------------------------------------------------*/
 
@@ -172,7 +460,7 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   /* Consume any carry bytes */
   int i = (16-n) & 15;
   if(i && i <= len) {
-    dobytes128(i, h1, h2, k1, k2, n, ptr, len);
+    dobytes128x64(i, h1, h2, k1, k2, n, ptr, len);
   }
 
   /* Process 128-bit chunks */
@@ -180,7 +468,7 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   for( ; ptr < end ; ptr+=16) {
     k1 = READ_UINT64(ptr, 0);
     k2 = READ_UINT64(ptr, 1);
-    doblock128(h1, h2, k1, k2);
+    doblock128x64(h1, h2, k1, k2);
   }
 
 #else /*UNALIGNED_SAFE*/
@@ -189,7 +477,7 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   /* Consume enough so that the next data byte is word aligned */
   int i = -(intptr_t)(void *)ptr & 7;
   if(i && i <= len) {
-    dobytes128(i, h1, h2, k1, k2, n, ptr, len);
+    dobytes128x64(i, h1, h2, k1, k2, n, ptr, len);
   }
   /* We're now aligned. Process in aligned blocks. Specialise for each possible carry count */
   end = ptr + (len & ~15);
@@ -200,20 +488,20 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
     for( ; ptr < end ; ptr+=16) {
       k1 = READ_UINT64(ptr, 0);
       k2 = READ_UINT64(ptr, 1);
-      doblock128(h1, h2, k1, k2);
+      doblock128x64(h1, h2, k1, k2);
     }
     break;
   case 1: case 2: case 3: case 4: case 5: case 6: case 7: /*
     k1=[10------] k2=[--------] w=[98765432 hgfedcba] b=[76543210 fedcba98] k1'=[hg------] */
     {
-      int lshift = n*8, rshift = 64-lshift;
+      const int lshift = n*8, rshift = 64-lshift;
       for( ; ptr < end ; ptr+=16) {
         uint64_t c = k1>>rshift;
         k2 = READ_UINT64(ptr, 0);
         c |= k2<<lshift;
         k1 = READ_UINT64(ptr, 1);
         k2 = k2>>rshift | k1<<lshift;
-        doblock128(h1, h2, c, k2);
+        doblock128x64(h1, h2, c, k2);
       }
     }
     break;
@@ -221,19 +509,19 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   k1=[76543210] k2=[--------] w=[fedcba98 nmlkjihg] b=[76543210 fedcba98] k1`=[nmlkjihg] */
     for( ; ptr < end ; ptr+=16) {
       k2 = READ_UINT64(ptr, 0);
-      doblock128(h1, h2, k1, k2);
+      doblock128x64(h1, h2, k1, k2);
       k1 = READ_UINT64(ptr, 1);
     }
     break;
-  default: /*
+  default: /* 8 < n <= 15
   k1=[76543210] k2=[98------] w=[hgfedcba ponmlkji] b=[76543210 fedcba98] k1`=[nmlkjihg] k2`=[po------] */
     {
-      int lshift = n*8-64, rshift = 64-lshift;
+      const int lshift = n*8-64, rshift = 64-lshift;
       for( ; ptr < end ; ptr+=16) {
         uint64_t c = k2 >> rshift;
         k2 = READ_UINT64(ptr, 0);
         c |= k2 << lshift;
-        doblock128(h1, h2, k1, c);
+        doblock128x64(h1, h2, k1, c);
         k1 = k2 >> rshift;
         k2 = READ_UINT64(ptr, 1);
         k1 |= k2 << lshift;
@@ -246,7 +534,7 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   len -= len & ~15;
 
   /* Append any remaining bytes into carry */
-  dobytes128(len, h1, h2, k1, k2, n, ptr, len);
+  dobytes128x64(len, h1, h2, k1, k2, n, ptr, len);
  
   /* Copy out new running hash and carry */
   ph[0] = h1;
@@ -254,44 +542,3 @@ void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int
   pcarry[0] = k1;
   pcarry[1] = (k2 & ~0xff) | n;
 } 
-
-/*---------------------------------------------------------------------------*/
-
-/* Finalize a hash. To match the original Murmur3_128x64 the total_length must be provided */
-void PMurHash128x64_Result(const uint64_t *ph, const uint64_t *pcarry, uint32_t total_length, void *out)
-{
-  uint64_t h1 = ph[0];
-  uint64_t h2 = ph[1];
-
-  uint64_t k1;
-  uint64_t k2 = pcarry[1];
-
-  int n = k2 & 15;
-  if (n) {
-    k1 = pcarry[0];
-    if (n > 8) {
-      k2 >>= (16-n)*8;
-      k2 *= C2; k2  = ROTL64(k2,33); k2 *= C1; h2 ^= k2;
-    } else {
-      k1 >>= (8-n)*8;
-    }
-    k1 *= C1; k1  = ROTL64(k1,31); k1 *= C2; h1 ^= k1;
-  }
-
-  //----------
-  // finalization
-
-  h1 ^= total_length; h2 ^= total_length;
-
-  h1 += h2;
-  h2 += h1;
-
-  h1 = fmix64(h1);
-  h2 = fmix64(h2);
-
-  h1 += h2;
-  h2 += h1;
-
-  ((uint64_t*)out)[0] = h1;
-  ((uint64_t*)out)[1] = h2;
-}

@@ -27,13 +27,8 @@ typedef unsigned __int64 uint64_t;
 /* ------------------------------------------------------------------------- */
 /* Prototypes */
 
-// #ifdef __cplusplus
-// extern "C" {
-// #endif
-
 void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int len);
-void PMurHash128x64_Result(const uint64_t *ph, const uint64_t *pcarry, uint32_t total_length, void *out);
+void PMurHash128x64_Result(const uint64_t *ph, const uint64_t *pcarry, uint32_t total_length, uint64_t *out);
 
-// #ifdef __cplusplus
-// }
-// #endif
+void PMurHash128x86_Process(uint32_t *ph, uint32_t *pcarry, const void *key, int len);
+void PMurHash128x86_Result(const uint32_t *ph, const uint32_t *pcarry, uint32_t total_length, uint32_t *out);

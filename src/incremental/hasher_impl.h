@@ -31,14 +31,34 @@ namespace MurmurHash {
       }
       NAN_INLINE void Update(void *data, int32_t length)
       {
-        PMurHash128x64_Process((uint64_t *)h, (uint64_t *)carry, data, (int) length);
+        PMurHash128x64_Process(h, carry, data, (int) length);
       }
       NAN_INLINE void Digest(uint64_t *hash, int32_t total)
       {
-        PMurHash128x64_Result((uint64_t *)h, (uint64_t *)carry, (uint32_t) total, (void *)hash);
+        PMurHash128x64_Result(h, carry, (uint32_t) total, hash);
       }
     private:
       uint64_t h[2], carry[2];
+  };
+
+  class IncrementalMurmurHash128x86 {
+    public:
+      NAN_INLINE IncrementalMurmurHash128x86(uint32_t seed) : carry() {
+        h[0] = seed;
+        h[1] = seed;
+        h[2] = seed;
+        h[3] = seed;
+      }
+      NAN_INLINE void Update(void *data, int32_t length)
+      {
+        PMurHash128x86_Process(h, carry, data, (int) length);
+      }
+      NAN_INLINE void Digest(uint32_t *hash, int32_t total)
+      {
+        PMurHash128x86_Result(h, carry, (uint32_t) total, hash);
+      }
+    private:
+      uint32_t h[4], carry[4];
   };
 }
 

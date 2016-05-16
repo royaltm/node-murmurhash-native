@@ -187,6 +187,12 @@ namespace MurmurHash {
   {
     INIT_HASHER("MurmurHash",       IncrementalMurmurHash3A,     uint32_t, 1);
     INIT_HASHER("MurmurHash128x64", IncrementalMurmurHash128x64, uint64_t, 2);
+    INIT_HASHER("MurmurHash128x86", IncrementalMurmurHash128x86, uint32_t, 4);
+  #ifdef NODE_MURMURHASH_DEFAULT_32BIT
+    INIT_HASHER("MurmurHash128",    IncrementalMurmurHash128x86, uint32_t, 4);
+  #else
+    INIT_HASHER("MurmurHash128",    IncrementalMurmurHash128x64, uint64_t, 2);
+  #endif
   }
 
   #undef INIT_HASHER
