@@ -3,7 +3,7 @@ var ben            = require('ben')
 ,   hash           = require('..')
 ,   incr           = require('../incremental')
 ,   assert         = require('assert')
-,   iters          = 50000
+,   iters          = 10000
 ,   crypto         = require('crypto')
 ,   createHash     = crypto.createHash
 ,   stringEncoding = process.argv[2] || 'binary';
@@ -24,12 +24,13 @@ function incremental(constr) {
 }
 
 var funmatrix = [
-  [hash.murmurHash,              'murmurHash              '],
-  [hash.murmurHash64x86,         'murmurHash64x86         '],
-  [hash.murmurHash64x64,         'murmurHash64x64         '],
-  [hash.murmurHash128x86,        'murmurHash128x86        '],
-  [hash.murmurHash128x64,        'murmurHash128x64        '],
-  [incremental(incr.MurmurHash), 'MurmurHash              ']
+  [hash.murmurHash,                    'murmurHash              '],
+  [hash.murmurHash64x86,               'murmurHash64x86         '],
+  [hash.murmurHash64x64,               'murmurHash64x64         '],
+  [hash.murmurHash128x86,              'murmurHash128x86        '],
+  [hash.murmurHash128x64,              'murmurHash128x64        '],
+  [incremental(incr.MurmurHash),       'MurmurHash              '],
+  [incremental(incr.MurmurHash128x64), 'MurmurHash128x64        ']
 ];
 
 crypto.getHashes().forEach(function(cipher) {
@@ -51,26 +52,20 @@ function randomstring(length) {
   return buffer.toString('binary');
 }
 
-funmatrix.forEach(function(args) {
-  var fun = args[0], name = args[1]
-    , size = 80
-    , string = randomstring(size);
-  measure("string", fun, name, iters*5, size, string);
-})
+function bench(size, inputStr, iters) {
+  var input = inputStr
+            ? randomstring(size)
+            : fillrandom(new Buffer(size));
+  funmatrix.forEach(function(args) {
+    var fun = args[0], name = args[1]
+    measure("string", fun, name, iters, size, input);
+  });
+}
 
-funmatrix.forEach(function(args) {
-  var fun = args[0], name = args[1]
-    , size = 128*1024
-    , string = randomstring(size);
-  measure("string", fun, name, iters, size, string);
-})
-
-funmatrix.forEach(function(args) {
-  var fun = args[0], name = args[1]
-    , size = 128*1024
-    , buffer = fillrandom(new Buffer(size));
-  measure("buffer", fun, name, iters, size, buffer);
-})
+bench(80, true, iters*10);
+bench(250, true, iters*10);
+bench(128*1024, true, iters);
+bench(128*1024, false, iters);
 
 function measure(label, fun, name, iters, size, arg) {
   ben(iters, function(){ fun(arg) }); // warm-up
