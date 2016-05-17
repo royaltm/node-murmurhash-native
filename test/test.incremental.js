@@ -90,6 +90,13 @@ function wrapStream(name) {
       t.type(hasher.digest, 'function');
       t.strictEqual(hasher.total, 0);
 
+      var hasher = MurmurHash(0, 'foo', 'bar', ['baz']);
+      t.type(hasher, 'object');
+      t.type(hasher, klass);
+      t.type(hasher.update, 'function');
+      t.type(hasher.digest, 'function');
+      t.strictEqual(hasher.total, 0);
+
       t.end();
     });
 

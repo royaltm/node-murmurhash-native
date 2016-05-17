@@ -54,10 +54,9 @@ namespace MurmurHash {
       info.GetReturnValue().Set( info.This() );
 
     } else {
-
-      int argc = info.Length();
+      int argc = std::min(1, info.Length());
       Local<Value> argv[1];
-      argv[0] = info[0];
+      if (argc > 0) argv[0] = info[0];
       Local<Function> cons = Nan::New<Function>(constructor);
       info.GetReturnValue().Set( Nan::NewInstance(cons, argc, &argv[0]).ToLocalChecked() );
     }
@@ -161,7 +160,7 @@ namespace MurmurHash {
 
   #undef SINGLE_ARG
 
-  #define INIT_HASHER(NAME,H,HashValueType,HashLength) do { \
+  #define INIT_HASHER(NAME,H,HashValueType,HashLength,ALTNAME) do { \
     Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>( \
         IncrementalHasher<H,HashValueType,HashLength>::New); \
     tpl->SetClassName( Nan::New<String>(NAME).ToLocalChecked() ); \
@@ -179,19 +178,25 @@ namespace MurmurHash {
     \
     IncrementalHasher<H,HashValueType,HashLength>::constructor.Reset( \
         Nan::GetFunction(tpl).ToLocalChecked() ); \
-    Nan::Set(target, Nan::New<String>(NAME).ToLocalChecked(), \
-                     Nan::GetFunction(tpl).ToLocalChecked()); \
+    if (sizeof(ALTNAME) > 1) { \
+      Local<Value> fn = Nan::GetFunction(tpl).ToLocalChecked(); \
+      Nan::Set(target, Nan::New<String>(NAME).ToLocalChecked(), fn); \
+      Nan::Set(target, Nan::New<String>(ALTNAME).ToLocalChecked(), fn); \
+    } else { \
+      Nan::Set(target, Nan::New<String>(NAME).ToLocalChecked(), \
+                       Nan::GetFunction(tpl).ToLocalChecked()); \
+    } \
   } while(0)
 
   NAN_MODULE_INIT(Init)
   {
-    INIT_HASHER("MurmurHash",       IncrementalMurmurHash3A,     uint32_t, 1);
-    INIT_HASHER("MurmurHash128x64", IncrementalMurmurHash128x64, uint64_t, 2);
-    INIT_HASHER("MurmurHash128x86", IncrementalMurmurHash128x86, uint32_t, 4);
+    INIT_HASHER("MurmurHash",       IncrementalMurmurHash3A,     uint32_t, 1, "");
   #ifdef NODE_MURMURHASH_DEFAULT_32BIT
-    INIT_HASHER("MurmurHash128",    IncrementalMurmurHash128x86, uint32_t, 4);
+    INIT_HASHER("MurmurHash128x64", IncrementalMurmurHash128x64, uint64_t, 2, "");
+    INIT_HASHER("MurmurHash128x86", IncrementalMurmurHash128x86, uint32_t, 4, "MurmurHash128");
   #else
-    INIT_HASHER("MurmurHash128",    IncrementalMurmurHash128x64, uint64_t, 2);
+    INIT_HASHER("MurmurHash128x64", IncrementalMurmurHash128x64, uint64_t, 2, "MurmurHash128");
+    INIT_HASHER("MurmurHash128x86", IncrementalMurmurHash128x86, uint32_t, 4, "");
   #endif
   }
 
