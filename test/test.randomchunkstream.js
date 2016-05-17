@@ -21,13 +21,14 @@ test("RandomChunkStream", function(t) {
     sizep += data.length;
     countp++;
   });
+  s.pipe(p);
   s.on('data', function(data) {
     t.type(data, 'Buffer');
     t.ok(data.length <= 10);
     data.copy(destbuf, sizes);
     sizes += data.length;
     counts++;
-  }).pipe(p);
+  });
   s.on('end', function() {
     t.equal(sizes, 10000);
     t.ok(counts >= 10000/10 )
