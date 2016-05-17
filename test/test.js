@@ -342,6 +342,7 @@ test("should have murmurHash functions", function(t) {
 
     t.test('should interpret 3[+2] arguments properly', function(t) {
       t.strictEqual(murmurHash('', -1, 0), seedZeroDefault);
+      t.strictEqual(murmurHash('', null, 'base64'), seedZeroBase64);
       t.strictEqual(murmurHash('', -1, null), seedMinusOneDefault);
       t.strictEqual(murmurHash('', -1, 'number'), seedMinusOneDefault);
       t.strictEqual(murmurHash('', -1, 'number', 1), seedMinusOneDefault);

@@ -1,15 +1,38 @@
 #!/usr/bin/env node
-var ben            = require('ben')
-,   hash           = require('..')
-,   incr           = require('../incremental')
+var ben            = require('./parben')
 ,   assert         = require('assert')
-,   iters          = 10000
 ,   crypto         = require('crypto')
 ,   createHash     = crypto.createHash
-,   stringEncoding = process.argv[2] || 'binary';
+,   hash           = require('..')
+,   incr           = require('../incremental')
+,   duration       = 1000
+,   stringEncoding = 'binary'
+,   outputType     = 'number';
 
-if (stringEncoding)
+var program = require('commander');
+
+program
+  .version(JSON.parse(require('fs').readFileSync(__dirname + '/../package.json')).version)
+  .usage('[options] [seconds=1]')
+  .option('-o, --output [type]', 'output type')
+  .option('-s, --small <chars>', 'small string size in chars', 80)
+  .option('-l, --large <kilobytes>', 'large string/buffer size in kilos', 128)
+  .option('-e, --encoding [enc]', 'input string encoding')
+  .option('-n, --no-crypto', 'do not benchmark crypto hashers')
+  .parse(process.argv);
+
+if (program.args.length > 0) duration = 1000*program.args[0]>>>0;
+
+if (program.encoding) {
+  stringEncoding = program.encoding;
   console.log('string encoding: %s', stringEncoding);
+}
+
+if (program.output) {
+  outputType = program.output;
+  console.log('output type: %s', outputType);
+}
+console.log('test duration: %d ms', duration);
 
 function cryptohasher(name, data, encoding) {
   var sum = createHash(name);
@@ -18,8 +41,8 @@ function cryptohasher(name, data, encoding) {
 }
 
 function incremental(constr) {
-  return function(data, encoding) {
-    return new constr().update(data, encoding).digest('number');
+  return function(data, encoding, outputType) {
+    return new constr().update(data, encoding).digest(outputType);
   }
 }
 
@@ -34,13 +57,15 @@ var funmatrix = [
   [incremental(incr.MurmurHash128x64), 'MurmurHash128x64        ']
 ];
 
-crypto.getHashes().forEach(function(cipher) {
-  var pad = '                        ';
-  funmatrix.push([
-      function(data, encoding) { return cryptohasher(cipher, data, encoding) },
-      cipher + pad.substr(0, pad.length - cipher.length)
-    ]);
-});
+if (program.crypto) {
+  crypto.getHashes().forEach(function(cipher) {
+    var pad = '                        ';
+    funmatrix.push([
+        function(data, encoding) { return cryptohasher(cipher, data, encoding) },
+        cipher + pad.substr(0, pad.length - cipher.length)
+      ]);
+  });
+}
 
 function fillrandom(buffer) {
   for(var i = 0; i < buffer.length; ++i)
@@ -53,25 +78,25 @@ function randomstring(length) {
   return buffer.toString('binary');
 }
 
-function bench(size, inputStr, iters) {
+function bench(size, inputStr, duration) {
   var input = inputStr
             ? randomstring(size)
             : fillrandom(new Buffer(size));
   funmatrix.forEach(function(args) {
     var fun = args[0], name = args[1]
-    measure(inputStr ? "string" : "buffer", fun, name, iters, size, input);
+    measure(inputStr ? "string" : "buffer", fun, name, duration, size, input);
   });
 }
 
-bench(80, true, iters*10);
-bench(250, true, iters*10);
-bench(128*1024, true, iters);
-bench(128*1024, false, iters);
+bench(program.small, true, duration);
+bench(program.large*1024, true, duration);
+bench(program.large*1024, false, duration);
 
-function measure(label, fun, name, iters, size, arg) {
-  ben(iters, function(){ fun(arg, stringEncoding, 'number') }); // warm-up
-  var ms = ben(iters, function(){ fun(arg, stringEncoding, 'number') });
+function measure(label, fun, name, duration, size, arg) {
+  var cb = function(){ fun(arg, stringEncoding, outputType) };
+  var iters = ben.calibrate(duration, cb);
+  var ms = ben(iters, cb);
   console.log(name + "(" + label + "[" + size + "]): %s %s",
-    ((1 / ms / 1000) * size).toFixed(4) + 'MB/s',
-    fun(arg, stringEncoding, 'number'));
+    (size / ms / 1000).toFixed(4) + 'MB/s',
+    fun(arg, stringEncoding, outputType));
 }

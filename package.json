@@ -31,8 +31,8 @@
     "nan": "^2.3.3"
   },
   "devDependencies": {
-    "ben": "*",
     "bluebird": "^3.3.5",
+    "commander": "^2.9.0",
     "murmurhash3js": "^3.0.1",
     "tap": "*"
   }
