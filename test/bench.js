@@ -69,7 +69,7 @@ bench(128*1024, true, iters);
 bench(128*1024, false, iters);
 
 function measure(label, fun, name, iters, size, arg) {
-  ben(iters, function(){ fun(arg) }); // warm-up
+  ben(iters, function(){ fun(arg, stringEncoding, 'number') }); // warm-up
   var ms = ben(iters, function(){ fun(arg, stringEncoding, 'number') });
   console.log(name + "(" + label + "[" + size + "]): %s %s",
     ((1 / ms / 1000) * size).toFixed(4) + 'MB/s',
