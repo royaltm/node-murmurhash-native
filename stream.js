@@ -16,7 +16,7 @@ Object.keys(binding).forEach(function(name) {
   }
 });
 
-algorithms['murmurhash3A'] = algorithms['murmurhash32'] = algorithms['murmurhash32x86'] = algorithms['murmurhash']
+algorithms['murmurhash3a'] = algorithms['murmurhash32'] = algorithms['murmurhash32x86'] = algorithms['murmurhash']
 
 /* from nodejs lib/crypto.js */
 
@@ -42,7 +42,16 @@ function MurmurHash(algorithm, options) {
     seed = options, options = undefined;
   else if (options)
     seed = options.seed;
-  this._handle = new algorithms[algorithm.toLowerCase()](seed);
+
+  if (!algorithm)
+    throw new TypeError("Must give algorithm string as argument");
+
+  var Handle = algorithms[algorithm.toLowerCase()];
+  if (Handle) {
+    this._handle = new Handle(seed);
+  } else {
+    throw new Error("Algorithm not supported");
+  }
   LazyTransform.call(this, options);
 }
 
