@@ -367,8 +367,8 @@ function wrapStream(name) {
     });
 
     t.test('should create hash from some random data incrementally', function(t) {
-      var maxchunksize = 100;
-      var buffer = new Buffer(10015);
+      var maxchunksize = 101;
+      var buffer = new Buffer(10007);
       var seed = (Math.random()*4294967296)|0;
       var hasher0 = new MurmurHash(0);
       var hasher1 = new MurmurHash(1);
@@ -379,7 +379,7 @@ function wrapStream(name) {
       var n = 0;
       while(n < buffer.length) {
         var p = n;
-        var slicelen = (Math.random()*maxchunksize);
+        var slicelen = (Math.random()*this.maxchunksize|0) + 1;
         for(var j = 0; j < slicelen; ++j) {
           if (n >= buffer.length) break;
           buffer[n++] = (Math.random()*0x100)|0;
@@ -391,7 +391,12 @@ function wrapStream(name) {
         hasher1str.update(buffer.slice(p, n).toString('binary'),'binary');
         hasherSstr.update(buffer.slice(p, n).toString('binary'),'binary');
       }
+      t.equal(hasher0.total, buffer.length);
+      t.equal(hasher1.total, buffer.length);
+      t.equal(hasherS.total, buffer.length);
       t.equal(hasher0str.total, buffer.length);
+      t.equal(hasher1str.total, buffer.length);
+      t.equal(hasherSstr.total, buffer.length);
       var data = buffer.toString('binary');
       t.equal(new MurmurHash().update(data, 'binary').digest().length, size);
       t.equal(new MurmurHash().update(data, 'binary').total, buffer.length);
