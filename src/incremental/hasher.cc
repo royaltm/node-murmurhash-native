@@ -6,20 +6,21 @@
 namespace MurmurHash {
   using v8::Local;
   using v8::Value;
+  using v8::Object;
   using v8::Int32;
   using v8::Uint32;
   using v8::String;
-  using v8::FunctionTemplate;
+  using v8::Function;
   using v8::ObjectTemplate;
 
   #define SINGLE_ARG(...) __VA_ARGS__
 
   template<class H, typename HashValueType, ssize_t HashLength>
-  Persistent<Function> IncrementalHasher<H,HashValueType,HashLength>::constructor;
+  Persistent<FunctionTemplate> IncrementalHasher<H,HashValueType,HashLength>::constructor;
 
   template<class H, typename HashValueType, ssize_t HashLength>
   IncrementalHasher<H,HashValueType,HashLength>
-  ::IncrementalHasher(uint32_t seed) : hasher(seed), total(0), digested(false) {};
+  ::IncrementalHasher(uint32_t seed) : hasher(seed), total(0) {};
 
   template<class H, typename HashValueType, ssize_t HashLength>
   NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
@@ -33,7 +34,6 @@ namespace MurmurHash {
   NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
   ::Digest(HashValueType *hash)
   {
-    digested = true;
     hasher.Digest( hash, total );
   }
 
@@ -57,18 +57,31 @@ namespace MurmurHash {
       int argc = std::min(1, info.Length());
       Local<Value> argv[1];
       if (argc > 0) argv[0] = info[0];
-      Local<Function> cons = Nan::New<Function>(constructor);
+      Local<Function> cons = Nan::GetFunction(Nan::New(constructor)).ToLocalChecked();
       info.GetReturnValue().Set( Nan::NewInstance(cons, argc, &argv[0]).ToLocalChecked() );
     }
+  }
+
+  template<class H, typename HashValueType, ssize_t HashLength>
+  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Copy))
+  {
+    IncrementalHasher_T *hasher = ObjectWrap::Unwrap<IncrementalHasher_T>( info.This() );
+
+    if ( info.Length() > 0 && Nan::New(IncrementalHasher_T::constructor)->HasInstance(info[0]) ) {
+      IncrementalHasher_T *other = ObjectWrap::Unwrap<IncrementalHasher_T>( info[0].As<Object>() );
+      other->hasher = hasher->hasher;
+      other->total = hasher->total;
+    } else {
+      return Nan::ThrowTypeError("Need another instance of murmur hasher");
+    }
+
+    info.GetReturnValue().Set( info[0] );
   }
 
   template<class H, typename HashValueType, ssize_t HashLength>
   NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Update))
   {
     IncrementalHasher_T *hasher = ObjectWrap::Unwrap<IncrementalHasher_T>( info.This() );
-
-    if ( hasher->digested )
-      return Nan::ThrowError("Digest already called");
 
     InputData data;
 
@@ -102,9 +115,6 @@ namespace MurmurHash {
   NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Digest))
   {
     IncrementalHasher_T *hasher = ObjectWrap::Unwrap<IncrementalHasher_T>( info.This() );
-
-    if ( hasher->digested )
-      return Nan::ThrowError("Digest already called");
 
     OutputType outputType( DefaultOutputType );
 
@@ -175,16 +185,16 @@ namespace MurmurHash {
       IncrementalHasher<H,HashValueType,HashLength>::Update); \
     Nan::SetPrototypeMethod(tpl, "digest", \
       IncrementalHasher<H,HashValueType,HashLength>::Digest); \
+    Nan::SetPrototypeMethod(tpl, "copy", \
+      IncrementalHasher<H,HashValueType,HashLength>::Copy); \
     \
-    IncrementalHasher<H,HashValueType,HashLength>::constructor.Reset( \
-        Nan::GetFunction(tpl).ToLocalChecked() ); \
+    Local<Value> fn = Nan::GetFunction(tpl).ToLocalChecked(); \
+    IncrementalHasher<H,HashValueType,HashLength>::constructor.Reset( tpl ); \
     if (sizeof(ALTNAME) > 1) { \
-      Local<Value> fn = Nan::GetFunction(tpl).ToLocalChecked(); \
       Nan::Set(target, Nan::New<String>(NAME).ToLocalChecked(), fn); \
       Nan::Set(target, Nan::New<String>(ALTNAME).ToLocalChecked(), fn); \
     } else { \
-      Nan::Set(target, Nan::New<String>(NAME).ToLocalChecked(), \
-                       Nan::GetFunction(tpl).ToLocalChecked()); \
+      Nan::Set(target, Nan::New<String>(NAME).ToLocalChecked(), fn); \
     } \
   } while(0)
 
