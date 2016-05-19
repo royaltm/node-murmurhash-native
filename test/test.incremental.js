@@ -480,8 +480,9 @@ function wrapStream(name) {
       t.throws(function() { new MurmurHash(new Buffer(11)) }, new TypeError("Incorrect size of the serialized data"));
       var serial0 = hasher0.serialize();
       t.type(serial0, 'string');
-      t.throws(function() { new MurmurHash(new Buffer(serial0.length).toString('binary')) }, new TypeError("Incorrect serialized string"));
-      t.throws(function() { new MurmurHash(new Buffer(serial0.length)) }, new TypeError("Incorrect serialized data"));
+      buffer = new Buffer(serial0.length); buffer.fill(0);
+      t.throws(function() { new MurmurHash(buffer.toString('binary')) }, new TypeError("Incorrect serialized string"));
+      t.throws(function() { new MurmurHash(buffer) }, new TypeError("Incorrect serialized data"));
       var serial0bin = new Buffer(hasher0.SERIAL_BYTE_LENGTH);
       t.strictEqual(hasher0.serialize(serial0bin), serial0bin);
       var hasher1 = new MurmurHash(serial0);
