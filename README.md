@@ -175,7 +175,7 @@ The native incremental module is also available at `murmurhash-native/incrementa
 ### Serializable state
 
 The incremental MurmurHash instances may be serialized and later deserialized.
-Also it's possible to copy hasher's internal state onto another.
+One may also copy a hasher's internal state onto another.
 This way the hasher can be re-used to calculate a hash of some data with already known prefix.
 
 ```js
@@ -196,7 +196,7 @@ backup.update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
 hash.update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
 ```
 
-See [hasher.cc][src/incremental/hasher.cc] for full native api description.
+See [hasher.cc](src/incremental/hasher.cc) for full native api description.
 
 Promises
 --------
