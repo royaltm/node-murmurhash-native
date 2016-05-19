@@ -10,11 +10,11 @@ This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing al
 
 Key features:
 
-* portable (platform independend network byte order output of hashes in binary form)
-* both blocking and asynchronous api interfaces
+* blocking and asynchronous api interfaces
 * additional MurmurHash3 32 and 128 bit progressive implementations based on [PMurHash][PMurHash]
 * stream wrapper for progressive hasher with [crypto.Hash-like][crypto.Hash] bi-api interface
-  and serializable state
+* serializable state of the progressive hasher
+* platform independend network byte order output of hashes in any form
 * promise wrapper
 
 Installation:
@@ -144,7 +144,8 @@ hash.on('data', digest => console.log(digest) );
 
 The incremental MurmurHash instances may be serialized and later deserialized.
 One may also copy a hasher's internal state onto another.
-This way the hasher can be re-used to calculate a hash of some data with already known prefix.
+This way the hasher utility can be re-used to calculate a hash of some data
+with already known prefix.
 
 ```js
 var hash = murmur.createHash('murmurhash128x64').update('hash');
