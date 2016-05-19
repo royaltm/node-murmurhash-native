@@ -224,3 +224,15 @@ uint32_t PMurHash32_Result(uint32_t h, uint32_t carry, uint32_t total_length)
 
   return h;
 }
+
+
+/*---------------------------------------------------------------------------*/
+
+/* All in one go */
+
+uint32_t PMurHash32(const void * key, int len, uint32_t seed)
+{
+  uint32_t carry = 0;
+  PMurHash32_Process(&seed, &carry, key, len);
+  return PMurHash32_Result(seed, carry, (uint32_t) len);
+}

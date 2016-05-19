@@ -15,6 +15,19 @@ test("should have murmurHash constructors", function(t) {
   t.end();
 });
 
+test("should not deserialize foreign serialized data", function(t) {
+  var serial0 = incr.MurmurHash128x64().serialize();
+  t.throws(function() { new incr.MurmurHash128x86(serial0) }, new TypeError("Incorrect serialized string"));
+  t.throws(function() { new incr.MurmurHash(serial0) }, new TypeError("Incorrect size of the serialized string"));
+  var serial1 = incr.MurmurHash128x86().serialize();
+  t.throws(function() { new incr.MurmurHash128x64(serial1) }, new TypeError("Incorrect serialized string"));
+  t.throws(function() { new incr.MurmurHash(serial1) }, new TypeError("Incorrect size of the serialized string"));
+  var serial2 = incr.MurmurHash().serialize();
+  t.throws(function() { new incr.MurmurHash128x86(serial2) }, new TypeError("Incorrect size of the serialized string"));
+  t.throws(function() { new incr.MurmurHash128x64(serial2) }, new TypeError("Incorrect size of the serialized string"));
+  t.end();
+});
+
 function wrapStream(name) {
   return function(seed) {
     var hasher = (seed instanceof strm.MurmurHash)
@@ -444,7 +457,8 @@ function wrapStream(name) {
     });
 
     t.test('should copy internal state and create instance from copy', function(t) {
-      var hasher0 = new MurmurHash(-1).update('foo');
+      var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
+      var hasher0 = new MurmurHash(seed).update('foo');
       t.throws(function() { hasher0.copy() }, new TypeError("Target must be another instance of the same murmur hash type utility"));
       t.throws(function() { hasher0.copy([]) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
       t.throws(function() { hasher0.copy({}) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
@@ -457,19 +471,20 @@ function wrapStream(name) {
       t.notStrictEqual(hasher1, hasher0);
       t.strictEqual(hasher0.digest('hex'), hasher1.digest('hex'));
       t.strictEqual(hasher0.update('bar').digest('hex'), hasher1.update('bar').digest('hex'));
-      t.strictEqual(hasher0.digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
-      t.strictEqual(hasher1.digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
+      t.strictEqual(hasher0.digest('hex'), new MurmurHash(seed).update('foobar').digest('hex'));
+      t.strictEqual(hasher1.digest('hex'), new MurmurHash(seed).update('foobar').digest('hex'));
       var hasher2 = new MurmurHash(0);
       t.strictEqual(hasher2.digest('hex'), seedZeroHex);
       t.strictEqual(hasher0.copy(hasher2), hasher2);
-      t.strictEqual(hasher2.digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
-      t.notStrictEqual(new MurmurHash(-1).update('foobar').digest('hex'), seedZeroHex);
+      t.strictEqual(hasher2.digest('hex'), new MurmurHash(seed).update('foobar').digest('hex'));
+      t.notStrictEqual(new MurmurHash(seed).update('foobar').digest('hex'), seedZeroHex);
 
       t.end();
     });
 
     t.test('should serialize internal state and create instance from serial', function(t) {
-      var hasher0 = new MurmurHash(-1).update('foo');
+      var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
+      var hasher0 = new MurmurHash(seed).update('foo');
       t.throws(function() { hasher0.serialize(new Buffer(0)) }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
       t.throws(function() { hasher0.serialize(new Buffer(1000), -1) }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
       t.throws(function() { hasher0.serialize(new Buffer(1000), 998) }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
@@ -488,13 +503,23 @@ function wrapStream(name) {
       var hasher1 = new MurmurHash(serial0);
       t.notStrictEqual(hasher1, hasher0);
       t.strictEqual(hasher1.digest('hex'), hasher0.digest('hex'));
-      t.strictEqual(hasher0.digest('hex'), new MurmurHash(-1).update('foo').digest('hex'));
+      t.strictEqual(hasher0.digest('hex'), new MurmurHash(seed).update('foo').digest('hex'));
       t.strictEqual(hasher1.update('bar').digest('hex'), hasher0.update('bar').digest('hex'));
-      t.strictEqual(hasher0.digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
-      t.strictEqual(hasher1.digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
+      t.strictEqual(hasher0.digest('hex'), new MurmurHash(seed).update('foobar').digest('hex'));
+      t.strictEqual(hasher1.digest('hex'), new MurmurHash(seed).update('foobar').digest('hex'));
       var hasher2 = new MurmurHash(serial0bin);
-      t.strictEqual(hasher2.digest('hex'), new MurmurHash(-1).update('foo').digest('hex'));
-      t.strictEqual(hasher2.update('bar').digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
+      t.strictEqual(hasher2.digest('hex'), new MurmurHash(seed).update('foo').digest('hex'));
+      t.strictEqual(hasher2.update('bar').digest('hex'), new MurmurHash(seed).update('foobar').digest('hex'));
+      buffer = new Buffer(serial0bin.length);
+      for(var i = 0; i < serial0bin.length; ++i) {
+        for(var n = 1; n < 0x100; n <<= 1) {
+          serial0bin.copy(buffer);
+          t.strictEqual(new MurmurHash(serial0bin).update('bar').digest('hex'),
+                        new MurmurHash(seed).update('foobar').digest('hex'));
+          buffer[i] = buffer[i] ^ n;
+          t.throws(function() { new MurmurHash(buffer) }, new TypeError("Incorrect serialized data"));
+        }
+      }
 
       t.end();
     });

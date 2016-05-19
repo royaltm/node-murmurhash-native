@@ -1,3 +1,4 @@
+#include "static_assert.h"
 #include "hasher.h"
 #include "inputdata.h"
 #include "murmurhashutils.h"
@@ -42,7 +43,7 @@ namespace MurmurHash {
           uint32_t seed = Nan::To<uint32_t>(info[0]).FromMaybe(0U);
           self = new IncrementalHasher_T(seed);
 
-        } else if ( Nan::New(IncrementalHasher_T::constructor)->HasInstance( info[0] ) ) {
+        } else if ( Nan::New(constructor)->HasInstance( info[0] ) ) {
           // hasher instance
           IncrementalHasher_T *other = ObjectWrap::Unwrap<IncrementalHasher_T>( info[0].As<Object>() );
           self = new IncrementalHasher_T(*other);
@@ -55,7 +56,7 @@ namespace MurmurHash {
           } else {
             return Nan::ThrowTypeError("Incorrect size of the serialized string");
           }
-          if ( IncrementalHasher_T::IsSerialTypeValid( serial ) ) {
+          if ( IsSerialTypeValid( serial ) ) {
             self = new IncrementalHasher_T(serial);
           } else {
             return Nan::ThrowTypeError("Incorrect serialized string");
@@ -65,7 +66,7 @@ namespace MurmurHash {
           // serial buffer
           if ( HashSerialSize <= static_cast<int32_t>(node::Buffer::Length( info[0] )) ) {
             uint8_t *serial = (uint8_t *) node::Buffer::Data( info[0] );
-            if ( IncrementalHasher_T::IsSerialTypeValid( serial ) ) {
+            if ( IsSerialTypeValid( serial ) ) {
               self = new IncrementalHasher_T(serial);
             } else {
               return Nan::ThrowTypeError("Incorrect serialized data");
@@ -163,7 +164,7 @@ namespace MurmurHash {
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
 
-    if ( info.Length() > 0 && Nan::New(IncrementalHasher_T::constructor)->HasInstance( info[0] ) ) {
+    if ( info.Length() > 0 && Nan::New(constructor)->HasInstance( info[0] ) ) {
       IncrementalHasher_T *other = ObjectWrap::Unwrap<IncrementalHasher_T>( info[0].As<Object>() );
       if ( other == self ) {
         return Nan::ThrowError("Target must not be the same instance");
@@ -345,19 +346,6 @@ namespace MurmurHash {
                                                           hasher(other.hasher),
                                                           total(other.total) {};
 
-  #define HashSerialTotalIndex (HashSerialCarryIndex + HashSize)
-  #define HashSerialType (static_cast<uint8_t>(0x0F ^ HashLength ^ sizeof(HashValueType)) << 4)
-  #define HashSerialTypeMask static_cast<uint8_t>(0xF0 | (0x10 - HashSize))
-  #define HashSerialTypeIndex (HashSerialTotalIndex - 1)
-  /*
-                           HashSerialType           HashSerialTypeMask
-          MurmurHash3A     0b101000nn 15 ^ 1 ^ 4 = 0xA0  0xF0 | 0x10 - 4  = 0xFC
-          MurmurHash128x64 0b0101nnnn 15 ^ 2 ^ 8 = 0x50  0xF0 | 0x10 - 16 = 0xF0
-          MurmurHash128x86 0b1111nnnn 15 ^ 4 ^ 4 = 0xF0  0xF0 | 0x10 - 16 = 0xF0
-          MurmurHash64x64  0b01100nnn 15 ^ 1 ^ 8 = 0x60  0xF0 | 0x10 - 8  = 0xF8
-          MurmurHash64x86  0b10010nnn 15 ^ 2 ^ 4 = 0x90  0xF0 | 0x10 - 8  = 0xF8
-  */
-
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
   ::IncrementalHasher(const uint8_t *serial) : hasher(serial)
@@ -371,23 +359,47 @@ namespace MurmurHash {
   NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength>
   :: IsSerialTypeValid(uint8_t *serial)
   {
-    return HashSerialType == (serial[HashSerialTypeIndex] & HashSerialTypeMask);
+    // check state type
+    if (HashSerialType == (serial[HashSerialTypeIndex] & HashSerialTypeMask)) {
+      // read checksum
+      uint32_t chksum = (uint32_t) serial[HashSerialCkIndex];
+      for(int i = HashSerialCkIndex;
+          ++i < HashSerialSize;
+          chksum = (chksum << 8) | serial[i]);
+      // build verify
+      uint32_t verify = PMurHash32(serial, HashSerialSize - HashSerialCkSize, HashSerialCkSeed);
+      STATIC_ASSERT(HashSerialCkSize > 0 && HashSerialCkSize <= sizeof(uint32_t),
+                    "must have 1 <= HashSerialCkSize <= sizeof(uint32_t)");
+      if (HashSerialCkSize < sizeof(uint32_t)) {
+        chksum ^= (verify >> ((sizeof(uint32_t) - HashSerialCkSize)*8));
+      }
+      // verify checksum
+      return chksum == (verify & HashSerialCkMask);
+    }
+    return false;
   }
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
   ::Serialize(uint8_t *serial)
   {
+    // write state
     hasher.Serialize(serial);
+    // write state type
     serial[HashSerialTypeIndex] |= HashSerialType;
+    // write total
     WriteHashBytes<1>(&total, &serial[HashSerialTotalIndex]);
+    // build checksum
+    uint32_t chksum = PMurHash32(serial, HashSerialSize - HashSerialCkSize, HashSerialCkSeed);
+    if (HashSerialCkSize < sizeof(uint32_t)) {
+      chksum ^= (chksum >> ((sizeof(uint32_t) - HashSerialCkSize)*8));
+    }
+    // write checksum
+    for(int i = HashSerialCkIndex + HashSerialCkSize ;; chksum >>=8) {
+      serial[--i] = (uint8_t) chksum & 0xFF;
+      if (i == HashSerialCkIndex) break;
+    }
   }
-
-  #undef HashSerialTotalIndex
-  #undef HashSerialType
-  #undef HashSerialTypeMask
-  #undef HashSerialTypeIndex
-  #undef HashSerialTypeValid
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
@@ -425,14 +437,13 @@ namespace MurmurHash {
   void IncrementalHasher<H,HashValueType,HashLength>
   ::Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE& target, const char* name, const char *altname)
   {
-    Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(IncrementalHasher_T::New);
+    Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
     tpl->SetClassName( Nan::New<String>(name).ToLocalChecked() );
    
     Local<ObjectTemplate> i_t = tpl->InstanceTemplate();
     i_t->SetInternalFieldCount(1);
    
-    Nan::SetAccessor( i_t, Nan::New<String>("total").ToLocalChecked(),
-                           IncrementalHasher_T::GetTotal );
+    Nan::SetAccessor( i_t, Nan::New<String>("total").ToLocalChecked(), GetTotal );
    
     Nan::SetTemplate(tpl, Nan::New<String>("SERIAL_BYTE_LENGTH").ToLocalChecked(),
                           Nan::New<Int32>(HashSerialSize),
@@ -441,14 +452,14 @@ namespace MurmurHash {
                           Nan::New<String>("SERIAL_BYTE_LENGTH").ToLocalChecked(),
                           Nan::New<Int32>(HashSerialSize),
                           static_cast<PropertyAttribute>(ReadOnly | DontDelete) );
-    Nan::SetPrototypeMethod(tpl, "copy",      IncrementalHasher_T::Copy);
-    Nan::SetPrototypeMethod(tpl, "serialize", IncrementalHasher_T::Serialize);
-    Nan::SetPrototypeMethod(tpl, "toJSON",    IncrementalHasher_T::Serialize);
-    Nan::SetPrototypeMethod(tpl, "update",    IncrementalHasher_T::Update);
-    Nan::SetPrototypeMethod(tpl, "digest",    IncrementalHasher_T::Digest);
+    Nan::SetPrototypeMethod(tpl, "copy",      Copy);
+    Nan::SetPrototypeMethod(tpl, "serialize", Serialize);
+    Nan::SetPrototypeMethod(tpl, "toJSON",    Serialize);
+    Nan::SetPrototypeMethod(tpl, "update",    Update);
+    Nan::SetPrototypeMethod(tpl, "digest",    Digest);
    
     Local<Value> fn = Nan::GetFunction(tpl).ToLocalChecked();
-    IncrementalHasher_T::constructor.Reset( tpl );
+    constructor.Reset( tpl );
     if (altname != NULL) {
       Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), fn);
       Nan::Set(target, Nan::New<String>(altname).ToLocalChecked(), fn);
@@ -456,6 +467,21 @@ namespace MurmurHash {
       Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), fn);
     }
   }
+
+  #undef HashSerialTypeIndex
+  #undef HashSerialTypeMask
+  #undef HashSerialType
+  #undef HashSerialCkSeed
+  #undef HashSerialStringSize
+  #undef HashSerialSize
+  #undef HashSerialCkIndex
+  #undef HashSerialTotalIndex
+  #undef HashSerialCarryIndex
+  #undef HashSerialHStateIndex
+  #undef HashSerialCkMask
+  #undef HashSerialCkSize
+  #undef BASE64_ENCODED_SIZE
+
 
   NAN_MODULE_INIT(Init)
   {
