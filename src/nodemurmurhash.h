@@ -14,7 +14,7 @@
 
 typedef void (*MurmurHashFunctionType)(const void *, int, uint32_t, void *);
 
-#define HashSize ((int32_t) (sizeof(HashValueType) * HashLength))
+#define HashSize (static_cast<int32_t>(sizeof(HashValueType) * HashLength))
 
 namespace MurmurHash {
   typedef enum {

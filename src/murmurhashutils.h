@@ -23,17 +23,16 @@ namespace MurmurHash {
   }
 
   template<int32_t HashLength, typename HashValueType>
-  Local<Value> HashToHexString(const HashValueType * hash)
+  Local<Value> HashToHexString(const HashValueType hashp[HashLength])
   {
     Nan::EscapableHandleScope scope;
 
     char str[HashSize * HEXSTR_SIZE];
     char *out = str;
 
-    const HashValueType * const valt = hash + HashLength;
-    const HashValueType * valp = hash;
-    while(valp < valt) {
-      out = WriteHexString( *(valp++), out );
+    const HashValueType * const valt = hashp + HashLength;
+    while(hashp < valt) {
+      out = WriteHexString( *(hashp++), out );
     }
 
     return scope.Escape(Nan::New<String>(str, (HashSize * HEXSTR_SIZE)).ToLocalChecked());
@@ -42,7 +41,22 @@ namespace MurmurHash {
   #undef HEXSTR_SIZE
 
   template<int32_t HashLength, typename HashValueType>
-  void WriteHashBytes(const HashValueType * hashp, uint8_t * out, int32_t length = HashSize, int32_t skip = 0)
+  void ReadHashBytes(const uint8_t * in, HashValueType hashp[HashLength])
+  {
+    for(HashValueType * hashend = hashp + HashLength ;;) {
+      HashValueType val = (HashValueType) *(in++);
+      for(int length = sizeof(HashValueType) ;--length; ) {
+        val <<= 8;
+        val |= (HashValueType) *(in++);
+      }
+      *(hashp++) = val;
+      if (hashp == hashend) break;
+    }
+  }
+
+  template<int32_t HashLength, typename HashValueType>
+  void WriteHashBytes(const HashValueType hashp[HashLength], uint8_t * out,
+                                  int32_t length = HashSize, int32_t skip = 0)
   {
     // sanity check
     if (length <= 0) return;

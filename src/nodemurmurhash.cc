@@ -41,10 +41,9 @@ namespace MurmurHash {
             ? Nan::To<int32_t>((INFO)[(INDEX) + 1]).FromMaybe(0) \
             : 0)
 
-  #define GET_ARG_LENGTH(INFO,INDEX,ARGC,DEF)              \
-            ((INDEX) + 2 < (ARGC)                          \
-            ? Nan::To<int32_t>((INFO)[(INDEX) + 2]).       \
-                      FromMaybe(static_cast<int32_t>(DEF)) \
+  #define GET_ARG_LENGTH(INFO,INDEX,ARGC,DEF)                      \
+            ((INDEX) + 2 < (ARGC)                                  \
+            ? Nan::To<int32_t>((INFO)[(INDEX) + 2]).FromMaybe(DEF) \
             : (DEF))
 
   /**
@@ -68,12 +67,11 @@ namespace MurmurHash {
    * @param {Uint32} seed - murmur hash seed, 0 by default
    * @param {Buffer} output - a Buffer object to write hash bytes to;
    *       the same object will be returned
-   *       the order of output bytes is platform dependent
    * @param {number} offset - start writing into output at offset byte;
    *       negative offset starts from the end of the output buffer
    * @param {number} length - a number of bytes to write from calculated hash;
    *       negative length starts from the end of the hash;
-   *       if absolute value of length is greater than the size of a calculated
+   *       if absolute value of length is larger than the size of a calculated
    *       hash, bytes are written only up to the hash size
    * @param {string} output_type - a string indicating return type:
    *       'number' - for murmurHash32 an unsigned 32-bit integer,

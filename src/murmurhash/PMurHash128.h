@@ -25,10 +25,13 @@ typedef unsigned __int64 uint64_t;
 #endif // !defined(_MSC_VER)
 
 /* ------------------------------------------------------------------------- */
-/* Prototypes */
+/* Formal prototypes */
 
-void PMurHash128x64_Process(uint64_t *ph, uint64_t *pcarry, const void *key, int len);
-void PMurHash128x64_Result(const uint64_t * ph, const uint64_t * pcarry, uint32_t total_length, uint64_t *out);
+// PMurHash128x64
+void PMurHash128_Process(uint64_t ph[2], uint64_t pcarry[2], const void *key, int len);
+void PMurHash128_Result(const uint64_t * ph, const uint64_t * pcarry, uint32_t total_length, uint64_t out[2]);
 
-void PMurHash128x86_Process(uint32_t *ph, uint32_t *pcarry, const void *key, int len);
-void PMurHash128x86_Result(const uint32_t * ph, const uint32_t * pcarry, uint32_t total_length, uint32_t *out);
+
+// PMurHash128x86
+void PMurHash128_Process(uint32_t ph[4], uint32_t pcarry[4], const void *key, int len);
+void PMurHash128_Result(const uint32_t ph[4], const uint32_t pcarry[4], uint32_t total_length, uint32_t out[4]);

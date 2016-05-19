@@ -7,17 +7,19 @@ var test = require("tap").test
 test("should have murmurHash constructors", function(t) {
   t.type(incr.MurmurHash, 'function');
   t.strictEqual(incr.MurmurHash.name, 'MurmurHash');
+  t.type(incr.MurmurHash128, 'function');
+  t.type(incr.MurmurHash128x64, 'function');
+  t.strictEqual(incr.MurmurHash128x64.name, 'MurmurHash128x64');
+  t.type(incr.MurmurHash128x86, 'function');
+  t.strictEqual(incr.MurmurHash128x86.name, 'MurmurHash128x86');
   t.end();
 });
 
 function wrapStream(name) {
   return function(seed) {
-    var hasher = new strm.MurmurHash(name, seed);
-    Object.defineProperty(hasher, 'total', {
-      get: function() {
-        return this._handle.total;
-      }
-    });
+    var hasher = (seed instanceof strm.MurmurHash)
+               ? new strm.MurmurHash(seed)
+               : new strm.MurmurHash(name, {seed: seed});
     return hasher;
   }
 }
@@ -112,6 +114,14 @@ function wrapStream(name) {
       t.throws(function() { new MurmurHash().update(1) }, new TypeError("string or Buffer is required") );
       t.throws(function() { new MurmurHash().update(-1) }, new TypeError("string or Buffer is required") );
       t.throws(function() { new MurmurHash().update(new Date()) }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash([]) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.throws(function() { MurmurHash([]) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.throws(function() { new MurmurHash({}) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.throws(function() { new MurmurHash(new Date) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.throws(function() { new MurmurHash(true) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.throws(function() { new MurmurHash(false) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.notThrow(function() { new MurmurHash(null) }, "null accepted" );
+      t.notThrow(function() { new MurmurHash(undefined) }, "undefined accepted" );
       t.notThrow(function() { new MurmurHash().update("", "abcdefghijklmno") }, "invalid encoding should be accepted" );
       t.notThrow(function() { new MurmurHash().update("", "123456") }, "invalid encoding should be accepted and ignored" );
       t.notThrow(function() { new MurmurHash().update("", "12345") }, "invalid encoding should be accepted and ignored" );
@@ -124,10 +134,10 @@ function wrapStream(name) {
       t.notThrow(function() { new MurmurHash().digest("utf-8") }, "invalid output type should be accepted and ignored" );
       var hasher = new MurmurHash();
       t.notThrow(function() { hasher.digest() }, "first digest ok" );
-      t.throws(function() { hasher.update() }, new Error("Digest already called") );
-      t.throws(function() { hasher.digest() }, new Error("Digest already called") );
-      t.throws(function() { hasher.update() }, new Error("Digest already called") );
-      t.throws(function() { hasher.digest() }, new Error("Digest already called") );
+      t.notThrow(function() { hasher.update('') }, "update ok" );
+      t.notThrow(function() { hasher.digest() }, "second digest ok" );
+      t.notThrow(function() { hasher.update('') }, "update ok" );
+      t.notThrow(function() { hasher.digest() }, "third digest ok" );
 
       t.end();
     });
@@ -429,6 +439,61 @@ function wrapStream(name) {
       t.strictEqual(dS, new MurmurHash(seed).update(data, 'binary').digest('number'));
       t.strictEqual(dS, murmurHash(buffer, seed));
       t.strictEqual(dS, murmurHash(data, seed));
+
+      t.end();
+    });
+
+    t.test('should copy internal state and create instance from copy', function(t) {
+      var hasher0 = new MurmurHash(-1).update('foo');
+      t.throws(function() { hasher0.copy() }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy([]) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy({}) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy(0) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy(true) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy(false) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy(null) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy(hasher0) }, new Error("Target must not be the same instance"));
+      var hasher1 = new MurmurHash(hasher0);
+      t.notStrictEqual(hasher1, hasher0);
+      t.strictEqual(hasher0.digest('hex'), hasher1.digest('hex'));
+      t.strictEqual(hasher0.update('bar').digest('hex'), hasher1.update('bar').digest('hex'));
+      t.strictEqual(hasher0.digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
+      t.strictEqual(hasher1.digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
+      var hasher2 = new MurmurHash(0);
+      t.strictEqual(hasher2.digest('hex'), seedZeroHex);
+      t.strictEqual(hasher0.copy(hasher2), hasher2);
+      t.strictEqual(hasher2.digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
+      t.notStrictEqual(new MurmurHash(-1).update('foobar').digest('hex'), seedZeroHex);
+
+      t.end();
+    });
+
+    t.test('should serialize internal state and create instance from serial', function(t) {
+      var hasher0 = new MurmurHash(-1).update('foo');
+      t.throws(function() { hasher0.serialize(new Buffer(0)) }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
+      t.throws(function() { hasher0.serialize(new Buffer(1000), -1) }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
+      t.throws(function() { hasher0.serialize(new Buffer(1000), 998) }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
+      t.throws(function() { new MurmurHash('') }, new TypeError("Incorrect size of the serialized string"));
+      t.throws(function() { new MurmurHash('1234567890abcdef1') }, new TypeError("Incorrect size of the serialized string"));
+      var buffer = new Buffer(50); buffer.fill(0);
+      t.throws(function() { new MurmurHash(buffer) }, new TypeError("Incorrect serialized data"));
+      t.throws(function() { new MurmurHash(new Buffer(11)) }, new TypeError("Incorrect size of the serialized data"));
+      var serial0 = hasher0.serialize();
+      t.type(serial0, 'string');
+      t.throws(function() { new MurmurHash(new Buffer(serial0.length).toString('binary')) }, new TypeError("Incorrect serialized string"));
+      t.throws(function() { new MurmurHash(new Buffer(serial0.length)) }, new TypeError("Incorrect serialized data"));
+      var serial0bin = new Buffer(hasher0.SERIAL_BYTE_LENGTH);
+      t.strictEqual(hasher0.serialize(serial0bin), serial0bin);
+      var hasher1 = new MurmurHash(serial0);
+      t.notStrictEqual(hasher1, hasher0);
+      t.strictEqual(hasher1.digest('hex'), hasher0.digest('hex'));
+      t.strictEqual(hasher0.digest('hex'), new MurmurHash(-1).update('foo').digest('hex'));
+      t.strictEqual(hasher1.update('bar').digest('hex'), hasher0.update('bar').digest('hex'));
+      t.strictEqual(hasher0.digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
+      t.strictEqual(hasher1.digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
+      var hasher2 = new MurmurHash(serial0bin);
+      t.strictEqual(hasher2.digest('hex'), new MurmurHash(-1).update('foo').digest('hex'));
+      t.strictEqual(hasher2.update('bar').digest('hex'), new MurmurHash(-1).update('foobar').digest('hex'));
 
       t.end();
     });

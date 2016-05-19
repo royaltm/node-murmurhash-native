@@ -107,7 +107,7 @@ FORCE_INLINE uint64_t fmix64 ( uint64_t k )
 }
 
 /*-----------------------------------------------------------------------------*
-                                 PMurHash128x64
+                                 PMurHash128x86
  *-----------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------
  * Core murmurhash algorithm macros */
@@ -172,7 +172,7 @@ FORCE_INLINE void dobytes128x86(int cnt, uint32_t &h1, uint32_t &h2, uint32_t &h
 }
 
 /* Finalize a hash. To match the original Murmur3_128x86 the total_length must be provided */
-void PMurHash128x86_Result(const uint32_t *ph, const uint32_t *pcarry, uint32_t total_length, uint32_t *out)
+void PMurHash128_Result(const uint32_t *ph, const uint32_t *pcarry, uint32_t total_length, uint32_t *out)
 {
   uint32_t h1 = ph[0];
   uint32_t h2 = ph[1];
@@ -247,7 +247,7 @@ skiprot:
 
 /* Main hashing function. Initialise carry[4] to {0,0,0,0} and h[4] to an initial {seed,seed,seed,seed}
  * if wanted. Both ph and pcarry are required arguments. */
-void PMurHash128x86_Process(uint32_t * const ph, uint32_t * const pcarry, const void * const key, int len)
+void PMurHash128_Process(uint32_t * const ph, uint32_t * const pcarry, const void * const key, int len)
 {
   uint32_t h1 = ph[0];
   uint32_t h2 = ph[1];
@@ -474,8 +474,8 @@ FORCE_INLINE void dobytes128x64(int cnt, uint64_t &h1, uint64_t &h2, uint64_t &k
 }
 
 /* Finalize a hash. To match the original Murmur3_128x64 the total_length must be provided */
-void PMurHash128x64_Result(const uint64_t * const ph, const uint64_t * const pcarry,
-                           const uint32_t total_length, uint64_t * const out)
+void PMurHash128_Result(const uint64_t * const ph, const uint64_t * const pcarry,
+                        const uint32_t total_length, uint64_t * const out)
 {
   uint64_t h1 = ph[0];
   uint64_t h2 = ph[1];
@@ -520,7 +520,7 @@ void PMurHash128x64_Result(const uint64_t * const ph, const uint64_t * const pca
 
 /* Main hashing function. Initialise carry[2] to {0,0} and h[2] to an initial {seed,seed}
  * if wanted. Both ph and pcarry are required arguments. */
-void PMurHash128x64_Process(uint64_t * const ph, uint64_t * const pcarry, const void * const key, int len)
+void PMurHash128_Process(uint64_t * const ph, uint64_t * const pcarry, const void * const key, int len)
 {
   uint64_t h1 = ph[0];
   uint64_t h2 = ph[1];

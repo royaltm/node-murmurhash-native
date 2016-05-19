@@ -28,7 +28,8 @@ var LazyTransform = require('./lazy_transform');
  * Except murmur's `seed` option, the rest of the options are passed to
  * stream.Transform constructor.
  *
- * @param {string} algorithm - one of available algorithms
+ * @param {string|MurmurHash} algorithm|hasher - one of available algorithms
+ *                            or a murmur hasher instance
  * @param {number|object} seed|options - hasher options
  **/
 exports.createHash = exports.MurmurHash = MurmurHash;
@@ -43,15 +44,19 @@ function MurmurHash(algorithm, options) {
   else if (options)
     seed = options.seed;
 
-  if (!algorithm)
-    throw new TypeError("Must give algorithm string as argument");
-
-  var Handle = algorithms[algorithm.toLowerCase()];
-  if (Handle) {
-    this._handle = new Handle(seed);
+  if (algorithm instanceof MurmurHash) {
+    this._handle = new algorithm._handle.constructor(algorithm._handle);
+  } else if (algorithm) {
+    var Handle = algorithms[algorithm.toLowerCase()];
+    if (Handle) {
+      this._handle = new Handle(seed);
+    } else {
+      throw new Error("Algorithm not supported");
+    }
   } else {
-    throw new Error("Algorithm not supported");
+    throw new TypeError("Must give algorithm string or MurmurHash instance");
   }
+
   LazyTransform.call(this, options);
 }
 
@@ -68,9 +73,49 @@ MurmurHash.prototype._flush = function(callback) {
 };
 
 MurmurHash.prototype.update = function(data, encoding) {
-  return this._handle.update(data, encoding);
+  this._handle.update(data, encoding);
+  return this;
 };
 
 MurmurHash.prototype.digest = function(outputEncoding) {
   return this._handle.digest(outputEncoding);
 };
+
+MurmurHash.prototype.serialize = function(type, offset) {
+  return this._handle.serialize(type, offset);
+};
+
+MurmurHash.prototype.copy = function(target) {
+  this._handle.copy(target && target._handle);
+  return target;
+};
+
+MurmurHash.prototype.toJSON = function() {
+  var handle = this._handle;
+  return {
+    type: handle.constructor.name,
+    state: handle.toJSON()
+  };
+};
+
+Object.defineProperty(MurmurHash.prototype, 'total', {
+  get: function() {
+    return this._handle.total;
+  },
+  enumerable: true,
+  configurable: true
+});
+
+Object.defineProperty(MurmurHash.prototype, 'SERIAL_BYTE_LENGTH', {
+  get: function() {
+    Object.defineProperty(this, 'SERIAL_BYTE_LENGTH', {
+      enumerable: true,
+      writable: true,
+      configurable: true,
+      value: this._handle.SERIAL_BYTE_LENGTH
+    });
+    return this.SERIAL_BYTE_LENGTH;
+  },
+  enumerable: true,
+  configurable: true,
+});

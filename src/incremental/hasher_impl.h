@@ -4,60 +4,75 @@
 #include "PMurHash.h"
 #include "PMurHash128.h"
 
+#define BASE64_ENCODED_SIZE(size) ((size + 2 - ((size + 2) % 3)) / 3 * 4)
+
+#define HashSerialSize (HashSize * 2 + static_cast<int32_t>(sizeof(uint32_t)))
+#define HashSerialStringSize BASE64_ENCODED_SIZE(HashSerialSize)
+
+#define HashSerialHStateIndex 0
+#define HashSerialCarryIndex (HashSerialHStateIndex + HashSize)
+// Serial data in network byte order
+//          0: hstate[MSByte] ... hstate[LSByte]
+//   HashSize:  carry[MSByte] ... carry[LSByte]
+// 2*HashSize:  total[MSByte] ... total[LSByte]
+
 namespace MurmurHash {
+  template<typename HashValueType, int32_t HashLength>
   class IncrementalMurmurHash3A {
     public:
-      NAN_INLINE IncrementalMurmurHash3A(uint32_t seed) : h(seed), carry(0) {}
+      NAN_INLINE IncrementalMurmurHash3A(const uint32_t seed = 0) : hstate(seed), carry(0) {}
+      NAN_INLINE IncrementalMurmurHash3A(const uint8_t *serial)
+      {
+        ReadHashBytes<HashLength>( &serial[HashSerialHStateIndex], &hstate );
+        ReadHashBytes<HashLength>( &serial[HashSerialCarryIndex],  &carry );
+      }
+      NAN_INLINE void Serialize(uint8_t *serial)
+      {
+        WriteHashBytes<HashLength>( &hstate, &serial[HashSerialHStateIndex] );
+        WriteHashBytes<HashLength>( &carry,  &serial[HashSerialCarryIndex] );
+      }
       NAN_INLINE void Update(void *data, int32_t length)
       {
-        PMurHash32_Process((uint32_t *)&h, (uint32_t *)&carry, data, (int) length);
+        PMurHash32_Process( &hstate, &carry, data, static_cast<int>(length) );
       }
-      NAN_INLINE void Digest(uint32_t *hash, int32_t total)
+      NAN_INLINE void Digest(HashValueType hash[HashLength], uint32_t total)
       {
-        *hash = PMurHash32_Result((uint32_t) h, (uint32_t) carry, (uint32_t) total);
+        *hash = PMurHash32_Result( hstate, carry, total );
       }
     private:
-      uint32_t h, carry;
+      HashValueType hstate, carry;
   };
 
-  class IncrementalMurmurHash128x64 {
+  template<typename HashValueType, int32_t HashLength>
+  class IncrementalMurmurHash128 {
     public:
-      NAN_INLINE IncrementalMurmurHash128x64(uint32_t seed) : carry() {
-        /* could h{seed, seed} but clang with node 0.x bails */
-        h[0] = seed;
-        h[1] = seed;
+      NAN_INLINE IncrementalMurmurHash128(const uint32_t seed = 0) : carry() {
+        for(HashValueType *p = hstate + HashLength;
+            p > hstate;
+            *--p = seed);
+      }
+      NAN_INLINE IncrementalMurmurHash128(const uint8_t *serial)
+      {
+        ReadHashBytes<HashLength>(&serial[HashSerialHStateIndex], hstate);
+        ReadHashBytes<HashLength>(&serial[HashSerialCarryIndex],  carry);
+      }
+      NAN_INLINE void Serialize(uint8_t *serial)
+      {
+        WriteHashBytes<HashLength>(hstate, &serial[HashSerialHStateIndex]);
+        WriteHashBytes<HashLength>(carry,  &serial[HashSerialCarryIndex]);
       }
       NAN_INLINE void Update(void *data, int32_t length)
       {
-        PMurHash128x64_Process(h, carry, data, (int) length);
+        PMurHash128_Process(hstate, carry, data, (int) length);
       }
-      NAN_INLINE void Digest(uint64_t *hash, int32_t total)
+      NAN_INLINE void Digest(HashValueType hash[HashLength], uint32_t total)
       {
-        PMurHash128x64_Result(h, carry, (uint32_t) total, hash);
+        PMurHash128_Result(hstate, carry, total, hash);
       }
     private:
-      uint64_t h[2], carry[2];
+      HashValueType hstate[HashLength], carry[HashLength];
   };
 
-  class IncrementalMurmurHash128x86 {
-    public:
-      NAN_INLINE IncrementalMurmurHash128x86(uint32_t seed) : carry() {
-        h[0] = seed;
-        h[1] = seed;
-        h[2] = seed;
-        h[3] = seed;
-      }
-      NAN_INLINE void Update(void *data, int32_t length)
-      {
-        PMurHash128x86_Process(h, carry, data, (int) length);
-      }
-      NAN_INLINE void Digest(uint32_t *hash, int32_t total)
-      {
-        PMurHash128x86_Result(h, carry, (uint32_t) total, hash);
-      }
-    private:
-      uint32_t h[4], carry[4];
-  };
 }
 
 #endif
