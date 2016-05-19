@@ -170,10 +170,11 @@ fs.createReadStream('README.md').pipe(hash);
 hash.on('data', digest => console.log(digest) );
 ```
 
-The native incremental module is also available at `murmurhash-native/incremental`.
+The dual-api with streaming is a javascript wrapper over the native module.
+The native incremental module is directly available at `murmurhash-native/incremental`.
 
 See [hasher.cc](src/incremental/hasher.cc) for full api description
-(and some really crazy templating is going on there...).
+(and there's some crazy templating going on there...).
 
 ### Serializable state
 
