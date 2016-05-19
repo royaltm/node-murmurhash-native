@@ -343,24 +343,26 @@ test('should throw error for bad arguments', function(t) {
       });
     });
 
+    t.test('should JSON serialize and deserialize', function(t) {
+      t.plan(3);
+      var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
+      var hasher0 = strm.createHash(algorithm, {seed: seed, encoding: 'hex'});
+      hasher0.write('foo');
+      var json = JSON.stringify(hasher0);
+      t.type(json, 'string');
+      var hasher1 = strm.createHash(JSON.parse(json), {encoding: 'hex'});
+      hasher0.once('readable', function() {
+        var hash0 = hasher0.read();
+        hasher1.once('readable', function() {
+          var hash1 = hasher1.read();
+          t.strictEqual(hash1, hash0);
+          t.strictEqual(hash1, murmurHash('foo', seed, 'hex'));
+        });
+      });
+      hasher0.end();
+      hasher1.end();
+    });
+
     t.end();
   });
 });
-
-
-
-
-/*
-
-var ben=require('ben')
-var ss=require('./stream')
-ben.async(1, (next)=>{
-  var h=ss.createHash('MurmurHash'); h.on('readable', next);
-  fs.createReadStream('D:\\Users\\Royal\\Videos\\Videos\\Mysie.mpg',{encoding:null}).pipe(h);
-}, ms => { console.log(ms) })
-ben.async(1, (next)=>{
-  var h=crypto.createHash('sha1'); h.on('readable', next);
-  fs.createReadStream('D:\\Users\\Royal\\Videos\\Videos\\Mysie.mpg',{encoding:null}).pipe(h);
-}, ms => { console.log(ms) })
-
-*/

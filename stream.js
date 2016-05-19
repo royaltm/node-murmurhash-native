@@ -48,6 +48,11 @@ function MurmurHash(algorithm, options) {
   if (algorithm instanceof MurmurHash) {
     this._handle = new algorithm._handle.constructor(algorithm._handle);
   } else if (algorithm) {
+    // handle object from json
+    if ('object' === typeof algorithm) {
+      seed = algorithm.seed;
+      algorithm = algorithm.type;
+    }
     var Handle = algorithms[algorithm.toLowerCase()];
     if (Handle) {
       this._handle = new Handle(seed);
@@ -95,7 +100,7 @@ MurmurHash.prototype.toJSON = function() {
   var handle = this._handle;
   return {
     type: handle.constructor.name,
-    state: handle.toJSON()
+    seed: handle.toJSON()
   };
 };
 
