@@ -114,6 +114,92 @@ or buffers referencing the same memory (views).
 ```
 
 
+Streaming and incremental api
+-----------------------------
+
+The dual-api interface for progressive MurmurHash3 is available as a submodule:
+
+```js
+var murmur = require('murmurhash-native/stream');
+````
+
+Progressive api
+
+```js
+var hash = murmur.createHash('murmurhash128x86');
+hash.update('hash').digest('hex'); // '0d872bbf2cd001722cd001722cd00172'
+hash.update(' me!').digest('hex'); // 'c7009299985a5627a9280372a9280372'
+```
+
+Streaming api
+
+```js
+var hash = murmur.createHash('murmurhash32', {seed: 123, encoding: 'hex'});
+fs.createReadStream('README.md').pipe(hash);
+hash.on('data', digest => console.log(digest) );
+```
+
+### Serializable state
+
+The incremental MurmurHash instances may be serialized and later deserialized.
+One may also copy a hasher's internal state onto another.
+This way the hasher can be re-used to calculate a hash of some data with already known prefix.
+
+```js
+var hash = murmur.createHash('murmurhash128x64').update('hash');
+hash.digest('hex');                   // '4ab2e1e022f63e2e9add75dfcea2dede'
+
+var backup = murmur.createHash(hash); // create a copy of a hash with the same internal state
+backup.update(' me!').digest('hex');  // 'c43668294e89db0ba5772846e5804467'
+
+hash.copy(backup)                     // copy hash's state onto the backup
+    .update(' me!').digest('hex');    // 'c43668294e89db0ba5772846e5804467'
+
+var serial = hash.serialize();        // serialize hash's state
+serial == 'AAAAAAAAAAAAAAAAAAAAAGhzYWgAAAAAAAAAAAAAAFQAAAAEtd3X';
+                                      // restore backup from serialized state
+var backup = murmur.createHash('murmurhash128x64', {seed: serial});
+backup.update(' me!').digest('hex');  // 'c43668294e89db0ba5772846e5804467'
+                                      // finally
+hash.update(' me!').digest('hex');    // 'c43668294e89db0ba5772846e5804467'
+```
+
+The dual-api with streaming is a javascript wrapper over the native module.
+The native incremental module is directly available at `murmurhash-native/incremental`.
+
+See [hasher.cc](src/incremental/hasher.cc) for full api description
+(and there's some crazy templating going on there...).
+
+
+Promises
+--------
+
+The native murmurHash functions run asynchronously if the last argument is a callback.
+There is however a promisify wrapper available:
+
+```js
+var mm = require('murmurhash-native/promisify')();
+mm.murmurHash32Async( 'hash me!', 0x12345789 )
+      .then(hash => { assert.equal(hash, 1908692277) });
+// Promise { <pending> }
+```
+
+You may provide your own promise constructor:
+
+```js
+var bluebird = require('bluebird');
+var mm = require('murmurhash-native/promisify')(bluebird);
+mm.murmurHash32Async( 'hash me!', 0x12345789 )
+      .then(hash => { assert.equal(hash, 1908692277) });
+// Promise {
+//   _bitField: 0,
+//   _fulfillmentHandler0: undefined,
+//   _rejectionHandler0: undefined,
+//   _promise0: undefined,
+//   _receiver0: undefined }
+```
+
+
 Significant changes in 3.x
 --------------------------
 
@@ -145,94 +231,11 @@ Another breaking change is for the BE platforms. Starting with 2.0 endian-ness i
 Since v2.1 the callback argument was introduced.
 
 
-Streaming and incremental api
------------------------------
-
-The dual-api interface for progressive MurmurHash3 is available as a submodule:
-
-```js
-var murmur = require('murmurhash-native/stream');
-````
-
-Progressive api
-
-```js
-var hash = murmur.createHash('murmurhash128x86');
-hash.update('hash').digest('hex'); // '0d872bbf2cd001722cd001722cd00172'
-hash.update(' me!').digest('hex'); // 'c7009299985a5627a9280372a9280372'
-```
-
-Streaming api
-
-```js
-var hash = murmur.createHash('murmurhash32', {seed: 123, encoding: 'hex'});
-fs.createReadStream('README.md').pipe(hash);
-hash.on('data', digest => console.log(digest) );
-```
-
-The dual-api with streaming is a javascript wrapper over the native module.
-The native incremental module is directly available at `murmurhash-native/incremental`.
-
-See [hasher.cc](src/incremental/hasher.cc) for full api description
-(and there's some crazy templating going on there...).
-
-### Serializable state
-
-The incremental MurmurHash instances may be serialized and later deserialized.
-One may also copy a hasher's internal state onto another.
-This way the hasher can be re-used to calculate a hash of some data with already known prefix.
-
-```js
-var hash = murmur.createHash('murmurhash128x64').update('hash');
-hash.digest('hex'); // '4ab2e1e022f63e2e9add75dfcea2dede'
-// create a copy of a hash with the same internal state
-var backup = murmur.createHash(hash);
-backup.update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
-// copy hash's state onto the backup
-hash.copy(backup).update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
-// serialize hash's state
-var serial = hash.serialize();
-serial == 'AAAAAAAAAAAAAAAAAAAAAGhzYWgAAAAAAAAAAAAAAFQAAAAE';
-// restore backup from serialized state
-var backup = murmur.createHash('murmurhash128x64', {seed: serial});
-backup.update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
-// finally
-hash.update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
-```
-
-Promises
---------
-
-The native murmurHash functions run asynchronously if the last argument is a callback.
-However if you wish to use promises there is a promisify wrapper available:
-
-```js
-var mm = require('murmurhash-native/promisify')();
-mm.murmurHash32Async( 'hash me!', 0x12345789 )
-      .then(hash => { assert.equal(hash, 1908692277) });
-// Promise { <pending> }
-```
-
-You may provide your own promise constructor:
-
-```js
-var bluebird = require('bluebird');
-var mm = require('murmurhash-native/promisify')(bluebird);
-mm.murmurHash32Async( 'hash me!', 0x12345789 )
-      .then(hash => { assert.equal(hash, 1908692277) });
-// Promise {
-//   _bitField: 0,
-//   _fulfillmentHandler0: undefined,
-//   _rejectionHandler0: undefined,
-//   _promise0: undefined,
-//   _receiver0: undefined }
-```
-
-
 Bugs, limitations, caveats
 --------------------------
-When working with Buffers, no data is being copied, however for strings this is unavoidable.
-For strings with byte-length < 1kB the static buffer is provided to avoid mem-allocs.
+When working with Buffers, input data is not being copied, however for strings
+this is unavoidable. For strings with byte-length < 1kB the static buffer is
+provided to avoid mem-allocs.
 
 The hash functions optimized for x64 and x86 produce different results.
 
