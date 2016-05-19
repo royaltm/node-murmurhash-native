@@ -3,9 +3,10 @@ MurmurHash bindings for node
 
 This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing algorithm functions in a few different flavours.
 
-[![NPM][NPM img]][NPM Status]
-
 [![Build Status][BS img]][Build Status]
+[![NPM][NPM img]][NPM Status]
+[![Node][Node img]][NPM Status]
+[![License][License img]][NPM Status]
 
 Key features:
 
@@ -242,9 +243,11 @@ The hash functions optimized for x64 and x86 produce different results.
 Tested with nodejs: v0.10, v0.11, v0.12, iojs-3, v4, v5 and v6.
 
 [Build Status]: https://travis-ci.org/royaltm/node-murmurhash-native
-[BS img]: https://travis-ci.org/royaltm/node-murmurhash-native.svg
-[NPM img]: https://nodei.co/npm/murmurhash-native.png?compact=true
-[NPM Status]: https://nodei.co/npm/murmurhash-native/
+[BS img]: https://img.shields.io/travis/royaltm/node-murmurhash-native.svg?maxAge=86400?style=flat-square
+[NPM img]: https://img.shields.io/npm/v/murmurhash-native.svg?maxAge=86400?style=flat-square
+[Node img]: https://img.shields.io/node/v/murmurhash-native.svg?maxAge=2592000?style=flat-square
+[License img]: https://img.shields.io/node/l/murmurhash-native.svg?maxAge=2592000?style=flat-square
+[NPM Status]: https://www.npmjs.com/package/murmurhash-native
 [murmurhash3js]: https://www.npmjs.com/package/murmurhash3js
 [PMurHash]: https://github.com/aappleby/smhasher/blob/master/src/PMurHash.c
 [crypto.Hash]: https://nodejs.org/dist/latest-v6.x/docs/api/crypto.html#crypto_class_hash
