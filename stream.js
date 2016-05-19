@@ -39,10 +39,11 @@ function MurmurHash(algorithm, options) {
   if (!(this instanceof MurmurHash))
     return new MurmurHash(algorithm, options);
 
-  if ('number' === typeof options)
-    seed = options, options = undefined;
-  else if (options)
+  if (options && 'object' === typeof options) {
     seed = options.seed;
+  } else {
+    seed = options, options = undefined;
+  }
 
   if (algorithm instanceof MurmurHash) {
     this._handle = new algorithm._handle.constructor(algorithm._handle);
