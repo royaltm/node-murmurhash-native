@@ -47,9 +47,10 @@ namespace MurmurHash {
   class IncrementalMurmurHash128 {
     public:
       NAN_INLINE IncrementalMurmurHash128(const uint32_t seed = 0) : carry() {
-        for(HashValueType *p = hstate + HashLength;
-            p > hstate;
-            *--p = seed);
+        HashValueType *p = hstate + HashLength;
+        do {
+          *--p = seed;
+        } while (p > hstate);
       }
       NAN_INLINE IncrementalMurmurHash128(const uint8_t *serial)
       {
@@ -63,7 +64,7 @@ namespace MurmurHash {
       }
       NAN_INLINE void Update(void *data, int32_t length)
       {
-        PMurHash128_Process(hstate, carry, data, (int) length);
+        PMurHash128_Process(hstate, carry, data, static_cast<int>(length));
       }
       NAN_INLINE void Digest(HashValueType hash[HashLength], uint32_t total)
       {
