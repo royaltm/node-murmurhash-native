@@ -1,6 +1,7 @@
 "use strict";
 
 var test = require("tap").test
+var crypto = require('crypto');
 var stream = require('stream');
 
 var Readable = stream.Readable;
@@ -19,10 +20,9 @@ function RandomChunkStream(options) {
 RandomChunkStream.prototype._read = function() {
   var buffer = this.buffer;
   var slicelen = (Math.random()*this.maxchunksize|0) + 1;
-  var n = this.cursor;
-  while(n < this.size && slicelen--) {
-    buffer[n++] = (Math.random()*0x100)|0;
-  }
+  slicelen = Math.min(slicelen, this.size - this.cursor);
+  crypto.randomBytes(slicelen).copy(buffer, this.cursor);
+  var n = this.cursor + slicelen;
   this.push(buffer.slice(this.cursor, n));
   this.cursor = n;
   if (n >= this.size)
