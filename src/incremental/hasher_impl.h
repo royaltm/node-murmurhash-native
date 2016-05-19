@@ -7,7 +7,7 @@
 #define BASE64_ENCODED_SIZE(size) ((size + 2 - ((size + 2) % 3)) / 3 * 4)
 
 #define HashSerialCkSize 3
-#define HashSerialCkMask static_cast<int32_t>((1ULL << (HashSerialCkSize * 8)) - 1)
+#define HashSerialCkMask static_cast<uint32_t>((1ULL << (HashSerialCkSize * 8)) - 1)
 
 #define HashSerialHStateIndex 0
 #define HashSerialCarryIndex (HashSerialHStateIndex + HashSize)
