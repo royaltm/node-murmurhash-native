@@ -9,11 +9,11 @@ This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing al
 
 Key features:
 
-* fast `npm run bench`
 * portable (platform independend network byte order output of hashes in binary form)
 * both blocking and asynchronous api interfaces
 * additional MurmurHash3 32 and 128 bit progressive implementations based on [PMurHash][PMurHash]
 * stream wrapper for progressive hasher with [crypto.Hash-like][crypto.Hash] bi-api interface
+  and serializable state
 * promise wrapper
 
 Installation:
@@ -84,12 +84,11 @@ murmurHash(data{String}, encoding, seed[, output_type][, callback])
 @param {Uint32} seed - murmur hash seed, 0 by default
 @param {Buffer} output - a Buffer object to write hash bytes to;
       the same object will be returned
-      the order of output bytes is platform dependent
 @param {number} offset - start writing into output at offset byte;
       negative offset starts from the end of the output buffer
 @param {number} length - a number of bytes to write from calculated hash;
       negative length starts from the end of the hash;
-      if absolute value of length is greater than the size of a calculated
+      if absolute value of length is larger than the size of a calculated
       hash, bytes are written only up to the hash size
 @param {string} output_type - a string indicating return type:
       'number' - for murmurHash32 an unsigned 32-bit integer,
@@ -151,19 +150,51 @@ Streaming and incremental api
 
 The dual-api interface for progressive MurmurHash3 is available as a submodule:
 
+Progressive api
+
 ```js
 var murmur = require('murmurhash-native/stream');
 
-var hasher = murmur.createHash('murmurhash128x86');
-hasher.update('hash').update(' me!').digest('hex'); // 'c7009299985a5627a9280372a9280372';
-
-var stream = murmur.createHash('murmurhash32', {seed: 123, encoding: 'hex'});
-fs.createReadStream('README.md').pipe(stream);
-stream.on('readable', () => console.log(stream.read()) );
+var hash = murmur.createHash('murmurhash128x86');
+hash.update('hash').digest('hex'); // '0d872bbf2cd001722cd001722cd00172'
+hash.update(' me!').digest('hex'); // 'c7009299985a5627a9280372a9280372'
 ```
 
-The low-level native incremental module is available at `murmurhash-native/incremental`.
+Streaming api
 
+```js
+var hash = murmur.createHash('murmurhash32', {seed: 123, encoding: 'hex'});
+fs.createReadStream('README.md').pipe(hash);
+hash.on('data', digest => console.log(digest) );
+```
+
+The native incremental module is also available at `murmurhash-native/incremental`.
+
+### Serializable state
+
+The incremental MurmurHash instances may be serialized and later deserialized.
+Also it's possible to copy hasher's internal state onto another.
+This way the hasher can be re-used to calculate a hash of some data with already known prefix.
+
+```js
+var hash = murmur.createHash('murmurhash128x64').update('hash');
+hash.digest('hex'); // '4ab2e1e022f63e2e9add75dfcea2dede'
+// create a copy of a hash with the same internal state
+var backup = murmur.createHash(hash);
+backup.update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
+// copy hash's state onto the backup
+hash.copy(backup).update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
+// serialize hash's state
+var serial = hash.serialize();
+serial == 'AAAAAAAAAAAAAAAAAAAAAGhzYWgAAAAAAAAAAAAAAFQAAAAE';
+// restore backup from serialized state
+var backup = murmur.createHash('murmurhash128x64', {seed: serial});
+backup.update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
+// finally
+hash.update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
+```
+
+See [hasher.cc][src/incremental/hasher.cc] for full native api description.
 
 Promises
 --------
