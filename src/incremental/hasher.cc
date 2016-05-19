@@ -13,7 +13,7 @@ namespace MurmurHash {
   using v8::PropertyAttribute;
   using v8::ReadOnly;
   using v8::DontDelete;
-  using v8::MaybeLocal;
+  using Nan::MaybeLocal;
 
   #define SINGLE_ARG(...) __VA_ARGS__
 
