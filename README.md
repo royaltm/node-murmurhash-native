@@ -150,11 +150,13 @@ Streaming and incremental api
 
 The dual-api interface for progressive MurmurHash3 is available as a submodule:
 
+```js
+var murmur = require('murmurhash-native/stream');
+````
+
 Progressive api
 
 ```js
-var murmur = require('murmurhash-native/stream');
-
 var hash = murmur.createHash('murmurhash128x86');
 hash.update('hash').digest('hex'); // '0d872bbf2cd001722cd001722cd00172'
 hash.update(' me!').digest('hex'); // 'c7009299985a5627a9280372a9280372'
