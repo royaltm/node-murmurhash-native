@@ -172,6 +172,9 @@ hash.on('data', digest => console.log(digest) );
 
 The native incremental module is also available at `murmurhash-native/incremental`.
 
+See [hasher.cc](src/incremental/hasher.cc) for full api description
+(and some really crazy templating is going on there...).
+
 ### Serializable state
 
 The incremental MurmurHash instances may be serialized and later deserialized.
@@ -195,8 +198,6 @@ backup.update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
 // finally
 hash.update(' me!').digest('hex'); // 'c43668294e89db0ba5772846e5804467'
 ```
-
-See [hasher.cc](src/incremental/hasher.cc) for full native api description.
 
 Promises
 --------
