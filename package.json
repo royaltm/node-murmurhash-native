@@ -21,7 +21,7 @@
   },
   "scripts": {
     "test": "tap ./test/test*.js",
-    "bench": "node ./test/bench.js"
+    "bench": "sh benches/bench.all.sh"
   },
   "main": "index.js",
   "engines": {

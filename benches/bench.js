@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-var ben            = require('./parben')
-,   assert         = require('assert')
+var assert         = require('assert')
 ,   crypto         = require('crypto')
-,   createHash     = crypto.createHash
+,   ben            = require('./parben')
 ,   hash           = require('..')
 ,   incr           = require('../incremental')
+,   createHash     = crypto.createHash
 ,   duration       = 1000
 ,   stringEncoding = 'binary'
 ,   outputType     = 'number';
@@ -14,11 +14,11 @@ var program = require('commander');
 program
   .version(JSON.parse(require('fs').readFileSync(__dirname + '/../package.json')).version)
   .usage('[options] [seconds=1]')
-  .option('-o, --output [type]', 'output type')
+  .option('-n, --no-crypto', 'do not benchmark crypto hashers')
   .option('-s, --small <chars>', 'small string size in chars', 80)
   .option('-l, --large <kilobytes>', 'large string/buffer size in kilos', 128)
+  .option('-o, --output [type]', 'output type')
   .option('-e, --encoding [enc]', 'input string encoding')
-  .option('-n, --no-crypto', 'do not benchmark crypto hashers')
   .parse(process.argv);
 
 if (program.args.length > 0) duration = 1000*program.args[0]>>>0;
