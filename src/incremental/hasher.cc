@@ -17,85 +17,6 @@ namespace MurmurHash {
 
   #define SINGLE_ARG(...) __VA_ARGS__
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  Persistent<FunctionTemplate> IncrementalHasher<H,HashValueType,HashLength>
-  ::constructor;
-
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
-  ::IncrementalHasher(const uint32_t seed) : hasher(seed), total(0) {};
-
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
-  ::IncrementalHasher(const IncrementalHasher_T& other) : ObjectWrap(),
-                                                          hasher(other.hasher),
-                                                          total(other.total) {};
-
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
-  ::operator=(const IncrementalHasher_T& other)
-  {
-    hasher = other.hasher;
-    total  = other.total;
-  }
-
-  #define HashSerialTotalIndex (HashSerialCarryIndex + HashSize)
-  #define HashSerialType (static_cast<uint8_t>(0x0F ^ HashLength ^ sizeof(HashValueType)) << 4)
-  #define HashSerialTypeMask static_cast<uint8_t>(0xF0 | (0x10 - HashSize))
-  #define HashSerialTypeIndex (HashSerialTotalIndex - 1)
-  /*
-                           HashSerialType           HashSerialTypeMask
-          MurmurHash3A     0b101000nn 15 ^ 1 ^ 4 = 0xA0  0xF0 | 0x10 - 4  = 0xFC
-          MurmurHash128x64 0b0101nnnn 15 ^ 2 ^ 8 = 0x50  0xF0 | 0x10 - 16 = 0xF0
-          MurmurHash128x86 0b1111nnnn 15 ^ 4 ^ 4 = 0xF0  0xF0 | 0x10 - 16 = 0xF0
-          MurmurHash64x64  0b01100nnn 15 ^ 1 ^ 8 = 0x60  0xF0 | 0x10 - 8  = 0xF8
-          MurmurHash64x86  0b10010nnn 15 ^ 2 ^ 4 = 0x90  0xF0 | 0x10 - 8  = 0xF8
-  */
-
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength>
-  :: IsSerialTypeValid(uint8_t *serial)
-  {
-    return HashSerialType == (serial[HashSerialTypeIndex] & HashSerialTypeMask);
-  }
-
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
-  ::IncrementalHasher(const uint8_t *serial) : hasher(serial)
-  {
-    ReadHashBytes<1>(&serial[HashSerialTotalIndex], &total);
-  }
-
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
-  ::Serialize(uint8_t *serial)
-  {
-    hasher.Serialize(serial);
-    serial[HashSerialTypeIndex] |= HashSerialType;
-    WriteHashBytes<1>(&total, &serial[HashSerialTotalIndex]);
-  }
-
-  #undef HashSerialTotalIndex
-  #undef HashSerialType
-  #undef HashSerialTypeMask
-  #undef HashSerialTypeIndex
-  #undef HashSerialTypeValid
-
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
-  ::Update(void *data, uint32_t length)
-  {
-    total += length;
-    hasher.Update( data, length );
-  }
-
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
-  ::Digest(HashValueType *hash)
-  {
-    hasher.Digest( hash, total );
-  }
-
   /**
    * @class
    *
@@ -229,7 +150,7 @@ namespace MurmurHash {
   }
 
   /**
-   * Copy the internal state to the target utility instance
+   * Copy the internal state onto the target utility instance
    * 
    * copy(target)
    * 
@@ -406,6 +327,100 @@ namespace MurmurHash {
     info.GetReturnValue().Set( Nan::New<Uint32>(self->total) );
   }
 
+  #undef SINGLE_ARG
+
+  /*************************************************/
+  /******************** private ********************/
+  /*************************************************/
+
+  /*---------------- constructors -----------------*/
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
+  ::IncrementalHasher(const uint32_t seed) : hasher(seed), total(0) {};
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
+  ::IncrementalHasher(const IncrementalHasher_T& other) : ObjectWrap(),
+                                                          hasher(other.hasher),
+                                                          total(other.total) {};
+
+  #define HashSerialTotalIndex (HashSerialCarryIndex + HashSize)
+  #define HashSerialType (static_cast<uint8_t>(0x0F ^ HashLength ^ sizeof(HashValueType)) << 4)
+  #define HashSerialTypeMask static_cast<uint8_t>(0xF0 | (0x10 - HashSize))
+  #define HashSerialTypeIndex (HashSerialTotalIndex - 1)
+  /*
+                           HashSerialType           HashSerialTypeMask
+          MurmurHash3A     0b101000nn 15 ^ 1 ^ 4 = 0xA0  0xF0 | 0x10 - 4  = 0xFC
+          MurmurHash128x64 0b0101nnnn 15 ^ 2 ^ 8 = 0x50  0xF0 | 0x10 - 16 = 0xF0
+          MurmurHash128x86 0b1111nnnn 15 ^ 4 ^ 4 = 0xF0  0xF0 | 0x10 - 16 = 0xF0
+          MurmurHash64x64  0b01100nnn 15 ^ 1 ^ 8 = 0x60  0xF0 | 0x10 - 8  = 0xF8
+          MurmurHash64x86  0b10010nnn 15 ^ 2 ^ 4 = 0x90  0xF0 | 0x10 - 8  = 0xF8
+  */
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
+  ::IncrementalHasher(const uint8_t *serial) : hasher(serial)
+  {
+    ReadHashBytes<1>(&serial[HashSerialTotalIndex], &total);
+  }
+
+  /*-------------- instance methods ---------------*/
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength>
+  :: IsSerialTypeValid(uint8_t *serial)
+  {
+    return HashSerialType == (serial[HashSerialTypeIndex] & HashSerialTypeMask);
+  }
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  ::Serialize(uint8_t *serial)
+  {
+    hasher.Serialize(serial);
+    serial[HashSerialTypeIndex] |= HashSerialType;
+    WriteHashBytes<1>(&total, &serial[HashSerialTotalIndex]);
+  }
+
+  #undef HashSerialTotalIndex
+  #undef HashSerialType
+  #undef HashSerialTypeMask
+  #undef HashSerialTypeIndex
+  #undef HashSerialTypeValid
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  ::Update(void *data, uint32_t length)
+  {
+    total += length;
+    hasher.Update( data, length );
+  }
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  ::Digest(HashValueType *hash)
+  {
+    hasher.Digest( hash, total );
+  }
+
+  /*------------------ operators ------------------*/
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  ::operator=(const IncrementalHasher_T& other)
+  {
+    hasher = other.hasher;
+    total  = other.total;
+  }
+
+  /*-------------- static variables ---------------*/
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  Persistent<FunctionTemplate> IncrementalHasher<H,HashValueType,HashLength>::constructor;
+
+  /*------------------ node init ------------------*/
+
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   void IncrementalHasher<H,HashValueType,HashLength>
   ::Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE& target, const char* name, const char *altname)
@@ -453,9 +468,6 @@ namespace MurmurHash {
     IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4>::Init(target, "MurmurHash128x86");
   #endif
   }
-
-  #undef SINGLE_ARG
-  #undef INIT_HASHER
 }
 
 NODE_MODULE(murmurhashincremental, MurmurHash::Init)
