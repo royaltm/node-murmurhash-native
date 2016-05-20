@@ -1,8 +1,9 @@
 v3.0.0
 
-* results in buffers always in network order MSB (byte)
+* results always in network order MSB (byte)
 * restored output types: "hex" "base64" and "binary"
 * incremental MurmurHash 3: 32bit, 128bit x86 and x64
+* copyable and serializable state of incremental MurmurHash
 * stream wrapper for incremental MurmurHash
 
 v2.1.0
