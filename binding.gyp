@@ -27,9 +27,7 @@
           'msvs_settings': {
             'VCCLCompilerTool': {
               'ExceptionHandling': 1,
-              'AdditionalOptions': [
-                '/EHsc' # ExceptionHandling=1 is not enough
-              ]
+              'DisableSpecificWarnings': ['4506']
             }
           }
         }]
@@ -63,9 +61,7 @@
           'msvs_settings': {
             'VCCLCompilerTool': {
               'ExceptionHandling': 1,
-              'AdditionalOptions': [
-                '/EHsc' # ExceptionHandling=1 is not enough
-              ]
+              'DisableSpecificWarnings': ['4506']
             }
           }
         }]
