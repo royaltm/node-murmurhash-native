@@ -8,6 +8,9 @@
     "murmurhash32",
     "murmurhash2",
     "murmurhash64",
+    "progressive hash",
+    "PMurHash",
+    "PMurHash128",
     "hash"
   ],
   "version": "2.1.0",
