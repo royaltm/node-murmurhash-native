@@ -46,13 +46,13 @@ namespace MurmurHash {
 
       #define BASE64_ENCODED_SIZE(size) ((size + 2 - ((size + 2) % 3)) / 3 * 4)
 
-      static const uint32_t kHashSerialTotalIndex = HashSize + HashSize;
+      static const int32_t kHashSerialTotalIndex = HashSize + HashSize;
+      static const int32_t kHashSerialCkSize = 3;
       static const checksum_t kHashSerialCkSeed = 0xDEADBACA;
-      static const uint32_t kHashSerialCkSize = 3;
       static const checksum_t kHashSerialCkMask = static_cast<checksum_t>((1LLU << (kHashSerialCkSize * 8)) - 1);
-      static const uint32_t kHashSerialCkIndex = kHashSerialTotalIndex + sizeof(total_t);
-      static const uint32_t kHashSerialSize = kHashSerialCkIndex + kHashSerialCkSize;
-      static const uint32_t kHashSerialStringSize = BASE64_ENCODED_SIZE(kHashSerialSize);
+      static const int32_t kHashSerialCkIndex = kHashSerialTotalIndex + sizeof(total_t);
+      static const int32_t kHashSerialSize = kHashSerialCkIndex + kHashSerialCkSize;
+      static const int32_t kHashSerialStringSize = BASE64_ENCODED_SIZE(kHashSerialSize);
       /*
        Serial data in network byte order
                             0: hstate[MSByte] ... hstate[LSByte]
@@ -60,9 +60,9 @@ namespace MurmurHash {
                     +HashSize:  total[MSByte] ... total[LSByte]
                +sizeof(total):  chksum = ((ck[0] ^ chksum >>24)<<16) | ck[1]<<8 | ck[2]
       */
-      static const uint8_t  kHashSerialType = static_cast<uint8_t>((0x0F ^ HashLength ^ sizeof(HashValueType)) << 4);
-      static const uint8_t  kHashSerialTypeMask = static_cast<uint8_t>(0xF0 | (0x10 - HashSize));
-      static const uint32_t kHashSerialTypeIndex = kHashSerialTotalIndex - 1;
+      static const uint8_t kHashSerialType = static_cast<uint8_t>((0x0F ^ HashLength ^ sizeof(HashValueType)) << 4);
+      static const uint8_t kHashSerialTypeMask = static_cast<uint8_t>(0xF0 | (0x10 - HashSize));
+      static const int32_t kHashSerialTypeIndex = kHashSerialTotalIndex - 1;
       /*
                                kHashSerialType           kHashSerialTypeMask
               MurmurHash3A     0b101000nn 15 ^ 1 ^ 4 = 0xA0  0xF0 | 0x10 - 4  = 0xFC
