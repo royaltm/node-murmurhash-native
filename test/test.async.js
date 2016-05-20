@@ -66,6 +66,26 @@ test("should have murmurHash functions", function(t) {
 
     t.type(murmurHash, 'function');
 
+    t.test('should not bail on error throw in a callback', function(t) {
+      t.plan(5);
+      var threw = t.hasOwnProperty('threw') ? t.threw : undefined;
+      t.threw = function(error) {
+        t.pass('threw async exception');
+        if (threw === undefined)
+          delete t.threw;
+        else
+          t.threw = threw
+        setImmediate(function() {
+          t.strictEqual(error.message, "mana mana");
+        });
+      };
+      t.strictEqual(undefined, murmurHash('', function(err, foo) {
+        t.error(err);
+        t.strictEqual(foo, seedZeroDefault);
+        throw new Error("mana mana");
+      }));
+    });
+
     t.test('should throw error for bad arguments', function(t) {
       t.plan(21*3);
       function cberr1(err) {
