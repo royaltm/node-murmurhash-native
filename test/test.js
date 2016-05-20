@@ -68,36 +68,36 @@ test("should have murmurHash functions", function(t) {
     , seedZeroBinary      = seedZeroBuffer.toString('binary')
     , seedMinusOneBinary  = seedMinusOneBuffer.toString('binary')
     , seedPlusOneBinary   = seedPlusOneBuffer.toString('binary')
-
+;
 
   test(label, function(t) {
 
     t.type(murmurHash, 'function');
 
     t.test('should throw error for bad arguments', function(t) {
-      t.throws(function() { murmurHash() }, new TypeError("string or Buffer is required") );
-      t.throws(function() { murmurHash({}) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { murmurHash([]) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { murmurHash(void(0)) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { murmurHash(null) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { murmurHash(true) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { murmurHash(false) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { murmurHash(0) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { murmurHash(1) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { murmurHash(-1) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { murmurHash(new Date()) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { murmurHash("", "abcdefghijklmno") }, new TypeError("\"encoding\" must be a valid string encoding") );
-      t.throws(function() { murmurHash("", "123456") }, new TypeError("\"encoding\" must be a valid string encoding") );
-      t.throws(function() { murmurHash("", "12345") }, new TypeError("\"encoding\" must be a valid string encoding") );
-      t.throws(function() { murmurHash("", "1234") }, new TypeError("\"encoding\" must be a valid string encoding") );
-      t.throws(function() { murmurHash("", "123") }, new TypeError("\"encoding\" must be a valid string encoding") );
-      t.throws(function() { murmurHash("", "") }, new TypeError("\"encoding\" must be a valid string encoding") );
-      t.throws(function() { murmurHash(new Buffer(0), 0, "") }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
-      t.throws(function() { murmurHash(new Buffer(0), "") }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
-      t.throws(function() { murmurHash("", 0, "") }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
-      t.throws(function() { murmurHash("", 0, "mumber") }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
-      t.throws(function() { murmurHash("", 0, "xxxxxxx") }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
-      t.throws(function() { murmurHash("", 0, "utf-8") }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
+      t.throws(function() { murmurHash(); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { murmurHash({}); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { murmurHash([]); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { murmurHash(void(0)); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { murmurHash(null); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { murmurHash(true); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { murmurHash(false); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { murmurHash(0); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { murmurHash(1); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { murmurHash(-1); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { murmurHash(new Date()); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { murmurHash("", "abcdefghijklmno"); }, new TypeError("\"encoding\" must be a valid string encoding") );
+      t.throws(function() { murmurHash("", "123456"); }, new TypeError("\"encoding\" must be a valid string encoding") );
+      t.throws(function() { murmurHash("", "12345"); }, new TypeError("\"encoding\" must be a valid string encoding") );
+      t.throws(function() { murmurHash("", "1234"); }, new TypeError("\"encoding\" must be a valid string encoding") );
+      t.throws(function() { murmurHash("", "123"); }, new TypeError("\"encoding\" must be a valid string encoding") );
+      t.throws(function() { murmurHash("", ""); }, new TypeError("\"encoding\" must be a valid string encoding") );
+      t.throws(function() { murmurHash(new Buffer(0), 0, ""); }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
+      t.throws(function() { murmurHash(new Buffer(0), ""); }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
+      t.throws(function() { murmurHash("", 0, ""); }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
+      t.throws(function() { murmurHash("", 0, "mumber"); }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
+      t.throws(function() { murmurHash("", 0, "xxxxxxx"); }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
+      t.throws(function() { murmurHash("", 0, "utf-8"); }, new TypeError("Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"") );
 
       t.end();
     });

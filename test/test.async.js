@@ -61,6 +61,7 @@ test("should have murmurHash functions", function(t) {
     , seedZeroBinary      = seedZeroBuffer.toString('binary')
     , seedMinusOneBinary  = seedMinusOneBuffer.toString('binary')
     , seedPlusOneBinary   = seedPlusOneBuffer.toString('binary')
+;
 
   test(label, function(t) {
 
@@ -74,7 +75,7 @@ test("should have murmurHash functions", function(t) {
         if (threw === undefined)
           delete t.threw;
         else
-          t.threw = threw
+          t.threw = threw;
         setImmediate(function() {
           t.strictEqual(error.message, "mana mana");
         });
@@ -742,7 +743,7 @@ test("should have murmurHash functions", function(t) {
       function cbfactory2(buf, offs, len) {
         return function(err, result) {
           t.error(err);
-          if (offs == undefined) {
+          if (offs === undefined) {
             t.deepEqual(result, buf);
           } else {
             t.deepEqual(result.slice(offs, len), buf);

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
+"use strict";
+
 var os             = require('os')
-,   assert         = require('assert')
 ,   parben         = require('./parben').parallel
 ,   hash           = require('..')
 ,   duration       = 1000

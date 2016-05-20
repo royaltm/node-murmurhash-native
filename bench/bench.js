@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-var assert         = require('assert')
-,   crypto         = require('crypto')
+"use strict";
+
+var crypto         = require('crypto')
 ,   ben            = require('./parben')
 ,   hash           = require('..')
 ,   incr           = require('../incremental')

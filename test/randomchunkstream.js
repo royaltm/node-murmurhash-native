@@ -1,6 +1,5 @@
 "use strict";
 
-var test = require("tap").test
 var crypto = require('crypto');
 var stream = require('stream');
 

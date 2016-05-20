@@ -1,6 +1,6 @@
 "use strict";
 
-var test = require("tap").test
+var test = require("tap").test;
 var RandomChunkStream = require('./randomchunkstream');
 var stream = require('stream');
 
@@ -31,7 +31,7 @@ test("RandomChunkStream", function(t) {
   });
   s.on('end', function() {
     t.equal(sizes, 10000);
-    t.ok(counts >= 10000/10 )
+    t.ok(counts >= 10000/10 );
     t.equal(s.cursor, 10000);
     t.deepEqual(s.buffer, destbuf);
     p.on('end', function() {

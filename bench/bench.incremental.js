@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-var os             = require('os')
-,   crypto         = require('crypto')
+"use strict";
+
+var crypto         = require('crypto')
 ,   ben            = require('./parben')
 ,   incr           = require('../incremental')
-,   assert         = require('assert')
 ,   duration       = 1000
 ,   stringEncoding = 'binary'
 ,   outputType     = 'hex';
@@ -29,11 +29,6 @@ if (program.encoding) {
 if (program.output) {
   outputType = program.output;
   console.log('output type: %s', outputType);
-}
-
-if (program.multiplier) {
-  smallmult = program.multiplier;
-  console.log('small multiplier: %d', smallmult);
 }
 
 console.log('test duration: %d ms', duration);

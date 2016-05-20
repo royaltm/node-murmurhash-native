@@ -8,10 +8,11 @@ var test = require("tap").test
 ;
 
 function testStream(hasher, data, encoding, cb) {
-  if ('function' === typeof encoding)
-    cb = encoding, encoding = null;
+  if ('function' === typeof encoding) {
+    cb = encoding; encoding = null;
+  }
   hasher.end(data, encoding);
-  hasher.on('readable', function() { cb(hasher.read()) });
+  hasher.on('readable', function() { cb(hasher.read()); });
 }
 
 test("should have algorithms", function(t) {
@@ -23,32 +24,26 @@ test("should have algorithms", function(t) {
 });
 
 test('should throw error for bad arguments', function(t) {
-  t.throws(function() { strm.createHash() }, new TypeError("Must give algorithm string or MurmurHash instance") );
-  t.throws(function() { strm.createHash("foo") }, new Error("Algorithm not supported") );
+  t.throws(function() { strm.createHash(); }, new TypeError("Must give algorithm string or MurmurHash instance") );
+  t.throws(function() { strm.createHash("foo"); }, new Error("Algorithm not supported") );
   t.end();
 });
 
 [
   [4, 'murmurhash', hash.murmurHash,
-      '00000000', '81f16f39', '514e28b7',
-      'e72d7f37'],
+      '00000000', '81f16f39', '514e28b7'],
   [4, 'murmurhash3a', hash.murmurHash,
-      '00000000', '81f16f39', '514e28b7',
-      'e72d7f37'],
+      '00000000', '81f16f39', '514e28b7'],
   [4, 'murmurhash32', hash.murmurHash,
-      '00000000', '81f16f39', '514e28b7',
-      'e72d7f37'],
+      '00000000', '81f16f39', '514e28b7'],
   [4, 'murmurhash32x86', hash.murmurHash,
-      '00000000', '81f16f39', '514e28b7',
-      'e72d7f37'],
+      '00000000', '81f16f39', '514e28b7'],
   [16, 'murmurhash128x64', hash.murmurHash128x64,
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
-      '4610abe56eff5cb551622daa78f83583',
-      '18a573e78e997f9b0be9c4b4595e5875'],
+      '4610abe56eff5cb551622daa78f83583'],
   [16, 'murmurhash128x86', hash.murmurHash128x86,
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
-      '88c4adec54d201b954d201b954d201b9',
-      'cf690ba00d5fb908b2978b4d8d77cbee']
+      '88c4adec54d201b954d201b954d201b9']
 ].forEach(function(args)  {
   var size                = args[ 0]
     , algorithm           = args[ 1]
@@ -56,7 +51,6 @@ test('should throw error for bad arguments', function(t) {
     , seedZeroHex         = args[ 3]
     , seedMinusOneHex     = args[ 4]
     , seedPlusOneHex      = args[ 5]
-    , crashTestHex        = args[ 6]
     , seedZeroBuffer      = new Buffer(seedZeroHex,  'hex')
     , seedMinusOneBuffer  = new Buffer(seedMinusOneHex, 'hex')
     , seedPlusOneBuffer   = new Buffer(seedPlusOneHex,  'hex')
@@ -66,6 +60,7 @@ test('should throw error for bad arguments', function(t) {
     , seedZeroBinary      = seedZeroBuffer.toString('binary')
     , seedMinusOneBinary  = seedMinusOneBuffer.toString('binary')
     , seedPlusOneBinary   = seedPlusOneBuffer.toString('binary')
+;
 
   test(algorithm, function(t) {
 
@@ -87,7 +82,7 @@ test('should throw error for bad arguments', function(t) {
       function cbfactory(value) {
         return function(result) {
           t.strictEqual(result, value);
-        }
+        };
       }
       testStream(strm.createHash(algorithm, {encoding:'hex'}), '', cbfactory(seedZeroHex));
       testStream(strm.createHash(algorithm, {encoding:'hex'}), '', 'binary', cbfactory(seedZeroHex));
@@ -116,7 +111,7 @@ test('should throw error for bad arguments', function(t) {
       function cbfactory(value) {
         return function(result) {
           t.deepEqual(result, value);
-        }
+        };
       }
       testStream(strm.createHash(algorithm), '', cbfactory(seedZeroBuffer));
       testStream(strm.createHash(algorithm), '', 'binary', cbfactory(seedZeroBuffer));
@@ -145,7 +140,7 @@ test('should throw error for bad arguments', function(t) {
       function cbfactory(value) {
         return function(result) {
           t.strictEqual(result, value);
-        }
+        };
       }
       testStream(strm.createHash(algorithm, {encoding:'base64'}), '', cbfactory(seedZeroBase64));
       testStream(strm.createHash(algorithm, {encoding:'binary'}), '', cbfactory(seedZeroBinary));
@@ -195,12 +190,12 @@ test('should throw error for bad arguments', function(t) {
         return function(result) {
           var result2 = murmurHash(arg, 'buffer');
           t.deepEqual(result, result2);
-        }
+        };
       }
       function cbfactory2(value) {
         return function(result) {
           t.deepEqual(result, value);
-        }
+        };
       }
       var string = "\u1220łóżko"
         , base64 = 'IELzfGtv'
@@ -230,21 +225,21 @@ test('should throw error for bad arguments', function(t) {
       function cbfactoryLen() {
         return function(result) {
           t.equal(result.length, size);
-        }
+        };
       }
       function cbfactory(arg, seed) {
         return function(result) {
-          var result2 = (seed == undefined)
+          var result2 = (seed === undefined)
             ? murmurHash(arg, 0, 'hex')
             : murmurHash(arg, seed, 'hex');
           t.strictEqual(result, result2);
-        }
+        };
       }
       function cbfactory2(assertion, arg, seed, output) {
         return function(result) {
           var result2 = murmurHash(arg, seed, output);
           t[assertion](result, result2);
-        }
+        };
       }
       var data = '';
       for (var i = 0; i < 1000; ++i) data += String.fromCharCode((Math.random()*32768)|0);
@@ -282,7 +277,7 @@ test('should throw error for bad arguments', function(t) {
       src.pipe(hasherS);
       src.once('data', function(data) {
         t.type(data, 'Buffer');
-        t.ok(data.length <= src.maxchunksize)
+        t.ok(data.length <= src.maxchunksize);
       }).on('data', function(data) {
         bufchunks++;
         bufsize += data.length;
@@ -292,7 +287,7 @@ test('should throw error for bad arguments', function(t) {
       strsrc.pipe(hasherSstr);
       strsrc.once('data', function(data) {
         t.type(data, 'string');
-        t.ok(data.length <= src.maxchunksize)
+        t.ok(data.length <= src.maxchunksize);
       }).on('data', function(data) {
         strchunks++;
         strsize += data.length;
@@ -302,8 +297,8 @@ test('should throw error for bad arguments', function(t) {
         t.equal(bufsize, buffer.length);
         t.equal(strsize, buffer.length);
         t.equal(bufchunks, strchunks);
-        t.ok(bufchunks >= src.size / src.maxchunksize)
-        t.ok(strchunks >= src.size / src.maxchunksize)
+        t.ok(bufchunks >= src.size / src.maxchunksize);
+        t.ok(strchunks >= src.size / src.maxchunksize);
         t.equal(hasher0._handle.total, buffer.length);
         t.equal(hasher1._handle.total, buffer.length);
         t.equal(hasherS._handle.total, buffer.length);

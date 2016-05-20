@@ -1,3 +1,4 @@
+// jshint loopfunc:true
 "use strict";
 
 var test = require("tap").test
@@ -19,14 +20,14 @@ test("should have murmurHash constructors", function(t) {
 
 test("should not deserialize foreign serialized data", function(t) {
   var serial0 = incr.MurmurHash128x64().serialize();
-  t.throws(function() { new incr.MurmurHash128x86(serial0) }, new TypeError("Incorrect serialized string"));
-  t.throws(function() { new incr.MurmurHash(serial0) }, new TypeError("Incorrect size of the serialized string"));
+  t.throws(function() { new incr.MurmurHash128x86(serial0); }, new TypeError("Incorrect serialized string"));
+  t.throws(function() { new incr.MurmurHash(serial0); }, new TypeError("Incorrect size of the serialized string"));
   var serial1 = incr.MurmurHash128x86().serialize();
-  t.throws(function() { new incr.MurmurHash128x64(serial1) }, new TypeError("Incorrect serialized string"));
-  t.throws(function() { new incr.MurmurHash(serial1) }, new TypeError("Incorrect size of the serialized string"));
+  t.throws(function() { new incr.MurmurHash128x64(serial1); }, new TypeError("Incorrect serialized string"));
+  t.throws(function() { new incr.MurmurHash(serial1); }, new TypeError("Incorrect size of the serialized string"));
   var serial2 = incr.MurmurHash().serialize();
-  t.throws(function() { new incr.MurmurHash128x86(serial2) }, new TypeError("Incorrect size of the serialized string"));
-  t.throws(function() { new incr.MurmurHash128x64(serial2) }, new TypeError("Incorrect size of the serialized string"));
+  t.throws(function() { new incr.MurmurHash128x86(serial2); }, new TypeError("Incorrect size of the serialized string"));
+  t.throws(function() { new incr.MurmurHash128x64(serial2); }, new TypeError("Incorrect size of the serialized string"));
   t.end();
 });
 
@@ -36,7 +37,7 @@ function wrapStream(name) {
                ? new strm.MurmurHash(seed)
                : new strm.MurmurHash(name, {seed: seed});
     return hasher;
-  }
+  };
 }
 
 [
@@ -94,6 +95,7 @@ function wrapStream(name) {
     , seedZeroBinary      = seedZeroBuffer.toString('binary')
     , seedMinusOneBinary  = seedMinusOneBuffer.toString('binary')
     , seedPlusOneBinary   = seedPlusOneBuffer.toString('binary')
+;
 
   test(label, function(t) {
 
@@ -107,52 +109,52 @@ function wrapStream(name) {
       t.type(hasher.digest, 'function');
       t.strictEqual(hasher.total, 0);
 
-      var hasher = MurmurHash(0, 'foo', 'bar', ['baz']);
-      t.type(hasher, 'object');
-      t.type(hasher, klass);
-      t.type(hasher.update, 'function');
-      t.type(hasher.digest, 'function');
-      t.strictEqual(hasher.total, 0);
+      var hasher1 = MurmurHash(0, 'foo', 'bar', ['baz']);
+      t.type(hasher1, 'object');
+      t.type(hasher1, klass);
+      t.type(hasher1.update, 'function');
+      t.type(hasher1.digest, 'function');
+      t.strictEqual(hasher1.total, 0);
 
       t.end();
     });
 
     t.test('should throw error for bad arguments', function(t) {
-      t.throws(function() { new MurmurHash().update() }, new TypeError("string or Buffer is required") );
-      t.throws(function() { new MurmurHash().update({}) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { new MurmurHash().update([]) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { new MurmurHash().update(void(0)) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { new MurmurHash().update(null) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { new MurmurHash().update(true) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { new MurmurHash().update(false) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { new MurmurHash().update(0) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { new MurmurHash().update(1) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { new MurmurHash().update(-1) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { new MurmurHash().update(new Date()) }, new TypeError("string or Buffer is required") );
-      t.throws(function() { new MurmurHash([]) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
-      t.throws(function() { MurmurHash([]) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
-      t.throws(function() { new MurmurHash({}) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
-      t.throws(function() { new MurmurHash(new Date) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
-      t.throws(function() { new MurmurHash(true) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
-      t.throws(function() { new MurmurHash(false) }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
-      t.notThrow(function() { new MurmurHash(null) }, "null accepted" );
-      t.notThrow(function() { new MurmurHash(undefined) }, "undefined accepted" );
-      t.notThrow(function() { new MurmurHash().update("", "abcdefghijklmno") }, "invalid encoding should be accepted" );
-      t.notThrow(function() { new MurmurHash().update("", "123456") }, "invalid encoding should be accepted and ignored" );
-      t.notThrow(function() { new MurmurHash().update("", "12345") }, "invalid encoding should be accepted and ignored" );
-      t.notThrow(function() { new MurmurHash().update("", "1234") }, "invalid encoding should be accepted and ignored" );
-      t.notThrow(function() { new MurmurHash().update("", "123") }, "invalid encoding should be accepted and ignored" );
-      t.notThrow(function() { new MurmurHash().update("", "") }, "invalid encoding should be accepted and ignored" );
-      t.notThrow(function() { new MurmurHash().digest("") }, "invalid output type should be accepted and ignored" );
-      t.notThrow(function() { new MurmurHash().digest("mumber") }, "invalid output type should be accepted and ignored" );
-      t.notThrow(function() { new MurmurHash().digest("xxxxxxx") }, "invalid output type should be accepted and ignored" );
-      t.notThrow(function() { new MurmurHash().digest("utf-8") }, "invalid output type should be accepted and ignored" );
+      t.throws(function() { new MurmurHash().update(); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash().update({}); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash().update([]); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash().update(void(0)); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash().update(null); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash().update(true); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash().update(false); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash().update(0); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash().update(1); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash().update(-1); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash().update(new Date()); }, new TypeError("string or Buffer is required") );
+      t.throws(function() { new MurmurHash([]); }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.throws(function() { MurmurHash([]); }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.throws(function() { new MurmurHash({}); }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.throws(function() { new MurmurHash(new Date()); }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.throws(function() { new MurmurHash(true); }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.throws(function() { new MurmurHash(false); }, new TypeError("Expected a seed number, MurmurHash instance or serialized state") );
+      t.notThrow(function() { new MurmurHash(null); }, "null accepted" );
+      t.notThrow(function() { new MurmurHash(undefined); }, "undefined accepted" );
+      t.notThrow(function() { new MurmurHash().update("", "abcdefghijklmno"); }, "invalid encoding should be accepted" );
+      t.notThrow(function() { new MurmurHash().update("", "123456"); }, "invalid encoding should be accepted and ignored" );
+      t.notThrow(function() { new MurmurHash().update("", "12345"); }, "invalid encoding should be accepted and ignored" );
+      t.notThrow(function() { new MurmurHash().update("", "1234"); }, "invalid encoding should be accepted and ignored" );
+      t.notThrow(function() { new MurmurHash().update("", "123"); }, "invalid encoding should be accepted and ignored" );
+      t.notThrow(function() { new MurmurHash().update("", ""); }, "invalid encoding should be accepted and ignored" );
+      t.notThrow(function() { new MurmurHash().digest(""); }, "invalid output type should be accepted and ignored" );
+      t.notThrow(function() { new MurmurHash().digest("mumber"); }, "invalid output type should be accepted and ignored" );
+      t.notThrow(function() { new MurmurHash().digest("xxxxxxx"); }, "invalid output type should be accepted and ignored" );
+      t.notThrow(function() { new MurmurHash().digest("utf-8"); }, "invalid output type should be accepted and ignored" );
       var hasher = new MurmurHash();
-      t.notThrow(function() { hasher.digest() }, "first digest ok" );
-      t.notThrow(function() { hasher.update('') }, "update ok" );
-      t.notThrow(function() { hasher.digest() }, "second digest ok" );
-      t.notThrow(function() { hasher.update('') }, "update ok" );
-      t.notThrow(function() { hasher.digest() }, "third digest ok" );
+      t.notThrow(function() { hasher.digest(); }, "first digest ok" );
+      t.notThrow(function() { hasher.update(''); }, "update ok" );
+      t.notThrow(function() { hasher.digest(); }, "second digest ok" );
+      t.notThrow(function() { hasher.update(''); }, "update ok" );
+      t.notThrow(function() { hasher.digest(); }, "third digest ok" );
 
       t.end();
     });
@@ -461,14 +463,14 @@ function wrapStream(name) {
     t.test('should copy internal state and create instance from copy', function(t) {
       var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
       var hasher0 = new MurmurHash(seed).update('foo');
-      t.throws(function() { hasher0.copy() }, new TypeError("Target must be another instance of the same murmur hash type utility"));
-      t.throws(function() { hasher0.copy([]) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
-      t.throws(function() { hasher0.copy({}) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
-      t.throws(function() { hasher0.copy(0) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
-      t.throws(function() { hasher0.copy(true) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
-      t.throws(function() { hasher0.copy(false) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
-      t.throws(function() { hasher0.copy(null) }, new TypeError("Target must be another instance of the same murmur hash type utility"));
-      t.throws(function() { hasher0.copy(hasher0) }, new Error("Target must not be the same instance"));
+      t.throws(function() { hasher0.copy(); }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy([]); }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy({}); }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy(0); }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy(true); }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy(false); }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy(null); }, new TypeError("Target must be another instance of the same murmur hash type utility"));
+      t.throws(function() { hasher0.copy(hasher0); }, new Error("Target must not be the same instance"));
       var hasher1 = new MurmurHash(hasher0);
       t.notStrictEqual(hasher1, hasher0);
       t.strictEqual(hasher0.digest('hex'), hasher1.digest('hex'));
@@ -487,19 +489,19 @@ function wrapStream(name) {
     t.test('should serialize internal state and create instance from serial', function(t) {
       var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
       var hasher0 = new MurmurHash(seed).update('foo');
-      t.throws(function() { hasher0.serialize(new Buffer(0)) }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
-      t.throws(function() { hasher0.serialize(new Buffer(1000), -1) }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
-      t.throws(function() { hasher0.serialize(new Buffer(1000), 998) }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
-      t.throws(function() { new MurmurHash('') }, new TypeError("Incorrect size of the serialized string"));
-      t.throws(function() { new MurmurHash('1234567890abcdef1') }, new TypeError("Incorrect size of the serialized string"));
+      t.throws(function() { hasher0.serialize(new Buffer(0)); }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
+      t.throws(function() { hasher0.serialize(new Buffer(1000), -1); }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
+      t.throws(function() { hasher0.serialize(new Buffer(1000), 998); }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
+      t.throws(function() { new MurmurHash(''); }, new TypeError("Incorrect size of the serialized string"));
+      t.throws(function() { new MurmurHash('1234567890abcdef1'); }, new TypeError("Incorrect size of the serialized string"));
       var buffer = new Buffer(50); buffer.fill(0);
-      t.throws(function() { new MurmurHash(buffer) }, new TypeError("Incorrect serialized data"));
-      t.throws(function() { new MurmurHash(new Buffer(11)) }, new TypeError("Incorrect size of the serialized data"));
+      t.throws(function() { new MurmurHash(buffer); }, new TypeError("Incorrect serialized data"));
+      t.throws(function() { new MurmurHash(new Buffer(11)); }, new TypeError("Incorrect size of the serialized data"));
       var serial0 = hasher0.serialize();
       t.type(serial0, 'string');
       buffer = new Buffer(serial0.length); buffer.fill(0);
-      t.throws(function() { new MurmurHash(buffer.toString('binary')) }, new TypeError("Incorrect serialized string"));
-      t.throws(function() { new MurmurHash(buffer) }, new TypeError("Incorrect serialized data"));
+      t.throws(function() { new MurmurHash(buffer.toString('binary')); }, new TypeError("Incorrect serialized string"));
+      t.throws(function() { new MurmurHash(buffer); }, new TypeError("Incorrect serialized data"));
       var serial0bin = new Buffer(hasher0.SERIAL_BYTE_LENGTH);
       t.strictEqual(hasher0.serialize(serial0bin), serial0bin);
       var hasher1 = new MurmurHash(serial0);
@@ -519,7 +521,7 @@ function wrapStream(name) {
           t.strictEqual(new MurmurHash(serial0bin).update('bar').digest('hex'),
                         new MurmurHash(seed).update('foobar').digest('hex'));
           buffer[i] = buffer[i] ^ n;
-          t.throws(function() { new MurmurHash(buffer) }, new TypeError("Incorrect serialized data"));
+          t.throws(function() { new MurmurHash(buffer); }, new TypeError("Incorrect serialized data"));
         }
       }
 

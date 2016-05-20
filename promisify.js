@@ -1,3 +1,4 @@
+// jshint multistr:true, evil:true
 "use strict";
 
 var murmurhash = require('./index');
