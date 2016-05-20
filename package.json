@@ -37,6 +37,6 @@
     "bluebird": "^3.3.5",
     "commander": "^2.9.0",
     "murmurhash3js": "^3.0.1",
-    "tap": "*"
+    "tap": "^5.7.1"
   }
 }
