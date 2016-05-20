@@ -19,9 +19,9 @@ test("should have murmurHash functions", function(t) {
 });
 
 function testHash(t, hash, input, seed, expectation) {
-  console.log(input)
+  console.log(input);
   input = swap(input, hash);
-  console.log(input)
+  console.log(input);
   if (Buffer.isBuffer(expectation)) {
     t.deepEqual(hash(input, seed), expectation);
   } else {
@@ -39,7 +39,7 @@ function swap(value, hash) {
     case "murmurHash128x64":
       return swap64(value);
     default:
-      throw new Error("unknown function")
+      throw new Error("unknown function");
   }
 }
 
