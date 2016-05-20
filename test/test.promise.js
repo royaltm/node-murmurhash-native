@@ -6,22 +6,18 @@ var test = require("tap").test
 ;
 
 test("should have murmurHash functions", function(t) {
-  t.type(hash.murmurHashAsync, 'function');
-  t.strictEqual(hash.murmurHashAsync.name, 'murmurHashAsync');
-  t.type(hash.murmurHash32Async, 'function');
-  t.strictEqual(hash.murmurHash32Async.name, 'murmurHash32Async');
-  t.type(hash.murmurHash64Async, 'function');
-  t.strictEqual(hash.murmurHash64Async.name, 'murmurHash64Async');
-  t.type(hash.murmurHash64x64Async, 'function');
-  t.strictEqual(hash.murmurHash64x64Async.name, 'murmurHash64x64Async');
-  t.type(hash.murmurHash64x86Async, 'function');
-  t.strictEqual(hash.murmurHash64x86Async.name, 'murmurHash64x86Async');
-  t.type(hash.murmurHash128x64Async, 'function');
-  t.strictEqual(hash.murmurHash128x64Async.name, 'murmurHash128x64Async');
-  t.type(hash.murmurHash128Async, 'function');
-  t.strictEqual(hash.murmurHash128Async.name, 'murmurHash128Async');
-  t.type(hash.murmurHash128x86Async, 'function');
-  t.strictEqual(hash.murmurHash128x86Async.name, 'murmurHash128x86Async');
+  ['murmurHashAsync',
+   'murmurHash32Async',
+   'murmurHash64Async',
+   'murmurHash64x64Async',
+   'murmurHash64x86Async',
+   'murmurHash128x64Async',
+   'murmurHash128Async',
+   'murmurHash128x86Async'
+  ].forEach(function(name) {
+    t.type(hash[name], 'function');
+    t.strictEqual(hash[name].name, name);
+  });
   t.end();
 });
 
