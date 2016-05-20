@@ -203,9 +203,12 @@ mm.murmurHash32Async( 'hash me!', 0x12345789 )
 Significant changes in 3.x
 --------------------------
 
-The most important change is full platform indifference of rendered output. In 2.x output hash as binary data provided via buffer was endian sensitive. Starting with 3.x the data written to output buffer is always MSB (byte) first.
+The most important change is full platform indifference of rendered output.
+In 2.x output hash as binary data provided via buffer was endian sensitive.
+Starting with 3.x the data written to output buffer is always MSB (byte) first.
 
-The "hex", "base64" and "binary" output types has been (re)added, but this time with sane definition.
+The "hex", "base64" and "binary" output types has been (re)added, but this time
+with a sane definition.
 
 So in this version the following is true on all platforms:
 
@@ -218,15 +221,24 @@ assert.strictEqual(murmurHash('foo', 'buffer').toString('base64'), murmurHash('f
 Significant changes in 2.x
 --------------------------
 
-The 1.x output types were very confusing. E.g. "hex" was just an equivalent of `murmurHash(data, "buffer").toString("hex")` which renders incorrect hexadecimal number. So all the string output type encodings: "utf8", "ucs2", "ascii", "hex", "base64" and "binary" were completely removed in 2.0 as being simply useless.
+The 1.x output types were very confusing. E.g. "hex" was just an equivalent of
+`murmurHash(data, "buffer").toString("hex")` which rendered incorrect hexadecimal
+number. So all the string output type encodings: "utf8", "ucs2", "ascii", "hex",
+"base64" and "binary" were completely removed in 2.0 as being simply useless.
 
-The "number" output type has been adapted to all variants in a way more compatible with other murmurhash [implementations][murmurhash3js]. For 32bit hash the return value is an unsigned 32-bit integer (it was signed integer in 1.x) and for other hashes it's a hexadecimal number.
+The "number" output type has been adapted to all variants in a way more compatible
+with other murmurhash [implementations][murmurhash3js]. For 32bit hash the return
+value is an unsigned 32-bit integer (it was signed integer in 1.x) and for other
+hashes it's a hexadecimal number.
 
-The "buffer" output type wasn't modified except that the default output is now "number" for all of the hashes.
+The "buffer" output type wasn't modified except that the default output is now
+"number" for all of the hashes.
 
-Additionally when passing unsupported value to `encoding` or `output_type` argument the function throws `TypeError`.
+Additionally when passing unsupported value to `encoding` or `output_type`
+argument the function throws `TypeError`.
 
-Another breaking change is for the BE platforms. Starting with 2.0 endian-ness is supported, so hashes should be consistent regardless of the cpu type.
+Another breaking change is for the BE platforms. Starting with 2.0 endian-ness
+is recognized, so hashes should be consistent regardless of the cpu type.
 
 Since v2.1 the callback argument was introduced.
 
@@ -249,7 +261,7 @@ Tested with nodejs: v0.10, v0.11, v0.12, iojs-3, v4, v5 and v6.
 [NPM Status]: https://www.npmjs.com/package/murmurhash-native
 [Node img]: https://img.shields.io/node/v/murmurhash-native.svg?maxAge=2592000&style=flat-square
 [License img]: https://img.shields.io/npm/l/murmurhash-native.svg?maxAge=2592000&style=flat-square
-[License Link]: LICENSE
+[License Link]: https://opensource.org/licenses/MIT
 [bitHound img]: https://img.shields.io/bithound/dependencies/github/royaltm/node-murmurhash-native.svg?maxAge=86400&style=flat-square
 [bitHound Status]: https://www.bithound.io/github/royaltm/node-murmurhash-native
 [murmurhash3js]: https://www.npmjs.com/package/murmurhash3js
