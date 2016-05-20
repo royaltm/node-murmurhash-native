@@ -248,7 +248,7 @@ Tested with nodejs: v0.10, v0.11, v0.12, iojs-3, v4, v5 and v6.
 [NPM img]: https://img.shields.io/npm/v/murmurhash-native.svg?maxAge=86400&style=flat-square
 [Node img]: https://img.shields.io/node/v/murmurhash-native.svg?maxAge=2592000&style=flat-square
 [License img]: https://img.shields.io/npm/l/murmurhash-native.svg?maxAge=2592000&style=flat-square
-[License Link]: https://github.com/royaltm/node-murmurhash-native/blob/master/LICENSE
+[License Link]: LICENSE
 [NPM Status]: https://www.npmjs.com/package/murmurhash-native
 [murmurhash3js]: https://www.npmjs.com/package/murmurhash3js
 [PMurHash]: https://github.com/aappleby/smhasher/blob/master/src/PMurHash.c
