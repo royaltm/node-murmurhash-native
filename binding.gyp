@@ -27,6 +27,7 @@
           'msvs_settings': {
             'VCCLCompilerTool': {
               'ExceptionHandling': 1,
+              'AdditionalOptions': ['/EHsc'], # pre 1.0 node compiler complaining
               'DisableSpecificWarnings': ['4506']
             }
           }
@@ -61,6 +62,7 @@
           'msvs_settings': {
             'VCCLCompilerTool': {
               'ExceptionHandling': 1,
+              'AdditionalOptions': ['/EHsc'], # pre 1.0 node compiler complaining
               'DisableSpecificWarnings': ['4506']
             }
           }
