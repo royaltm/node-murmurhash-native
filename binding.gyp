@@ -26,7 +26,7 @@
         ['OS=="win"', {
           'msvs_settings': {
             'VCCLCompilerTool': {
-              'ExceptionHandling': 1,
+              'ExceptionHandling': 0,
               'DisableSpecificWarnings': ['4506']
             }
           }
@@ -60,7 +60,7 @@
         ['OS=="win"', {
           'msvs_settings': {
             'VCCLCompilerTool': {
-              'ExceptionHandling': 1,
+              'ExceptionHandling': 0,
               'DisableSpecificWarnings': ['4506']
             }
           }
