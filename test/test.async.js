@@ -113,7 +113,7 @@ test("should have murmurHash functions", function(t) {
         return function(err, result) {
           t.error(err);
           t.strictEqual(result, value);
-        }
+        };
       }
       t.strictEqual(undefined, murmurHash('', cbfactory(seedZeroDefault)));
       t.strictEqual(undefined, murmurHash('', 'number', cbfactory(seedZeroDefault)));
@@ -143,13 +143,13 @@ test("should have murmurHash functions", function(t) {
         return function(err, result) {
           t.error(err);
           t.deepEqual(result, value);
-        }
+        };
       }
       function cbfactoryHex(value) {
         return function(err, result) {
           t.error(err);
           t.strictEqual(result.toString('hex'), value);
-        }
+        };
       }
       t.strictEqual(undefined, murmurHash('', 0, 'buffer', cbfactoryBuffer(seedZeroBuffer)));
       t.strictEqual(undefined, murmurHash('', 0, 'buffer', cbfactoryHex(seedZeroHex)));
@@ -179,7 +179,7 @@ test("should have murmurHash functions", function(t) {
         return function(err, result) {
           t.error(err);
           t.strictEqual(result, value);
-        }
+        };
       }
       t.strictEqual(undefined, murmurHash('', 0, 'hex', cbfactory(seedZeroHex)));
       t.strictEqual(undefined, murmurHash(new Buffer(''), 'hex', cbfactory(seedZeroHex)));
@@ -222,13 +222,13 @@ test("should have murmurHash functions", function(t) {
             t.error(err);
             t.strictEqual(result, result2);
           });
-        }
+        };
       }
       function cbfactory2(value) {
         return function(err, result) {
           t.error(err);
           t.strictEqual(result, value);
-        }
+        };
       }
       var string = "\u1220łóżko"
         , base64 = 'IELzfGtv'
@@ -258,12 +258,12 @@ test("should have murmurHash functions", function(t) {
         return function(err, result) {
           t.error(err);
           t.equal(result.length, size);
-        }
+        };
       }
       function cbfactory(arg, seed) {
         return function(err, result) {
           t.error(err);
-          if (seed == undefined)
+          if (seed === undefined)
             murmurHash(arg, cb);
           else
             murmurHash(arg, seed, cb);
@@ -271,12 +271,12 @@ test("should have murmurHash functions", function(t) {
             t.error(err);
             t.strictEqual(result, result2);
           }
-        }
+        };
       }
       function cbfactory2(assertion, arg, seed, output) {
         return function(err, result) {
           t.error(err);
-          if (output == undefined)
+          if (output === undefined)
             murmurHash(arg, seed, cb);
           else
             murmurHash(arg, seed, output, cb);
@@ -284,7 +284,7 @@ test("should have murmurHash functions", function(t) {
             t.error(err);
             t[assertion](result, result2);
           }
-        }
+        };
       }
       var data = '';
       for (var i = 0; i < 1000; ++i) data += String.fromCharCode((Math.random()*32768)|0);
@@ -309,7 +309,7 @@ test("should have murmurHash functions", function(t) {
         return function(err, result) {
           t.error(err);
           t.strictEqual(result, value);
-        }
+        };
       }
       t.strictEqual(undefined, murmurHash('', cbfactory(seedZeroDefault)));
       t.strictEqual(undefined, murmurHash(new Buffer(0), cbfactory(seedZeroDefault)));
@@ -326,7 +326,7 @@ test("should have murmurHash functions", function(t) {
           } else {
             t.deepEqual(result, value);
           }
-        }
+        };
       }
       function cbfactory2() {
         var args = [].slice.call(arguments, 0);
@@ -342,14 +342,14 @@ test("should have murmurHash functions", function(t) {
             }
           });
           murmurHash.apply(this, args);
-        }
+        };
       }
       function cbfactory3(value, cb) {
         return function(err, result) {
           t.error(err);
           t.strictEqual(result, value);
           cb();
-        }
+        };
       }
       t.strictEqual(undefined, murmurHash('', 0, cbfactory(seedZeroDefault)));
       t.strictEqual(undefined, murmurHash('', -1, cbfactory(seedMinusOneDefault)));
@@ -433,7 +433,7 @@ test("should have murmurHash functions", function(t) {
           } else {
             t.deepEqual(result, value);
           }
-        }
+        };
       }
       function cbfactory2() {
         var args = [].slice.call(arguments, 0);
@@ -449,14 +449,14 @@ test("should have murmurHash functions", function(t) {
             }
           });
           murmurHash.apply(this, args);
-        }
+        };
       }
       function cbfactory3(value, cb) {
         return function(err, result) {
           t.error(err);
           t.strictEqual(result, value);
           cb();
-        }
+        };
       }
       t.strictEqual(undefined, murmurHash('', -1, 0, cbfactory(seedZeroDefault)));
       t.strictEqual(undefined, murmurHash('', -1, null, cbfactory(seedMinusOneDefault)));
@@ -576,7 +576,7 @@ test("should have murmurHash functions", function(t) {
           } else {
             t.deepEqual(result, value);
           }
-        }
+        };
       }
       function cbfactory2() {
         var args = [].slice.call(arguments, 0);
@@ -592,14 +592,14 @@ test("should have murmurHash functions", function(t) {
             }
           });
           murmurHash.apply(this, args);
-        }
+        };
       }
       function cbfactory3(value, cb) {
         return function(err, result) {
           t.error(err);
           t.strictEqual(result, value);
           cb();
-        }
+        };
       }
       t.strictEqual(undefined, murmurHash('', 'utf8', -1, 0, cbfactory(seedZeroDefault)));
       t.strictEqual(undefined, murmurHash('', 'utf8', -1, null, cbfactory(seedMinusOneDefault)));
@@ -721,7 +721,7 @@ test("should have murmurHash functions", function(t) {
           t.error(err);
           t.strictEqual(result, buf);
           cb();
-        }
+        };
       }
       function cbfactory2(buf, offs, len) {
         return function(err, result) {
@@ -731,8 +731,7 @@ test("should have murmurHash functions", function(t) {
           } else {
             t.deepEqual(result.slice(offs, len), buf);
           }
-          
-        }
+        };
       }
       var data = '';
       for (var i = 0; i < 1000; ++i) data += String.fromCharCode((Math.random()*32768)|0);

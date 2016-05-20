@@ -66,7 +66,7 @@ function bench(size, inputStr, duration) {
             ? randomstring(size)
             : fillrandom(new Buffer(size));
   funmatrix.forEach(function(args) {
-    var fun = args[0], name = args[1]
+    var fun = args[0], name = args[1];
     queue(measure, inputStr ? "string" : "buffer", fun, name, duration, parallel, size, input);
   });
 }
@@ -78,7 +78,7 @@ bench(program.large*1024, false, duration);
 next();
 
 function measure(label, fun, name, duration, parallel, size, arg) {
-  var cb = function(next) { fun(arg, stringEncoding, outputType, next) };
+  var cb = function(next) { fun(arg, stringEncoding, outputType, next); };
   parben.calibrate(duration, parallel, cb)
   .then(function(iters) {
     return parben(iters, parallel, cb);

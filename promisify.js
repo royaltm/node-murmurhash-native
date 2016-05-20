@@ -17,7 +17,7 @@ module.exports = function(promise) {
     }
   }
   return hash;
-}
+};
 
 function wrap(promise, fn) {
   return new Function('Promise', 'slice', 'fn', 

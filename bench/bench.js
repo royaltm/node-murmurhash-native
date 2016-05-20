@@ -43,7 +43,7 @@ function cryptohasher(name, data, encoding) {
 function incremental(constr) {
   return function(data, encoding, outputType) {
     return new constr().update(data, encoding).digest(outputType);
-  }
+  };
 }
 
 var funmatrix = [
@@ -61,7 +61,7 @@ if (program.crypto) {
   crypto.getHashes().forEach(function(cipher) {
     var pad = '                        ';
     funmatrix.push([
-        function(data, encoding) { return cryptohasher(cipher, data, encoding) },
+        function(data, encoding) { return cryptohasher(cipher, data, encoding); },
         cipher + pad.substr(0, pad.length - cipher.length)
       ]);
   });
@@ -83,7 +83,7 @@ function bench(size, inputStr, duration) {
             ? randomstring(size)
             : fillrandom(new Buffer(size));
   funmatrix.forEach(function(args) {
-    var fun = args[0], name = args[1]
+    var fun = args[0], name = args[1];
     measure(inputStr ? "string" : "buffer", fun, name, duration, size, input);
   });
 }
@@ -93,7 +93,7 @@ bench(program.large*1024, true, duration);
 bench(program.large*1024, false, duration);
 
 function measure(label, fun, name, duration, size, arg) {
-  var cb = function(){ fun(arg, stringEncoding, outputType) };
+  var cb = function(){ fun(arg, stringEncoding, outputType); };
   var iters = ben.calibrate(duration, cb);
   var ms = ben(iters, cb);
   console.log(name + "(" + label + "[" + size + "]): %s %s",

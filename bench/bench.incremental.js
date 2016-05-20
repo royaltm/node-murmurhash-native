@@ -48,7 +48,7 @@ if (program.crypto) {
   crypto.getHashes().forEach(function(cipher) {
     var pad = '                        ';
     funmatrix.push([
-        function() { return new crypto.createHash(cipher) },
+        function() { return new crypto.createHash(cipher); },
         cipher + pad.substr(0, pad.length - cipher.length)
       ]);
   });
@@ -92,10 +92,10 @@ bench(program.large*1024, false, duration);
 
 function measure(label, chunk, fun, name, duration, size) {
   var padstr = '           ';
-  var pad = function(str,pad) { return padstr.substr(0, (pad || padstr.length) - (''+str).length) + str};
+  var pad = function(str,pad) { return padstr.substr(0, (pad || padstr.length) - (''+str).length) + str; };
 
-  var cb = function(){ fun(stringEncoding, outputType) };
-  var iters = ben.calibrate(duration, cb)
+  var cb = function(){ fun(stringEncoding, outputType); };
+  var iters = ben.calibrate(duration, cb);
   var ms = ben(iters, cb);
   console.log(name + label + " (%s of %s): %s %s",
     pad(chunk, size.toString().length), size,

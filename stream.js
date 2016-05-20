@@ -16,7 +16,7 @@ Object.keys(binding).forEach(function(name) {
   }
 });
 
-algorithms['murmurhash3a'] = algorithms['murmurhash32'] = algorithms['murmurhash32x86'] = algorithms['murmurhash']
+algorithms.murmurhash3a = algorithms.murmurhash32 = algorithms.murmurhash32x86 = algorithms.murmurhash;
 
 /* from nodejs lib/crypto.js */
 
@@ -42,7 +42,7 @@ function MurmurHash(algorithm, options) {
   if (options && 'object' === typeof options) {
     seed = options.seed;
   } else {
-    seed = options, options = undefined;
+    seed = options; options = undefined;
   }
 
   if (algorithm instanceof MurmurHash) {
