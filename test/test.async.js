@@ -26,31 +26,25 @@ test("should have murmurHash functions", function(t) {
 
 [
   [4, 'murmurHash', hash.murmurHash, 0, 2180083513, 1364076727,
-      '00000000', '396ff181', 'b7284e51',
-      'd11c1950'],
+      '00000000', '81f16f39', '514e28b7'],
   [4, 'murmurHash', hash.murmurHash32, 0, 2180083513, 1364076727,
-      '00000000', '396ff181', 'b7284e51',
-      'd11c1950'],
+      '00000000', '81f16f39', '514e28b7'],
   [8, 'murmurHash64x64', hash.murmurHash64x64,
       '0000000000000000', '952d4201a42f3c31', 'c6a4a7935bd064dc',
-      '0000000000000000', '313c2fa401422d95', 'dc64d05b93a7a4c6',
-      '71b1be73e08a71e5'],
+      '0000000000000000', '952d4201a42f3c31', 'c6a4a7935bd064dc'],
   [8, 'murmurHash64x86', hash.murmurHash64x86,
       '0000000000000000', 'f107ca78f6c98ab0', 'dd9f019f79505248',
-      '0000000000000000', 'b08ac9f678ca07f1', '485250799f019fdd',
-      '5b8ffc9cf60c0120'],
+      '0000000000000000', 'f107ca78f6c98ab0', 'dd9f019f79505248'],
   [16, 'murmurHash128x64', hash.murmurHash128x64,
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
       '4610abe56eff5cb551622daa78f83583',
-      '00000000000000000000000000000000', 'ecc93b9d4ddff16a6b44e61e12217485',
-      'b55cff6ee5ab10468335f878aa2d6251',
-      'b55cc0152721ca566f0749fb7d73a43a'],
+      '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
+      '4610abe56eff5cb551622daa78f83583'],
   [16, 'murmurHash128x86', hash.murmurHash128x86,
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
       '88c4adec54d201b954d201b954d201b9',
-      '00000000000000000000000000000000', 'a9081e05f7499d98f7499d98f7499d98',
-      'ecadc488b901d254b901d254b901d254',
-      '9d94cc09d28d0a26151324de151324de'],
+      '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
+      '88c4adec54d201b954d201b954d201b9'],
 ].forEach(function(args)  {
 
   var size                = args[ 0]
@@ -62,11 +56,15 @@ test("should have murmurHash functions", function(t) {
     , seedZeroHex         = args[ 6]
     , seedMinusOneHex     = args[ 7]
     , seedPlusOneHex      = args[ 8]
-    , crashTestHex        = args[ 9]
     , seedZeroBuffer      = new Buffer(seedZeroHex,  'hex')
     , seedMinusOneBuffer  = new Buffer(seedMinusOneHex, 'hex')
     , seedPlusOneBuffer   = new Buffer(seedPlusOneHex,  'hex')
-
+    , seedZeroBase64      = seedZeroBuffer.toString('base64')
+    , seedMinusOneBase64  = seedMinusOneBuffer.toString('base64')
+    , seedPlusOneBase64   = seedPlusOneBuffer.toString('base64')
+    , seedZeroBinary      = seedZeroBuffer.toString('binary')
+    , seedMinusOneBinary  = seedMinusOneBuffer.toString('binary')
+    , seedPlusOneBinary   = seedPlusOneBuffer.toString('binary')
 
   test(label, function(t) {
 
@@ -84,7 +82,7 @@ test("should have murmurHash functions", function(t) {
       }
       function cberr3(err) {
         t.type(err, TypeError);
-        t.strictEqual(err.message, "Unknown output type: should be \"number\" or \"buffer\"");
+        t.strictEqual(err.message, "Unknown output type: should be \"number\", \"buffer\", \"binary\", \"base64\" or \"hex\"");
       }
       t.strictEqual(undefined, murmurHash(cberr1));
       t.strictEqual(undefined, murmurHash({}, cberr1));
@@ -173,6 +171,46 @@ test("should have murmurHash functions", function(t) {
       t.strictEqual(undefined, murmurHash('', 1, 'buffer', cbfactoryHex(seedPlusOneHex)));
       t.strictEqual(undefined, murmurHash(new Buffer(''), 1, 'buffer', cbfactoryBuffer(seedPlusOneBuffer)));
       t.strictEqual(undefined, murmurHash(new Buffer(''), 1, 'buffer', cbfactoryHex(seedPlusOneHex)));
+    });
+
+    t.test('should create string encoded hash from empty data', function(t) {
+      t.plan(30*3);
+      function cbfactory(value) {
+        return function(err, result) {
+          t.error(err);
+          t.strictEqual(result, value);
+        }
+      }
+      t.strictEqual(undefined, murmurHash('', 0, 'hex', cbfactory(seedZeroHex)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 'hex', cbfactory(seedZeroHex)));
+      t.strictEqual(undefined, murmurHash('', -1, 'hex', cbfactory(seedMinusOneHex)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), -1, 'hex', cbfactory(seedMinusOneHex)));
+      t.strictEqual(undefined, murmurHash('', 4294967295, 'hex', cbfactory(seedMinusOneHex)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 4294967295, 'hex', cbfactory(seedMinusOneHex)));
+      t.strictEqual(undefined, murmurHash('', 4294967296, 'hex', cbfactory(seedZeroHex)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 4294967296, 'hex', cbfactory(seedZeroHex)));
+      t.strictEqual(undefined, murmurHash('', 1, 'hex', cbfactory(seedPlusOneHex)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 1, 'hex', cbfactory(seedPlusOneHex)));
+      t.strictEqual(undefined, murmurHash('', 0, 'base64', cbfactory(seedZeroBase64)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 'base64', cbfactory(seedZeroBase64)));
+      t.strictEqual(undefined, murmurHash('', -1, 'base64', cbfactory(seedMinusOneBase64)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), -1, 'base64', cbfactory(seedMinusOneBase64)));
+      t.strictEqual(undefined, murmurHash('', 4294967295, 'base64', cbfactory(seedMinusOneBase64)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 4294967295, 'base64', cbfactory(seedMinusOneBase64)));
+      t.strictEqual(undefined, murmurHash('', 4294967296, 'base64', cbfactory(seedZeroBase64)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 4294967296, 'base64', cbfactory(seedZeroBase64)));
+      t.strictEqual(undefined, murmurHash('', 1, 'base64', cbfactory(seedPlusOneBase64)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 1, 'base64', cbfactory(seedPlusOneBase64)));
+      t.strictEqual(undefined, murmurHash('', 0, 'binary', cbfactory(seedZeroBinary)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 'binary', cbfactory(seedZeroBinary)));
+      t.strictEqual(undefined, murmurHash('', -1, 'binary', cbfactory(seedMinusOneBinary)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), -1, 'binary', cbfactory(seedMinusOneBinary)));
+      t.strictEqual(undefined, murmurHash('', 4294967295, 'binary', cbfactory(seedMinusOneBinary)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 4294967295, 'binary', cbfactory(seedMinusOneBinary)));
+      t.strictEqual(undefined, murmurHash('', 4294967296, 'binary', cbfactory(seedZeroBinary)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 4294967296, 'binary', cbfactory(seedZeroBinary)));
+      t.strictEqual(undefined, murmurHash('', 1, 'binary', cbfactory(seedPlusOneBinary)));
+      t.strictEqual(undefined, murmurHash(new Buffer(''), 1, 'binary', cbfactory(seedPlusOneBinary)));
     });
 
     t.test('should utilize different string input encodings', function(t) {
@@ -438,7 +476,7 @@ test("should have murmurHash functions", function(t) {
       t.strictEqual(undefined, murmurHash(new Buffer(0), null, -1, cbfactory(seedMinusOneDefault)));
       t.strictEqual(undefined, murmurHash('\u1234', 'utf8', 100,
                   cbfactory2(new Buffer('\u1234', 'utf8'), 100)));
-      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'ignore', 100,
+      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'number', 100,
                   cbfactory2(new Buffer('\u1234', 'binary'), 100)));
       t.strictEqual(undefined, murmurHash('\u1234', 'utf8', 'buffer',
                     cbfactory2(new Buffer('\u1234', 'utf8'), 0, 'buffer')));
@@ -466,11 +504,11 @@ test("should have murmurHash functions", function(t) {
                   cbfactory2(new Buffer('\u1234', 'binary'), 0)));
       t.strictEqual(undefined, murmurHash('\u1234', 'utf8', null,
                   cbfactory2(new Buffer('\u1234', 'utf8'), 0)));
-      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'ignore', null,
+      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'number', null,
                   cbfactory2(new Buffer('\u1234', 'binary'), 0)));
       t.strictEqual(undefined, murmurHash('\u1234', 'utf8', null, -1,
                   cbfactory2(new Buffer('\u1234', 'utf8'), 0)));
-      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'ignore', null, -1,
+      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'number', null, -1,
                   cbfactory2(new Buffer('\u1234', 'binary'), 0)));
 
       var buf = new Buffer(size); buf.fill(-1);
@@ -572,30 +610,30 @@ test("should have murmurHash functions", function(t) {
       t.strictEqual(undefined, murmurHash('', 'utf8', -1, 'buffer', 1, cbfactory(new Buffer(seedMinusOneHex, 'hex'))));
       t.strictEqual(undefined, murmurHash('', 'utf8', 1, -1, cbfactory(seedMinusOneDefault)));
       t.strictEqual(undefined, murmurHash('', 'utf8', null, -1, cbfactory(seedZeroDefault)));
-      t.strictEqual(undefined, murmurHash(new Buffer(0), 'utf8', -1, 0, cbfactory(seedZeroDefault)));
-      t.strictEqual(undefined, murmurHash(new Buffer(0), 'utf8', -1, null, cbfactory(seedMinusOneDefault)));
-      t.strictEqual(undefined, murmurHash(new Buffer(0), 'utf8', -1, null, 1, cbfactory(seedMinusOneDefault)));
-      t.strictEqual(undefined, murmurHash(new Buffer(0), 'utf8', -1, 'number', cbfactory(seedMinusOneDefault)));
-      t.strictEqual(undefined, murmurHash(new Buffer(0), 'utf8', -1, 'number', 1, cbfactory(seedMinusOneDefault)));
-      t.strictEqual(undefined, murmurHash(new Buffer(0), 'utf8', -1, 'buffer', cbfactory(new Buffer(seedMinusOneHex, 'hex'))));
-      t.strictEqual(undefined, murmurHash(new Buffer(0), 'utf8', -1, 'buffer', 1, cbfactory(new Buffer(seedMinusOneHex, 'hex'))));
-      t.strictEqual(undefined, murmurHash(new Buffer(0), 'utf8', 1, -1, cbfactory(seedMinusOneDefault)));
-      t.strictEqual(undefined, murmurHash(new Buffer(0), 'utf8', null, -1, cbfactory(seedZeroDefault)));
+      t.strictEqual(undefined, murmurHash(new Buffer(0), 'hex', -1, 0, cbfactory(seedMinusOneHex)));
+      t.strictEqual(undefined, murmurHash(new Buffer(0), 'hex', -1, null, cbfactory(seedMinusOneHex)));
+      t.strictEqual(undefined, murmurHash(new Buffer(0), 'hex', -1, null, 1, cbfactory(seedMinusOneHex)));
+      t.strictEqual(undefined, murmurHash(new Buffer(0), 'number', -1, 'ignore', cbfactory(seedMinusOneDefault)));
+      t.strictEqual(undefined, murmurHash(new Buffer(0), 'number', -1, 'ignore', 1, cbfactory(seedMinusOneDefault)));
+      t.strictEqual(undefined, murmurHash(new Buffer(0), 'buffer', -1, 'ignore', cbfactory(new Buffer(seedMinusOneHex, 'hex'))));
+      t.strictEqual(undefined, murmurHash(new Buffer(0), 'buffer', -1, 'ignore', 1, cbfactory(new Buffer(seedMinusOneHex, 'hex'))));
+      t.strictEqual(undefined, murmurHash(new Buffer(0), 'hex', 1, -1, cbfactory(seedPlusOneHex)));
+      t.strictEqual(undefined, murmurHash(new Buffer(0), 'hex', null, -1, cbfactory(seedZeroHex)));
       t.strictEqual(undefined, murmurHash('\u1234', 'utf8', 100, 'buffer', 
                     cbfactory2(new Buffer('\u1234', 'utf8'), 100, 'buffer')));
-      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'ignore', 100, 'buffer', 
+      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'buffer', 100, 'ignore', 
                     cbfactory2(new Buffer('\u1234', 'binary'), 100, 'buffer')));
       t.strictEqual(undefined, murmurHash('\u1234', 'utf8', 100, 'buffer', -1, 
                     cbfactory2(new Buffer('\u1234', 'utf8'), 100, 'buffer')));
-      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'ignore', 100, 'buffer', -1, 
+      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'buffer', 100, 'ignore', -1, 
                     cbfactory2(new Buffer('\u1234', 'binary'), 100, 'buffer')));
       t.strictEqual(undefined, murmurHash('\u1234', 'utf8', 0, 'buffer', 
                     cbfactory2(new Buffer('\u1234', 'utf8'), 'buffer')));
-      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'ignore', 0, 'buffer', 
+      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'buffer', 0, 'ignore', 
                     cbfactory2(new Buffer('\u1234', 'binary'), 'buffer')));
       t.strictEqual(undefined, murmurHash('\u1234', 'utf8', 0, 'buffer', -1, 
                     cbfactory2(new Buffer('\u1234', 'utf8'), 'buffer')));
-      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'ignore', 0, 'buffer', -1, 
+      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'buffer', 0, 'ignore', -1, 
                     cbfactory2(new Buffer('\u1234', 'binary'), 'buffer')));
       t.strictEqual(undefined, murmurHash('\u1234', null, 1, 'buffer', 
                     cbfactory2(new Buffer('\u1234', 'binary'), 1, 'buffer')));
@@ -615,11 +653,11 @@ test("should have murmurHash functions", function(t) {
                     cbfactory2(new Buffer('\u1234', 'binary'), 1)));
       t.strictEqual(undefined, murmurHash('\u1234', 'utf8', 1, null,
                     cbfactory2(new Buffer('\u1234', 'utf8'), 1)));
-      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'ignore', 1, null,
+      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'number', 1, null,
                     cbfactory2(new Buffer('\u1234', 'binary'), 1)));
       t.strictEqual(undefined, murmurHash('\u1234', 'utf8', 1, null, -1,
                     cbfactory2(new Buffer('\u1234', 'utf8'), 1)));
-      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'ignore', 1, null, -1,
+      t.strictEqual(undefined, murmurHash(new Buffer('\u1234', 'binary'), 'number', 1, null, -1,
                     cbfactory2(new Buffer('\u1234', 'binary'), 1)));
 
       var buf = new Buffer(size); buf.fill(-1);
@@ -627,7 +665,7 @@ test("should have murmurHash functions", function(t) {
         t.deepEqual(buf, new Buffer(seedMinusOneHex, 'hex'));
       })));
       var bufb = new Buffer(size); bufb.fill(-1);
-      t.strictEqual(undefined, murmurHash(new Buffer(0), '', -1, bufb, cbfactory3(bufb, function() {
+      t.strictEqual(undefined, murmurHash(new Buffer(0), -1, bufb, cbfactory3(bufb, function() {
         t.deepEqual(bufb, new Buffer(seedMinusOneHex, 'hex'));
       })));
 
@@ -636,7 +674,7 @@ test("should have murmurHash functions", function(t) {
         t.deepEqual(buf2, Buffer.concat([new Buffer([0,0]), new Buffer(seedMinusOneHex, 'hex')]));
       })));
       var buf2b = new Buffer(size + 2); buf2b.fill(0, 0, 2); buf2b.fill(-1, 2);
-      t.strictEqual(undefined, murmurHash(new Buffer(0), '', -1, buf2b, 2, cbfactory3(buf2b, function() {
+      t.strictEqual(undefined, murmurHash(new Buffer(0), -1, buf2b, 2, cbfactory3(buf2b, function() {
         t.deepEqual(buf2b, Buffer.concat([new Buffer([0,0]), new Buffer(seedMinusOneHex, 'hex')]));
       })));
 
@@ -645,7 +683,7 @@ test("should have murmurHash functions", function(t) {
         t.deepEqual(buf3, new Buffer(seedMinusOneHex, 'hex').slice(1));        
       })));
       var buf3b = new Buffer(size - 1); buf3b.fill(-1);
-      t.strictEqual(undefined, murmurHash(new Buffer(0), '', -1, buf3b, -size, cbfactory3(buf3b, function() {
+      t.strictEqual(undefined, murmurHash(new Buffer(0), -1, buf3b, -size, cbfactory3(buf3b, function() {
         t.deepEqual(buf3b, new Buffer(seedMinusOneHex, 'hex').slice(1));
       })));
 
@@ -658,7 +696,7 @@ test("should have murmurHash functions", function(t) {
                                          bufpad]));
       })));
       var buf4b = new Buffer(size + 2); buf4b.fill(0, 0, 2); buf4b.fill(-1, 2);
-      t.strictEqual(undefined, murmurHash(new Buffer(0), '', -1, buf4b, 2, 3, cbfactory3(buf4b, function() {
+      t.strictEqual(undefined, murmurHash(new Buffer(0), -1, buf4b, 2, 3, cbfactory3(buf4b, function() {
         t.deepEqual(buf4b, Buffer.concat([new Buffer([0,0]),
                                          new Buffer(seedMinusOneHex, 'hex').slice(0, 3),
                                          bufpad]));
@@ -670,7 +708,7 @@ test("should have murmurHash functions", function(t) {
                                          bufpad]));
       })));
       var buf5b = new Buffer(size - 1); buf5b.fill(-1);
-      t.strictEqual(undefined, murmurHash(new Buffer(0), '', -1, buf5b, -size, -3, cbfactory3(buf5b, function() {
+      t.strictEqual(undefined, murmurHash(new Buffer(0), -1, buf5b, -size, -3, cbfactory3(buf5b, function() {
         t.deepEqual(buf5b, Buffer.concat([new Buffer(seedMinusOneHex, 'hex').slice(size - 3 + 1),
                                          bufpad]));
       })));

@@ -3,9 +3,19 @@ MurmurHash bindings for node
 
 This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing algorithm functions in a few different flavours.
 
-[![NPM][NPM img]][NPM Status]
-
 [![Build Status][BS img]][Build Status]
+[![NPM][NPM img]][NPM Status]
+[![Node][Node img]][NPM Status]
+[![License][License img]][License Link]
+
+Key features:
+
+* blocking and asynchronous api interfaces
+* additional MurmurHash3 32 and 128 bit progressive implementations based on [PMurHash][PMurHash]
+* stream wrapper for progressive hasher with [crypto.Hash-like][crypto.Hash] bi-api interface
+* serializable state of the progressive hasher
+* platform independend network byte order output of hashes in any form
+* promise wrapper
 
 Installation:
 -------------
@@ -26,10 +36,11 @@ var murmurHash = require('murmurhash-native').murmurHash
 murmurHash( 'hash me!' ) // 2061152078
 murmurHash( new Buffer('hash me!') ) // 2061152078
 murmurHash( 'hash me!', 0x12345789 ) // 1908692277
-murmurHash( 'hash me!', 0x12345789, 'buffer' ) // <Buffer 35 55 c4 71>
+murmurHash( 'hash me!', 0x12345789, 'buffer' ) // <Buffer 71 c4 55 35>
+murmurHash( 'hash me!', 0x12345789, 'hex' ) // '71c45535'
 var buf = new Buffer('hash me!____')
 murmurHash( buf.slice(0,8), 0x12345789, buf, 8 )
-// <Buffer 68 61 73 68 20 6d 65 21 35 55 c4 71>
+// <Buffer 68 61 73 68 20 6d 65 21 71 c4 55 35>
 
 var murmurHash128x64 = require('murmurhash-native').murmurHash128x64
 murmurHash128x64( 'hash me!' ) // 'c43668294e89db0ba5772846e5804467'
@@ -37,7 +48,8 @@ murmurHash128x64( 'hash me!' ) // 'c43668294e89db0ba5772846e5804467'
 var murmurHash128x86 = require('murmurhash-native').murmurHash128x86
 murmurHash128x86( 'hash me!' ) // 'c7009299985a5627a9280372a9280372'
 
-// asynchronous:
+// asynchronous
+
 murmurHash( 'hash me!', function(err, hash) { assert.equal(hash, 2061152078) });
 ```
 
@@ -57,12 +69,12 @@ Provided functions share the following signature:
 ```js
 murmurHash(data[, callback])
 murmurHash(data, output[, offset[, length]][, callback])
-murmurHash(data{String}, encoding[, callback])
-murmurHash(data, output_type[, callback])
+murmurHash(data{String}, encoding|output_type[, callback])
+murmurHash(data, output_type[, seed][, callback])
 murmurHash(data, seed[, output[, offset[, length]]][, callback])
 murmurHash(data, seed[, output_type][, callback])
+murmurHash(data, encoding, output_type[, callback])
 murmurHash(data{String}, encoding, output[, offset[, length]][, callback])
-murmurHash(data{String}, encoding, output_type[, callback])
 murmurHash(data{String}, encoding, seed[, output[, offset[, length]]][, callback])
 murmurHash(data{String}, encoding, seed[, output_type][, callback])
 
@@ -73,16 +85,18 @@ murmurHash(data{String}, encoding, seed[, output_type][, callback])
 @param {Uint32} seed - murmur hash seed, 0 by default
 @param {Buffer} output - a Buffer object to write hash bytes to;
       the same object will be returned
-      the order of output bytes is platform dependent
 @param {number} offset - start writing into output at offset byte;
       negative offset starts from the end of the output buffer
 @param {number} length - a number of bytes to write from calculated hash;
       negative length starts from the end of the hash;
-      if absolute value of length is greater than the size of a calculated
+      if absolute value of length is larger than the size of a calculated
       hash, bytes are written only up to the hash size
 @param {string} output_type - a string indicating return type:
       'number' - for murmurHash32 an unsigned 32-bit integer,
-                 other hashes - a hex number as a string
+                 other hashes - hexadecimal string
+      'hex'    - hexadecimal string
+      'base64' - base64 string
+      'binary' - binary string
       'buffer' - a new Buffer object;
       'number' by default
 @param {Function} callback - optional callback(err, result)
@@ -92,7 +106,7 @@ murmurHash(data{String}, encoding, seed[, output_type][, callback])
       Be carefull as reading and writing by multiple threads to the same
       memory may render undetermined results
 
-The order of bytes written to a Buffer is platform dependent.
+The order of bytes written to a Buffer is platform independent.
 
 `data` and `output` arguments might reference the same Buffer object
 or buffers referencing the same memory (views).
@@ -100,26 +114,70 @@ or buffers referencing the same memory (views).
 @return {number|Buffer|String|undefined}
 ```
 
-Significant changes in 2.x
---------------------------
 
-The 1.x output types were very confusing. E.g. "hex" was just an equivalent of `murmurHash(data, "buffer").toString("hex")` which renders incorrect hexadecimal number. So all the string output type encodings: "utf8", "ucs2", "ascii", "hex", "base64" and "binary" were completely removed in 2.0 as being simply useless.
+Streaming and incremental api
+-----------------------------
 
-The "number" output type has been adapted to all variants in a way more compatible with other murmurhash [implementations][murmurhash3js]. For 32bit hash the return value is an unsigned 32-bit integer (it was signed integer in 1.x) and for other hashes it's a hexadecimal number.
+The dual-api interface for progressive MurmurHash3 is available as a submodule:
 
-The "buffer" output type wasn't modified except that the default output is now "number" for all of the hashes.
+```js
+var murmur = require('murmurhash-native/stream');
+````
 
-Additionally when passing unsupported value to `encoding` or `output_type` argument the function throws `TypeError`.
+Progressive api
 
-Another breaking change is for the BE platforms. Starting with 2.0 endian-ness is supported, so hashes should be consistent regardless of the cpu type.
+```js
+var hash = murmur.createHash('murmurhash128x86');
+hash.update('hash').digest('hex'); // '0d872bbf2cd001722cd001722cd00172'
+hash.update(' me!').digest('hex'); // 'c7009299985a5627a9280372a9280372'
+```
 
-Since v2.1 the callback argument was introduced.
+Streaming api
+
+```js
+var hash = murmur.createHash('murmurhash32', {seed: 123, encoding: 'hex'});
+fs.createReadStream('README.md').pipe(hash);
+hash.on('data', digest => console.log(digest) );
+```
+
+### Serializable state
+
+The incremental MurmurHash instances may be serialized and later deserialized.
+One may also copy a hasher's internal state onto another.
+This way the hasher utility can be re-used to calculate a hash of some data
+with already known prefix.
+
+```js
+var hash = murmur.createHash('murmurhash128x64').update('hash');
+hash.digest('hex');                   // '4ab2e1e022f63e2e9add75dfcea2dede'
+
+var backup = murmur.createHash(hash); // create a copy of a hash with the same internal state
+backup.update(' me!').digest('hex');  // 'c43668294e89db0ba5772846e5804467'
+
+hash.copy(backup)                     // copy hash's state onto the backup
+    .update(' me!').digest('hex');    // 'c43668294e89db0ba5772846e5804467'
+
+var serial = hash.serialize();        // serialize hash's state
+serial == 'AAAAAAAAAAAAAAAAAAAAAGhzYWgAAAAAAAAAAAAAAFQAAAAEtd3X';
+                                      // restore backup from serialized state
+var backup = murmur.createHash('murmurhash128x64', {seed: serial});
+backup.update(' me!').digest('hex');  // 'c43668294e89db0ba5772846e5804467'
+                                      // finally
+hash.update(' me!').digest('hex');    // 'c43668294e89db0ba5772846e5804467'
+```
+
+The dual-api with streaming is a javascript wrapper over the native module.
+The native incremental module is directly available at `murmurhash-native/incremental`.
+
+See [hasher.cc](src/incremental/hasher.cc) for full api description
+(and there's some crazy templating going on there...).
+
 
 Promises
 --------
 
 The native murmurHash functions run asynchronously if the last argument is a callback.
-However if you wish to use promises there is a promisify wrapper available:
+There is however a promisify wrapper available:
 
 ```js
 var mm = require('murmurhash-native/promisify')();
@@ -143,17 +201,55 @@ mm.murmurHash32Async( 'hash me!', 0x12345789 )
 //   _receiver0: undefined }
 ```
 
+
+Significant changes in 3.x
+--------------------------
+
+The most important change is full platform indifference of rendered output. In 2.x output hash as binary data provided via buffer was endian sensitive. Starting with 3.x the data written to output buffer is always MSB (byte) first.
+
+The "hex", "base64" and "binary" output types has been (re)added, but this time with sane definition.
+
+So in this version the following is true on all platforms:
+
+```js
+assert.strictEqual(murmurHash('foo', 'buffer').toString('hex'), murmurHash('foo', 0, 'hex'));
+assert.strictEqual(murmurHash('foo', 'buffer').toString('base64'), murmurHash('foo', 0, 'base64'));
+```
+
+
+Significant changes in 2.x
+--------------------------
+
+The 1.x output types were very confusing. E.g. "hex" was just an equivalent of `murmurHash(data, "buffer").toString("hex")` which renders incorrect hexadecimal number. So all the string output type encodings: "utf8", "ucs2", "ascii", "hex", "base64" and "binary" were completely removed in 2.0 as being simply useless.
+
+The "number" output type has been adapted to all variants in a way more compatible with other murmurhash [implementations][murmurhash3js]. For 32bit hash the return value is an unsigned 32-bit integer (it was signed integer in 1.x) and for other hashes it's a hexadecimal number.
+
+The "buffer" output type wasn't modified except that the default output is now "number" for all of the hashes.
+
+Additionally when passing unsupported value to `encoding` or `output_type` argument the function throws `TypeError`.
+
+Another breaking change is for the BE platforms. Starting with 2.0 endian-ness is supported, so hashes should be consistent regardless of the cpu type.
+
+Since v2.1 the callback argument was introduced.
+
+
 Bugs, limitations, caveats
 --------------------------
-When working with Buffers, no data is being copied, however for strings this is unavoidable.
-For strings with byte-length < 1kB the static buffer is provided to avoid mem-allocs.
+When working with Buffers, input data is not being copied, however for strings
+this is unavoidable. For strings with byte-length < 1kB the static buffer is
+provided to avoid mem-allocs.
 
 The hash functions optimized for x64 and x86 produce different results.
 
 Tested with nodejs: v0.10, v0.11, v0.12, iojs-3, v4, v5 and v6.
 
 [Build Status]: https://travis-ci.org/royaltm/node-murmurhash-native
-[BS img]: https://travis-ci.org/royaltm/node-murmurhash-native.svg
-[NPM img]: https://nodei.co/npm/murmurhash-native.png?compact=true
-[NPM Status]: https://nodei.co/npm/murmurhash-native/
+[BS img]: https://img.shields.io/travis/royaltm/node-murmurhash-native.svg?maxAge=86400&style=flat-square
+[NPM img]: https://img.shields.io/npm/v/murmurhash-native.svg?maxAge=86400&style=flat-square
+[Node img]: https://img.shields.io/node/v/murmurhash-native.svg?maxAge=2592000&style=flat-square
+[License img]: https://img.shields.io/npm/l/murmurhash-native.svg?maxAge=2592000&style=flat-square
+[License Link]: LICENSE
+[NPM Status]: https://www.npmjs.com/package/murmurhash-native
 [murmurhash3js]: https://www.npmjs.com/package/murmurhash3js
+[PMurHash]: https://github.com/aappleby/smhasher/blob/master/src/PMurHash.c
+[crypto.Hash]: https://nodejs.org/dist/latest-v6.x/docs/api/crypto.html#crypto_class_hash

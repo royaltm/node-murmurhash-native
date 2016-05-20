@@ -12,4 +12,21 @@
 #  define strcasecmp _stricmp
 #endif
 
+typedef void (*MurmurHashFunctionType)(const void *, int, uint32_t, void *);
+
+#define HashSize (static_cast<int32_t>(sizeof(HashValueType) * HashLength))
+
+namespace MurmurHash {
+  typedef enum {
+    DefaultOutputType,
+    NumberOutputType,
+    HexStringOutputType,
+    BinaryStringOutputType,
+    Base64StringOutputType,
+    BufferOutputType,
+    ProvidedBufferOutputType,
+    UnknownOutputType,
+  } OutputType;
+}
+
 #endif
