@@ -3,11 +3,12 @@ MurmurHash bindings for node
 
 This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing algorithm functions in a few different flavours.
 
-[![Build Status][BS img]][Build Status]
 [![NPM][NPM img]][NPM Status]
 [![Node][Node img]][NPM Status]
-[![License][License img]][License Link]
+[![Travis][Travis img]][Travis Status]
+[![AppVeyor][AppVeyor img]][AppVeyor Status]
 [![bitHound][bitHound img]][bitHound Status]
+[![License][License img]][License Link]
 
 Key features:
 
@@ -255,8 +256,10 @@ Tested on Linux (x64), OS X and MS Windows (x64 and x86).
 
 Tested with nodejs: v0.10, v0.11, v0.12, iojs-3, v4, v5 and v6.
 
-[Build Status]: https://travis-ci.org/royaltm/node-murmurhash-native
-[BS img]: https://img.shields.io/travis/royaltm/node-murmurhash-native.svg?maxAge=86400&style=flat-square
+[Travis Status]: https://travis-ci.org/royaltm/node-murmurhash-native
+[Travis img]: https://img.shields.io/travis/royaltm/node-murmurhash-native.svg?maxAge=86400&style=flat-square&label=unix
+[AppVeyor img]: https://img.shields.io/appveyor/ci/royaltm/node-murmurhash-native.svg?maxAge=86400&style=flat-square&label=windows
+[AppVeyor Status]: https://ci.appveyor.com/project/royaltm/node-murmurhash-native
 [NPM img]: https://img.shields.io/npm/v/murmurhash-native.svg?maxAge=86400&style=flat-square
 [NPM Status]: https://www.npmjs.com/package/murmurhash-native
 [Node img]: https://img.shields.io/node/v/murmurhash-native.svg?maxAge=2592000&style=flat-square
