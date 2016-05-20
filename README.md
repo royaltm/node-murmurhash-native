@@ -7,7 +7,7 @@ This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing al
 [![NPM][NPM img]][NPM Status]
 [![Node][Node img]][NPM Status]
 [![License][License img]][License Link]
-
+[![bitHound]bitHound img][bitHound Status]
 Key features:
 
 * blocking and asynchronous api interfaces
@@ -246,10 +246,12 @@ Tested with nodejs: v0.10, v0.11, v0.12, iojs-3, v4, v5 and v6.
 [Build Status]: https://travis-ci.org/royaltm/node-murmurhash-native
 [BS img]: https://img.shields.io/travis/royaltm/node-murmurhash-native.svg?maxAge=86400&style=flat-square
 [NPM img]: https://img.shields.io/npm/v/murmurhash-native.svg?maxAge=86400&style=flat-square
+[NPM Status]: https://www.npmjs.com/package/murmurhash-native
 [Node img]: https://img.shields.io/node/v/murmurhash-native.svg?maxAge=2592000&style=flat-square
 [License img]: https://img.shields.io/npm/l/murmurhash-native.svg?maxAge=2592000&style=flat-square
 [License Link]: LICENSE
-[NPM Status]: https://www.npmjs.com/package/murmurhash-native
+[bitHound img]: https://img.shields.io/bithound/dependencies/github/royaltm/node-murmurhash-native.svg?maxAge=86400?style=flat-square
+[bitHound Status]: https://www.bithound.io/github/royaltm/node-murmurhash-native
 [murmurhash3js]: https://www.npmjs.com/package/murmurhash3js
 [PMurHash]: https://github.com/aappleby/smhasher/blob/master/src/PMurHash.c
 [crypto.Hash]: https://nodejs.org/dist/latest-v6.x/docs/api/crypto.html#crypto_class_hash
