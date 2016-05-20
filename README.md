@@ -18,18 +18,15 @@ Key features:
 * platform independend network byte order output of hashes in any form
 * promise wrapper
 
-Installation:
--------------
+Install:
+--------
 
 ```
 npm install murmurhash-native
 ```
 
-Tested on Linux (x64), OS X and MS Windows (x64 and x86).
-
-
-Usage:
-------
+Make a hash:
+------------
 
 ```js
 var murmurHash = require('murmurhash-native').murmurHash
@@ -54,7 +51,7 @@ murmurHash128x86( 'hash me!' ) // 'c7009299985a5627a9280372a9280372'
 murmurHash( 'hash me!', function(err, hash) { assert.equal(hash, 2061152078) });
 ```
 
-The following functions are available:
+These functions are awaiting your command:
 
 * `murmurHash`       - MurmurHash v3 32bit
 * `murmurHash32`     - (an alias of murmurHash)
@@ -65,7 +62,7 @@ The following functions are available:
 * `murmurHash64x64`  - MurmurHash v2 64bit x64 optimized
 * `murmurHash64x86`  - MurmurHash v2 64bit x86 optimized
 
-Provided functions share the following signature:
+and they share the following signature:
 
 ```js
 murmurHash(data[, callback])
@@ -125,7 +122,7 @@ The dual-api interface for progressive MurmurHash3 is available as a submodule:
 var murmur = require('murmurhash-native/stream');
 ````
 
-Progressive api
+Incremental (a.k.a. progressive) api
 
 ```js
 var hash = murmur.createHash('murmurhash128x86');
@@ -143,7 +140,7 @@ hash.on('data', digest => console.log(digest) );
 
 ### Serializable state
 
-The incremental MurmurHash instances may be serialized and later deserialized.
+The incremental MurmurHash utilities may be serialized and later deserialized.
 One may also copy a hasher's internal state onto another.
 This way the hasher utility can be re-used to calculate a hash of some data
 with already known prefix.
@@ -178,7 +175,7 @@ Promises
 --------
 
 The native murmurHash functions run asynchronously if the last argument is a callback.
-There is however a promisify wrapper available:
+There is however a promisify wrapper:
 
 ```js
 var mm = require('murmurhash-native/promisify')();
@@ -241,6 +238,8 @@ this is unavoidable. For strings with byte-length < 1kB the static buffer is
 provided to avoid mem-allocs.
 
 The hash functions optimized for x64 and x86 produce different results.
+
+Tested on Linux (x64), OS X and MS Windows (x64 and x86).
 
 Tested with nodejs: v0.10, v0.11, v0.12, iojs-3, v4, v5 and v6.
 
