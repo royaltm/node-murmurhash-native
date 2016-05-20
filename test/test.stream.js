@@ -1,3 +1,5 @@
+"use strict";
+
 var test = require("tap").test
   , stream = require('stream')
   , strm = require('../stream')
@@ -273,7 +275,7 @@ test('should throw error for bad arguments', function(t) {
       var hasher1str = strm.createHash(algorithm, {seed: 1, encoding: 'hex'});
       var hasherSstr = strm.createHash(algorithm, {seed: seed, encoding: 'hex'});
       var bufchunks = 0, bufsize = 0;
-      var strchunks = 0; strsize = 0;
+      var strchunks = 0, strsize = 0;
       src.pipe(strsrc);
       src.pipe(hasher0);
       src.pipe(hasher1);

@@ -1,3 +1,5 @@
+"use strict";
+
 var murmurhash = require('./index');
 
 module.exports = function(promise) {

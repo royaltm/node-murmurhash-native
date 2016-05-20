@@ -1,3 +1,5 @@
+"use strict";
+
 var test = require("tap").test
   , incr = require('../incremental')
   , strm = require('../stream')
@@ -402,7 +404,7 @@ function wrapStream(name) {
       var n = 0;
       while(n < buffer.length) {
         var p = n;
-        var slicelen = (Math.random()*this.maxchunksize|0) + 1;
+        var slicelen = (Math.random()*maxchunksize|0) + 1;
         for(var j = 0; j < slicelen; ++j) {
           if (n >= buffer.length) break;
           buffer[n++] = (Math.random()*0x100)|0;

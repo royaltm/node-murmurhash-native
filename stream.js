@@ -1,3 +1,5 @@
+"use strict";
+
 var util = require('util');
 var binding = require('./incremental');
 var algorithms = {};

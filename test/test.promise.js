@@ -6,6 +6,7 @@ var test = require("tap").test
 ;
 
 test("should have murmurHash functions", function(t) {
+  t.plan(8*2);
   ['murmurHashAsync',
    'murmurHash32Async',
    'murmurHash64Async',
@@ -18,7 +19,6 @@ test("should have murmurHash functions", function(t) {
     t.type(hash[name], 'function');
     t.strictEqual(hash[name].name, name);
   });
-  t.end();
 });
 
 [

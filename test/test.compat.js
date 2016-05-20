@@ -1,3 +1,5 @@
+"use strict";
+
 var test = require("tap").test
   , hash = require('..')
   , hash3js = require("murmurhash3js")
