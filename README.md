@@ -7,7 +7,8 @@ This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing al
 [![NPM][NPM img]][NPM Status]
 [![Node][Node img]][NPM Status]
 [![License][License img]][License Link]
-[![bitHound]bitHound img][bitHound Status]
+[![bitHound][bitHound img]][bitHound Status]
+
 Key features:
 
 * blocking and asynchronous api interfaces
