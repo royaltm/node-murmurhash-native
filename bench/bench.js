@@ -13,7 +13,7 @@ var crypto         = require('crypto')
 var program = require('commander');
 
 program
-  .version(JSON.parse(require('fs').readFileSync(__dirname + '/../package.json')).version)
+  .version(require(__dirname + '/../package.json').version)
   .usage('[options] [seconds=1]')
   .option('-n, --no-crypto', 'do not benchmark crypto hashers')
   .option('-s, --small <chars>', 'small string size in chars', 80)

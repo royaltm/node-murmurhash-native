@@ -12,7 +12,7 @@ var os             = require('os')
 var program = require('commander');
 
 program
-  .version(JSON.parse(require('fs').readFileSync(__dirname + '/../package.json')).version)
+  .version(require(__dirname + '/../package.json').version)
   .usage('[options] [seconds=1]')
   .option('-n, --no-crypto', 'do not benchmark crypto hashers')
   .option('-p, --parallel <n>', 'number of parallel threads', parseInt)
