@@ -8,18 +8,6 @@
 #include "murmurhashutils.h"
 #include "asyncworker.h"
 
-#ifdef NODE_MURMURHASH_DEFAULT_32BIT
-#  define MurmurHash2_64  MurmurHash2_x86_64
-#  define MurmurHash3_128 MurmurHash3_x86_128
-#  define MurmurHash3_128Length 4
-#  define MurmurHash3_128ValueType uint32_t
-#else
-#  define MurmurHash2_64  MurmurHash2_x64_64
-#  define MurmurHash3_128 MurmurHash3_x64_128
-#  define MurmurHash3_128Length 2
-#  define MurmurHash3_128ValueType uint64_t
-#endif
-
 NAN_INLINE void MurmurHash2_x64_64 (
     const void * key, int len, uint32_t seed, void * out)
 {
@@ -287,11 +275,15 @@ namespace MurmurHash {
     Nan::SetMethod(target, "murmurHash32",     MurmurHash<MurmurHash3_x86_32 , uint32_t, 1>);
     Nan::SetMethod(target, "murmurHash64x64",  MurmurHash<MurmurHash2_x64_64 , uint64_t, 1>);
     Nan::SetMethod(target, "murmurHash64x86",  MurmurHash<MurmurHash2_x86_64 , uint64_t, 1>);
-    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_64     , uint64_t, 1>);
     Nan::SetMethod(target, "murmurHash128x64", MurmurHash<MurmurHash3_x64_128, uint64_t, 2>);
     Nan::SetMethod(target, "murmurHash128x86", MurmurHash<MurmurHash3_x86_128, uint32_t, 4>);
-    Nan::SetMethod(target, "murmurHash128",    MurmurHash<MurmurHash3_128    , MurmurHash3_128ValueType
-                                                                                       , MurmurHash3_128Length>);
+  #if defined(NODE_MURMURHASH_DEFAULT_32BIT)
+    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_x86_64 , uint64_t, 1>);
+    Nan::SetMethod(target, "murmurHash128",    MurmurHash<MurmurHash3_x86_128, uint32_t, 4>);
+  #else
+    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_x64_64 , uint64_t, 1>);
+    Nan::SetMethod(target, "murmurHash128",    MurmurHash<MurmurHash3_x64_128, uint64_t, 2>);
+  #endif
   }
 
 }

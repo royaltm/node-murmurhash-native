@@ -112,29 +112,29 @@ FORCE_INLINE uint64_t fmix64 ( uint64_t k )
 /*-----------------------------------------------------------------------------
  * Core murmurhash algorithm macros */
 
-#define C1 0x239b961b
-#define C2 0xab0e9789
-#define C3 0x38b34ae5
-#define C4 0xa1e38b93
+static const uint32_t kC1 = 0x239b961b;
+static const uint32_t kC2 = 0xab0e9789;
+static const uint32_t kC3 = 0x38b34ae5;
+static const uint32_t kC4 = 0xa1e38b93;
 
 /* This is the main processing body of the algorithm. It operates
  * on each full 128-bits of input. */
 FORCE_INLINE void doblock128x86(uint32_t &h1, uint32_t &h2, uint32_t &h3, uint32_t &h4,
                                 uint32_t &k1, uint32_t &k2, uint32_t &k3, uint32_t &k4)
 {
-  k1 *= C1; k1  = ROTL32(k1,15); k1 *= C2; h1 ^= k1;
+  k1 *= kC1; k1  = ROTL32(k1,15); k1 *= kC2; h1 ^= k1;
 
   h1 = ROTL32(h1,19); h1 += h2; h1 = h1*5+0x561ccd1b;
 
-  k2 *= C2; k2  = ROTL32(k2,16); k2 *= C3; h2 ^= k2;
+  k2 *= kC2; k2  = ROTL32(k2,16); k2 *= kC3; h2 ^= k2;
 
   h2 = ROTL32(h2,17); h2 += h3; h2 = h2*5+0x0bcaa747;
 
-  k3 *= C3; k3  = ROTL32(k3,17); k3 *= C4; h3 ^= k3;
+  k3 *= kC3; k3  = ROTL32(k3,17); k3 *= kC4; h3 ^= k3;
 
   h3 = ROTL32(h3,15); h3 += h4; h3 = h3*5+0x96cd1c35;
 
-  k4 *= C4; k4  = ROTL32(k4,18); k4 *= C1; h4 ^= k4;
+  k4 *= kC4; k4  = ROTL32(k4,18); k4 *= kC1; h4 ^= k4;
 
   h4 = ROTL32(h4,13); h4 += h1; h4 = h4*5+0x32ac3b17;
 }
@@ -203,16 +203,16 @@ void PMurHash128_Result(const uint32_t *ph, const uint32_t *pcarry, uint32_t tot
       goto skiprot;
   }
 finrot_k4321:
-  k4 *= C4; k4  = ROTL32(k4,18); k4 *= C1; h4 ^= k4;
+  k4 *= kC4; k4  = ROTL32(k4,18); k4 *= kC1; h4 ^= k4;
   k3 = pcarry[2];
 finrot_k321:
-  k3 *= C3; k3  = ROTL32(k3,17); k3 *= C4; h3 ^= k3;
+  k3 *= kC3; k3  = ROTL32(k3,17); k3 *= kC4; h3 ^= k3;
   k2 = pcarry[1];
 finrot_k21:
-  k2 *= C2; k2  = ROTL32(k2,16); k2 *= C3; h2 ^= k2;
+  k2 *= kC2; k2  = ROTL32(k2,16); k2 *= kC3; h2 ^= k2;
   k1 = pcarry[0];
 finrot_k1:
-  k1 *= C1; k1  = ROTL32(k1,15); k1 *= C2; h1 ^= k1;
+  k1 *= kC1; k1  = ROTL32(k1,15); k1 *= kC2; h1 ^= k1;
 skiprot:
 
   //----------
@@ -237,11 +237,6 @@ skiprot:
   out[2] = h3;
   out[3] = h4;
 }
-
-#undef C1
-#undef C2
-#undef C3
-#undef C4
 
 /*---------------------------------------------------------------------------*/
 
@@ -432,18 +427,18 @@ void PMurHash128_Process(uint32_t * const ph, uint32_t * const pcarry, const voi
 /*-----------------------------------------------------------------------------
  * Core murmurhash algorithm macros */
 
-#define C1L BIG_CONSTANT(0x87c37b91114253d5)
-#define C2L BIG_CONSTANT(0x4cf5ad432745937f)
+static const uint64_t kC1L = BIG_CONSTANT(0x87c37b91114253d5);
+static const uint64_t kC2L = BIG_CONSTANT(0x4cf5ad432745937f);
 
 /* This is the main processing body of the algorithm. It operates
  * on each full 128-bits of input. */
 FORCE_INLINE void doblock128x64(uint64_t &h1, uint64_t &h2, uint64_t &k1, uint64_t &k2)
 {
-  k1 *= C1L; k1  = ROTL64(k1,31); k1 *= C2L; h1 ^= k1;
+  k1 *= kC1L; k1  = ROTL64(k1,31); k1 *= kC2L; h1 ^= k1;
 
   h1 = ROTL64(h1,27); h1 += h2; h1 = h1*5+0x52dce729;
 
-  k2 *= C2L; k2  = ROTL64(k2,33); k2 *= C1L; h2 ^= k2;
+  k2 *= kC2L; k2  = ROTL64(k2,33); k2 *= kC1L; h2 ^= k2;
 
   h2 = ROTL64(h2,31); h2 += h1; h2 = h2*5+0x38495ab5;
 }
@@ -488,11 +483,11 @@ void PMurHash128_Result(const uint64_t * const ph, const uint64_t * const pcarry
     k1 = pcarry[0];
     if (n > 8) {
       k2 >>= (16-n)*8;
-      k2 *= C2L; k2  = ROTL64(k2,33); k2 *= C1L; h2 ^= k2;
+      k2 *= kC2L; k2  = ROTL64(k2,33); k2 *= kC1L; h2 ^= k2;
     } else {
       k1 >>= (8-n)*8;
     }
-    k1 *= C1L; k1  = ROTL64(k1,31); k1 *= C2L; h1 ^= k1;
+    k1 *= kC1L; k1  = ROTL64(k1,31); k1 *= kC2L; h1 ^= k1;
   }
 
   //----------
@@ -512,9 +507,6 @@ void PMurHash128_Result(const uint64_t * const ph, const uint64_t * const pcarry
   out[0] = h1;
   out[1] = h2;
 }
-
-#undef C1L
-#undef C2L
 
 /*---------------------------------------------------------------------------*/
 

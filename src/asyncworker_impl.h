@@ -3,6 +3,10 @@
 #endif
 
 namespace MurmurHash {
+  namespace {
+    enum { kInputBufferIndex, kOutputBufferIndex };
+  }
+
   template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
   NAN_INLINE MurmurHashWorker<HashFunction,HashValueType,HashLength>
   ::MurmurHashWorker(
@@ -19,7 +23,7 @@ namespace MurmurHash {
   {
     data_.Setup(key, encoding, validEncoding);
     if (data_.IsFromBuffer())
-      SaveToPersistent(0U, key);    
+      SaveToPersistent(kInputBufferIndex, key);
   }
 
   template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
@@ -27,7 +31,7 @@ namespace MurmurHash {
   ::SaveOutputBuffer(
                 const Local<Value> &buffer, int32_t offset, int32_t length)
   {
-    SaveToPersistent(1U, buffer);
+    SaveToPersistent(kOutputBufferIndex, buffer);
     offset_ = offset;
     length_ = length;
   }
@@ -90,7 +94,7 @@ namespace MurmurHash {
         break;
 
       case ProvidedBufferOutputType:
-        argv[1] = GetFromPersistent(1U);
+        argv[1] = GetFromPersistent(kOutputBufferIndex);
         WriteHashToBuffer<HashLength>(
               hash_,
               node::Buffer::Data(argv[1]),

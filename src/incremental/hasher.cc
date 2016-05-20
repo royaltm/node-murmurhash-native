@@ -50,8 +50,8 @@ namespace MurmurHash {
 
         } else if ( info[0]->IsString() ) {
           // serial string
-          uint8_t serial[HashSerialSize];
-          if ( HashSerialStringSize == info[0].As<String>()->Length() ) {
+          uint8_t serial[kHashSerialSize];
+          if ( kHashSerialStringSize == info[0].As<String>()->Length() ) {
             Nan::DecodeWrite( (char *) serial, sizeof(serial), info[0], Nan::BASE64 );
           } else {
             return Nan::ThrowTypeError("Incorrect size of the serialized string");
@@ -64,7 +64,7 @@ namespace MurmurHash {
 
         } else if ( node::Buffer::HasInstance( info[0] ) ) {
           // serial buffer
-          if ( HashSerialSize <= static_cast<int32_t>(node::Buffer::Length( info[0] )) ) {
+          if ( kHashSerialSize <= static_cast<int32_t>(node::Buffer::Length( info[0] )) ) {
             uint8_t *serial = (uint8_t *) node::Buffer::Data( info[0] );
             if ( IsSerialTypeValid( serial ) ) {
               self = new IncrementalHasher_T(serial);
@@ -130,7 +130,7 @@ namespace MurmurHash {
 
       if (offset < 0) offset += length;
 
-      if (offset >= 0 && HashSerialSize <= length - offset ) {
+      if (offset >= 0 && kHashSerialSize <= length - offset ) {
 
         result = info[0];
         uint8_t *serial = (uint8_t *) node::Buffer::Data( result ) + offset;
@@ -141,7 +141,7 @@ namespace MurmurHash {
       }
     } else {
 
-      uint8_t serial[HashSerialSize];
+      uint8_t serial[kHashSerialSize];
       self->Serialize(serial);
       result = Nan::Encode((void *)serial, sizeof(serial), Nan::BASE64);
 
@@ -350,7 +350,7 @@ namespace MurmurHash {
   NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
   ::IncrementalHasher(const uint8_t *serial) : hasher(serial)
   {
-    ReadHashBytes<1>(&serial[HashSerialTotalIndex], &total);
+    ReadHashBytes<1>(&serial[kHashSerialTotalIndex], &total);
   }
 
   /*-------------- instance methods ---------------*/
@@ -360,21 +360,21 @@ namespace MurmurHash {
   :: IsSerialTypeValid(uint8_t *serial)
   {
     // check state type
-    if (HashSerialType == (serial[HashSerialTypeIndex] & HashSerialTypeMask)) {
+    if (kHashSerialType == (serial[kHashSerialTypeIndex] & kHashSerialTypeMask)) {
       // read checksum
-      uint32_t chksum = (uint32_t) serial[HashSerialCkIndex];
-      for(int i = HashSerialCkIndex;
-          ++i < HashSerialSize;
+      checksum_t chksum = (checksum_t) serial[kHashSerialCkIndex];
+      for(int i = kHashSerialCkIndex;
+          ++i < kHashSerialSize;
           chksum = (chksum << 8) | serial[i]);
       // build verify
-      uint32_t verify = PMurHash32(serial, HashSerialSize - HashSerialCkSize, HashSerialCkSeed);
-      STATIC_ASSERT(HashSerialCkSize > 0 && HashSerialCkSize <= sizeof(uint32_t),
-                    "must have 1 <= HashSerialCkSize <= sizeof(uint32_t)");
-      if (HashSerialCkSize < sizeof(uint32_t)) {
-        chksum ^= (verify >> ((sizeof(uint32_t) - HashSerialCkSize)*8));
+      checksum_t verify = PMurHash32(serial, kHashSerialSize - kHashSerialCkSize, kHashSerialCkSeed);
+      STATIC_ASSERT(kHashSerialCkSize > 0 && kHashSerialCkSize <= sizeof(checksum_t),
+                    "must have 1 <= kHashSerialCkSize <= sizeof(checksum_t)");
+      if (kHashSerialCkSize < sizeof(checksum_t)) {
+        chksum ^= (verify >> ((sizeof(checksum_t) - kHashSerialCkSize)*8));
       }
       // verify checksum
-      return chksum == (verify & HashSerialCkMask);
+      return chksum == (verify & kHashSerialCkMask);
     }
     return false;
   }
@@ -386,18 +386,18 @@ namespace MurmurHash {
     // write state
     hasher.Serialize(serial);
     // write state type
-    serial[HashSerialTypeIndex] |= HashSerialType;
+    serial[kHashSerialTypeIndex] |= kHashSerialType;
     // write total
-    WriteHashBytes<1>(&total, &serial[HashSerialTotalIndex]);
+    WriteHashBytes<1>(&total, &serial[kHashSerialTotalIndex]);
     // build checksum
-    uint32_t chksum = PMurHash32(serial, HashSerialSize - HashSerialCkSize, HashSerialCkSeed);
-    if (HashSerialCkSize < sizeof(uint32_t)) {
-      chksum ^= (chksum >> ((sizeof(uint32_t) - HashSerialCkSize)*8));
+    checksum_t chksum = PMurHash32(serial, kHashSerialSize - kHashSerialCkSize, kHashSerialCkSeed);
+    if (kHashSerialCkSize < sizeof(checksum_t)) {
+      chksum ^= (chksum >> ((sizeof(checksum_t) - kHashSerialCkSize)*8));
     }
     // write checksum
-    for(int i = HashSerialCkIndex + HashSerialCkSize ;; chksum >>=8) {
+    for(int i = kHashSerialCkIndex + kHashSerialCkSize ;; chksum >>=8) {
       serial[--i] = (uint8_t) chksum & 0xFF;
-      if (i == HashSerialCkIndex) break;
+      if (i == kHashSerialCkIndex) break;
     }
   }
 
@@ -405,7 +405,7 @@ namespace MurmurHash {
   NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
   ::Update(void *data, uint32_t length)
   {
-    total += length;
+    total += (total_t) length;
     hasher.Update( data, length );
   }
 
@@ -446,11 +446,11 @@ namespace MurmurHash {
     Nan::SetAccessor( i_t, Nan::New<String>("total").ToLocalChecked(), GetTotal );
    
     Nan::SetTemplate(tpl, Nan::New<String>("SERIAL_BYTE_LENGTH").ToLocalChecked(),
-                          Nan::New<Int32>(HashSerialSize),
+                          Nan::New<Int32>(kHashSerialSize),
                           static_cast<PropertyAttribute>(ReadOnly | DontDelete) );
     Nan::SetInstanceTemplate(tpl,
                           Nan::New<String>("SERIAL_BYTE_LENGTH").ToLocalChecked(),
-                          Nan::New<Int32>(HashSerialSize),
+                          Nan::New<Int32>(kHashSerialSize),
                           static_cast<PropertyAttribute>(ReadOnly | DontDelete) );
     Nan::SetPrototypeMethod(tpl, "copy",      Copy);
     Nan::SetPrototypeMethod(tpl, "serialize", Serialize);
@@ -468,25 +468,10 @@ namespace MurmurHash {
     }
   }
 
-  #undef HashSerialTypeIndex
-  #undef HashSerialTypeMask
-  #undef HashSerialType
-  #undef HashSerialCkSeed
-  #undef HashSerialStringSize
-  #undef HashSerialSize
-  #undef HashSerialCkIndex
-  #undef HashSerialTotalIndex
-  #undef HashSerialCarryIndex
-  #undef HashSerialHStateIndex
-  #undef HashSerialCkMask
-  #undef HashSerialCkSize
-  #undef BASE64_ENCODED_SIZE
-
-
   NAN_MODULE_INIT(Init)
   {
     IncrementalHasher<IncrementalMurmurHash3A,  uint32_t, 1>::Init(target, "MurmurHash");
-  #ifdef NODE_MURMURHASH_DEFAULT_32BIT
+  #if defined(NODE_MURMURHASH_DEFAULT_32BIT)
     IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2>::Init(target, "MurmurHash128x64");
     IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4>::Init(target, "MurmurHash128x86", "MurmurHash128");
   #else
