@@ -1,6 +1,10 @@
+v3.0.3
+
+* improved node-pre-gyp configuration so only essential binaries are being packaged
+
 v3.0.2
 
-* removed bunded dependencies, as it troubles older npm
+* removed bundled dependencies
 
 v3.0.1
 

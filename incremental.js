@@ -1,2 +1,7 @@
 /* expose pure incremental api */
-module.exports = require('bindings')('murmurhashincremental.node');
+"use strict";
+
+var binary = require('node-pre-gyp');
+var path = require('path');
+var binding_path = binary.find(path.resolve(path.join(__dirname,'./package.json')));
+module.exports = require(path.join(path.dirname(binding_path), 'murmurhashincremental.node'));

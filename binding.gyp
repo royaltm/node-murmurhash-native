@@ -68,6 +68,20 @@
           }
         }]
       ]
+    },
+    {
+      "target_name": "action_after_build",
+      "type": "none",
+      "dependencies": [ "murmurhash", "murmurhashincremental" ],
+      "copies": [
+        {
+          "files": [
+            "<(PRODUCT_DIR)/murmurhash.node",
+            "<(PRODUCT_DIR)/murmurhashincremental.node",
+          ],
+          "destination": "<(module_path)"
+        }
+      ]
     }
   ]
 }
