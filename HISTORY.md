@@ -1,3 +1,7 @@
+v3.0.2
+
+* removed bunded dependencies, as it troubles older npm
+
 v3.0.1
 
 * facilitate installation with prebuilt native binaries
