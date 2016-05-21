@@ -44,7 +44,7 @@ script:
 - npm test
 # publish on a tag
 - if [[ $PUBLISH_BINARY == yes ]]; then node-pre-gyp package; fi;
-- if [[ $PUBLISH_BINARY == yes ]]; then node-pre-gyp-github publish --release; fi;
+- if [[ $PUBLISH_BINARY == yes ]]; then node-pre-gyp-github publish --release --tag "$TRAVIS_BRANCH"; fi;
 # cleanup
 - node-pre-gyp clean
 # test binary exists

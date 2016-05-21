@@ -34,6 +34,18 @@ If the prebuilt release is not available for your system or nodejs version,
 the compilation from source will kick-in. For more information on building from
 source please consult [this page][node-gyp-install].
 
+If for some reason (e.g. an incompatible GLIBC) you might want to force building from source, type:
+
+```
+npm i murmurhash-native --build-from-source
+```
+
+To reinstall prebuilt binary (e.g. after switching between major nodejs versions):
+
+```
+npm i murmurhash-native --udpate-binary
+```
+
 Make a hash:
 ------------
 
@@ -143,8 +155,7 @@ Streaming api
 
 ```js
 var hash = murmur.createHash('murmurhash32', {seed: 123, encoding: 'hex'});
-fs.createReadStream('README.md').pipe(hash);
-hash.on('data', digest => console.log(digest) );
+fs.createReadStream('README.md').pipe(hash).pipe(process.stdout);
 ```
 
 ### Serializable state

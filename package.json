@@ -30,7 +30,8 @@
   "binary": {
     "module_name": "murmurhash",
     "module_path": "build/{configuration}/",
-    "host": "https://github.com/royaltm/node-murmurhash-native/releases/download/3.0.0-test-prebuilt2"
+    "host": "https://github.com/royaltm/node-murmurhash-native/releases/download/",
+    "remote_path": "v{version}"
   },
   "main": "index.js",
   "engines": {
@@ -45,7 +46,7 @@
     "bluebird": "^3.3.5",
     "commander": "^2.9.0",
     "murmurhash3js": "^3.0.1",
-    "node-pre-gyp-github": "^1.1.2",
+    "node-pre-gyp-github": "royaltm/node-pre-gyp-github#tag-options",
     "tap": "^5.7.1"
   },
   "bundledDependencies": [
