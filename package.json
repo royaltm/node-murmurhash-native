@@ -48,8 +48,5 @@
     "murmurhash3js": "^3.0.1",
     "node-pre-gyp-github": "royaltm/node-pre-gyp-github#tag-options",
     "tap": "^5.7.1"
-  },
-  "bundledDependencies": [
-    "node-pre-gyp"
-  ]
+  }
 }
