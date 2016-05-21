@@ -30,7 +30,7 @@
   "binary": {
     "module_name": "murmurhash",
     "module_path": "build/{configuration}/",
-    "host": "https://github.com/royaltm/node-murmurhash-native/releases/download/3.0.0"
+    "host": "https://github.com/royaltm/node-murmurhash-native/releases/download/3.0.0-test-prebuilt1"
   },
   "main": "index.js",
   "engines": {
