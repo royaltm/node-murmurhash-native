@@ -18,13 +18,21 @@ Key features:
 * serializable state of the progressive hasher
 * platform independend network byte order output of hashes in any form
 * promise wrapper
+* prebuilt binaries for most standard system configurations
 
 Install:
 --------
 
+There are prebuilt [binaries][releases] available for painless installation on
+some Linuxes (x64), OS-X (x64) and Windows (x64 and x86) thanks to [node-pre-gyp][node-pre-gyp] and [node-pre-gyp-github][node-pre-gyp-github].
+
 ```
 npm install murmurhash-native
 ```
+
+If the prebuilt release is not available for your system or nodejs version,
+the compilation from source will kick-in. For more information on building from
+source please consult [this page][node-gyp-install].
 
 Make a hash:
 ------------
@@ -270,3 +278,7 @@ Tested with nodejs: v0.10, v0.11, v0.12, iojs-3, v4, v5 and v6.
 [murmurhash3js]: https://www.npmjs.com/package/murmurhash3js
 [PMurHash]: https://github.com/aappleby/smhasher/blob/master/src/PMurHash.c
 [crypto.Hash]: https://nodejs.org/dist/latest-v6.x/docs/api/crypto.html#crypto_class_hash
+[node-pre-gyp]: https://github.com/mapbox/node-pre-gyp
+[node-pre-gyp-github]: https://github.com/bchr02/node-pre-gyp-github
+[releases]: https://github.com/royaltm/node-murmurhash-native/releases
+[node-gyp-install]: https://github.com/nodejs/node-gyp#installation

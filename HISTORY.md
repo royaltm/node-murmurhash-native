@@ -1,3 +1,11 @@
+v3.0.1
+
+* facilitate installation with prebuilt native binaries
+* use "bindings" gem for finding native modules
+* backward compatibility testing of serialized data
+* c++ code cleanup: most of the precompiler macros replaces with type-safe constants
+* js code cleanup with jshint
+
 v3.0.0
 
 * results always in network order MSB (byte)
