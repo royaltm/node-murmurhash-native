@@ -62,13 +62,10 @@ build_script:
 
 test_script:
   - npm test
-  - ps: if ($env:publish_binary -eq 1) {node-pre-gyp package 2>&1}
-  - ps: >
-      if ($env:publish_binary -eq 1) {
-        node-pre-gyp-github publish --release --tag "$env:appveyor_repo_tag_name" 2>&1
-      }
-  - ps: if ($env:publish_binary -eq 1) {node-pre-gyp clean}
-  - ps: if ($env:publish_binary -eq 1) {npm install --fallback-to-build=false}
+  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
+  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release --tag %APPVEYOR_REPO_TAG_NAME% 2>&1)
+  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean)
+  - IF %PUBLISH_BINARY% == 1 (npm install --fallback-to-build=false)
 
 # Set build version format here instead of in the admin panel.
 version: "{build}"
