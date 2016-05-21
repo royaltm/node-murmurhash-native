@@ -5,6 +5,7 @@ v3.0.1
 * backward compatibility testing of serialized data
 * c++ code cleanup: most of the precompiler macros replaces with type-safe constants
 * js code cleanup with jshint
+* remove iojs-3 from ci tests
 
 v3.0.0
 
