@@ -23,20 +23,32 @@
     "url": "git://github.com/royaltm/node-murmurhash-native.git"
   },
   "scripts": {
+    "install": "node-pre-gyp install --fallback-to-build",
     "test": "tap -C -Rclassic ./test/test*.js",
     "bench": "sh bench/bench.all.sh"
+  },
+  "binary": {
+    "module_name": "murmurhash",
+    "module_path": "build/{configuration}/",
+    "host": "https://github.com/royaltm/node-murmurhash-native/releases/download/3.0.0"
   },
   "main": "index.js",
   "engines": {
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "nan": "^2.3.3"
+    "bindings": "^1.2.1",
+    "nan": "^2.3.3",
+    "node-pre-gyp": "^0.6.28"
   },
   "devDependencies": {
     "bluebird": "^3.3.5",
     "commander": "^2.9.0",
     "murmurhash3js": "^3.0.1",
+    "node-pre-gyp-github": "^1.1.2",
     "tap": "^5.7.1"
-  }
+  },
+  "bundledDependencies": [
+    "node-pre-gyp"
+  ]
 }

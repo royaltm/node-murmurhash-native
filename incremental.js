@@ -1,2 +1,2 @@
 /* expose pure incremental api */
-module.exports = require(__dirname + '/build/Release/murmurhashincremental.node');
+module.exports = require('bindings')('murmurhashincremental.node');

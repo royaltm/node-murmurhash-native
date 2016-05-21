@@ -1,6 +1,3 @@
-os:
-  - linux
-  - osx
 sudo: false
 language: cpp
 addons:
@@ -9,18 +6,46 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
+os:
+- linux
+- osx
 env:
+  global:
+    secure: des8AXoNK5+Dr9wS3HOMngqAA/sc9JdJ1Meq86YpELFYYERYyqTv/hbxMc9quFbhMn3Z2i5PjmeUdXV4JXko7GDXhzi8/pk+la3qkaEVvfapD4GBaMNn+xGQjapK7iOi76dvxsXkbv+28bYdEqqVz/kgXi9KYAF2sjWTPTZ7huU=
   matrix:
   - TRAVIS_NODE_VERSION="0.10"
   - TRAVIS_NODE_VERSION="0.12"
-  - TRAVIS_NODE_VERSION="iojs-3"
   - TRAVIS_NODE_VERSION="4"
   - TRAVIS_NODE_VERSION="5"
   - TRAVIS_NODE_VERSION="6"
-install:
-  - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
-  - $CXX --version
-  - npm install
-script: npm test
 
+before_install:
+- rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+- PATH=$PATH:`pwd`/node_modules/.bin
+# print versions
+- node --version
+- npm --version
+# use g++-4.8 on Linux
+- if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
+- "$CXX --version"
+# figure out if we should publish
+- PUBLISH_BINARY=no
+# if we are building a tag then publish
+- echo $TRAVIS_BRANCH
+- echo `git describe --tags --always HEAD`
+- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=yes; fi;
+- echo "Are we going to publish a binary? ->" $PUBLISH_BINARY
+
+install:
+# ensure source install works
+- npm install --build-from-source
+
+script:
+- npm test
+# publish on a tag
+- if [[ $PUBLISH_BINARY == yes ]]; then node-pre-gyp package; fi;
+- if [[ $PUBLISH_BINARY == yes ]]; then node-pre-gyp-github publish --release; fi;
+# cleanup
+- node-pre-gyp clean
+# test binary exists
+- if [[ $PUBLISH_BINARY == yes ]]; then npm install --fallback-to-build=false; fi;
