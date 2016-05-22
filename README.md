@@ -43,7 +43,7 @@ npm i murmurhash-native --build-from-source
 To reinstall prebuilt binary (e.g. after switching between major nodejs versions):
 
 ```
-npm i murmurhash-native --udpate-binary
+npm rebuild --update-binary
 ```
 
 Make a hash:

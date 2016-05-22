@@ -14,3 +14,5 @@ sftp-config.json
 *.o
 *.so
 .nyc_output
+*.tgz
+/lib
