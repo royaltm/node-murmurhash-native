@@ -14,18 +14,18 @@ namespace MurmurHash {
         ReadHashBytes<HashLength>( &serial[0], &hstate );
         ReadHashBytes<HashLength>( &serial[sizeof(hstate)],  &carry );
       }
-      NAN_INLINE void Serialize(uint8_t *serial)
+      NAN_INLINE void Serialize(uint8_t *serial) const
       {
         WriteHashBytes<HashLength>( &hstate, &serial[0] );
         WriteHashBytes<HashLength>( &carry,  &serial[sizeof(hstate)] );
       }
-      NAN_INLINE void Update(void *data, int32_t length)
+      NAN_INLINE void Update(const void *data, int32_t length)
       {
         PMurHash32_Process( &hstate, &carry, data, static_cast<int>(length) );
       }
-      NAN_INLINE void Digest(HashValueType hash[HashLength], total_t total)
+      NAN_INLINE void Digest(HashValueType hash[HashLength], uint32_t total) const
       {
-        *hash = PMurHash32_Result( hstate, carry, (uint32_t) total );
+        *hash = PMurHash32_Result( hstate, carry, total );
       }
     private:
       HashValueType hstate, carry;
@@ -45,18 +45,18 @@ namespace MurmurHash {
         ReadHashBytes<HashLength>(&serial[0], hstate);
         ReadHashBytes<HashLength>(&serial[sizeof(hstate)],  carry);
       }
-      NAN_INLINE void Serialize(uint8_t *serial)
+      NAN_INLINE void Serialize(uint8_t *serial) const
       {
         WriteHashBytes<HashLength>(hstate, &serial[0]);
         WriteHashBytes<HashLength>(carry,  &serial[sizeof(hstate)]);
       }
-      NAN_INLINE void Update(void *data, int32_t length)
+      NAN_INLINE void Update(const void *data, int32_t length)
       {
         PMurHash128_Process(hstate, carry, data, static_cast<int>(length));
       }
-      NAN_INLINE void Digest(HashValueType hash[HashLength], total_t total)
+      NAN_INLINE void Digest(HashValueType hash[HashLength], uint32_t total) const
       {
-        PMurHash128_Result(hstate, carry, (uint32_t) total, hash);
+        PMurHash128_Result(hstate, carry, total, hash);
       }
     private:
       HashValueType hstate[HashLength], carry[HashLength];

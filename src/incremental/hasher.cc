@@ -3,20 +3,25 @@
 #include "inputdata.h"
 #include "murmurhashutils.h"
 #include "hasher_impl.h"
+#include "asyncupdate.h"
 
 namespace MurmurHash {
   using v8::Object;
   using v8::Int32;
   using v8::Uint32;
-  using v8::String;
   using v8::Function;
   using v8::ObjectTemplate;
   using v8::PropertyAttribute;
   using v8::ReadOnly;
   using v8::DontDelete;
+  using v8::DontEnum;
   using Nan::MaybeLocal;
 
   #define SINGLE_ARG(...) __VA_ARGS__
+
+  namespace {
+    static const char * const MESSAGE_ERROR_PENDING_UPDATE = "Asynchronous update still in progress";
+  }
 
   /**
    * @class
@@ -46,6 +51,11 @@ namespace MurmurHash {
         } else if ( Nan::New(constructor)->HasInstance( info[0] ) ) {
           // hasher instance
           IncrementalHasher_T *other = ObjectWrap::Unwrap<IncrementalHasher_T>( info[0].As<Object>() );
+
+          if ( other->asyncInProgress ) {
+            return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
+          }
+
           self = new IncrementalHasher_T(*other);
 
         } else if ( info[0]->IsString() ) {
@@ -101,56 +111,6 @@ namespace MurmurHash {
   }
 
   /**
-   * Serialize the internal state of the murmur hash utility instance
-   * 
-   * serialize([output[, offset]])
-   * 
-   * If the output buffer is not provided the serial is generated as a base64
-   * encoded string. When output has not enough space for the serialized data
-   * at the given offset it throws an Error. You may consult the required
-   * byte length reading constant: MurmurHashClass.SERIAL_BYTE_LENGTH
-   * 
-   * @param {Buffer} output - a buffer to write serialized state to
-   * @param {number} offset - offset at output
-   * @return {string|Buffer}
-  **/
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Serialize))
-  {
-    IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
-
-    int argc = info.Length();
-
-    Local<Value> result;
-
-    if ( argc > 0 && node::Buffer::HasInstance( info[0] ) ) {
-
-      int32_t length = static_cast<int32_t>(node::Buffer::Length( info[0] ));
-      int32_t offset = (argc > 1) ? Nan::To<int32_t>(info[1]).FromMaybe(0) : 0;
-
-      if (offset < 0) offset += length;
-
-      if (offset >= 0 && kHashSerialSize <= length - offset ) {
-
-        result = info[0];
-        uint8_t *serial = (uint8_t *) node::Buffer::Data( result ) + offset;
-        self->Serialize(serial);
-
-      } else {
-        return Nan::ThrowError("Serialized state does not fit in the provided buffer at the given offset");
-      }
-    } else {
-
-      uint8_t serial[kHashSerialSize];
-      self->Serialize(serial);
-      result = Nan::Encode((void *)serial, sizeof(serial), Nan::BASE64);
-
-    }
-
-    info.GetReturnValue().Set( result );
-  }
-
-  /**
    * Copy the internal state onto the target utility instance
    * 
    * copy(target)
@@ -164,6 +124,10 @@ namespace MurmurHash {
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
 
+    if ( self->asyncInProgress ) {
+      return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
+    }
+
     if ( info.Length() > 0 && Nan::New(constructor)->HasInstance( info[0] ) ) {
       IncrementalHasher_T *other = ObjectWrap::Unwrap<IncrementalHasher_T>( info[0].As<Object>() );
       if ( other == self ) {
@@ -175,52 +139,6 @@ namespace MurmurHash {
     }
 
     info.GetReturnValue().Set( info[0] );
-  }
-
-  /**
-   * Update internal state with the given data
-   *
-   * update(data[, encoding])
-   *
-   * The encoding can be 'utf8', 'ascii', 'binary', 'ucs2', 'base64' or 'hex'.
-   * If encoding is not provided or is not known and the data is a string,
-   * an encoding of 'utf8' is enforced. If data is a Buffer then encoding is ignored.
-   * 
-   * @param {string|Buffer} data
-   * @param {string} [encoding]
-   * @return {MurmurHash} this
-  **/
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Update))
-  {
-    IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
-
-    InputData data;
-
-    int argc = info.Length();
-
-    if ( argc > 0 ) {
-      enum Nan::Encoding encoding = Nan::BUFFER;
-
-      if ( info[0]->IsString() ) {
-        encoding = Nan::UTF8;
-
-        if ( argc > 1 && info[1]->IsString() ) {
-          InputData::ReadEncodingString( info[1].As<String>() );
-          (void) InputData::DetermineEncoding( encoding );
-        }
-
-      }
-
-      data.Setup( info[0], encoding );
-    }
-
-    if ( ! data.IsValid() )
-      return Nan::ThrowTypeError(data.Error());
-
-    self->Update((void *)*data, (int32_t) data.length());
-
-    info.GetReturnValue().Set( self->handle() );
   }
 
   /**
@@ -254,7 +172,11 @@ namespace MurmurHash {
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Digest))
   {
-    IncrementalHasher_T *hasher = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
+    IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
+
+    if ( self->asyncInProgress ) {
+      return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
+    }
 
     OutputType outputType( DefaultOutputType );
 
@@ -273,7 +195,7 @@ namespace MurmurHash {
 
     HashValueType hash[HashLength];
 
-    hasher->Digest( hash );
+    self->Digest( hash );
 
     switch(outputType) {
       case HexStringOutputType:
@@ -318,6 +240,162 @@ namespace MurmurHash {
   }
 
   /**
+   * Serialize the internal state of the murmur hash utility instance
+   * 
+   * serialize([output[, offset]])
+   * 
+   * If the output buffer is not provided the serial is generated as a base64
+   * encoded string. When output has not enough space for the serialized data
+   * at the given offset it throws an Error. You may consult the required
+   * byte length reading constant: MurmurHashClass.SERIAL_BYTE_LENGTH
+   * 
+   * @param {Buffer} output - a buffer to write serialized state to
+   * @param {number} offset - offset at output
+   * @return {string|Buffer}
+  **/
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Serialize))
+  {
+    IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
+
+    if ( self->asyncInProgress ) {
+      return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
+    }
+
+    int argc = info.Length();
+
+    Local<Value> result;
+
+    if ( argc > 0 && node::Buffer::HasInstance( info[0] ) ) {
+
+      int32_t length = static_cast<int32_t>(node::Buffer::Length( info[0] ));
+      int32_t offset = (argc > 1) ? Nan::To<int32_t>(info[1]).FromMaybe(0) : 0;
+
+      if (offset < 0) offset += length;
+
+      if (offset >= 0 && kHashSerialSize <= length - offset ) {
+
+        result = info[0];
+        uint8_t *serial = (uint8_t *) node::Buffer::Data( result ) + offset;
+        self->Serialize(serial);
+
+      } else {
+        return Nan::ThrowError("Serialized state does not fit in the provided buffer at the given offset");
+      }
+    } else {
+
+      uint8_t serial[kHashSerialSize];
+      self->Serialize(serial);
+      result = Nan::Encode((void *)serial, sizeof(serial), Nan::BASE64);
+
+    }
+
+    info.GetReturnValue().Set( result );
+  }
+
+  /**
+   * Update internal state with the given data
+   *
+   * update(data[, encoding][, callback])
+   *
+   * The encoding can be 'utf8', 'ascii', 'binary', 'ucs2', 'base64' or 'hex'.
+   * If encoding is not provided or is not known and the data is a string,
+   * an encoding of 'utf8' is enforced. If data is a Buffer then encoding is ignored.
+   * 
+   * @param {string|Buffer} data
+   * @param {string} [encoding]
+   * @param {Function} callback - optional callback(err)
+   *       if provided the hash will be updated asynchronously using libuv
+   *       worker queue, the return value in this instance will be `undefined`
+   *       Be carefull as reading and writing by multiple threads to the same
+   *       memory may render undetermined results
+   * @return {MurmurHash} this
+  **/
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Update))
+  {
+    IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
+
+    InputData data;
+
+    int argc = info.Length();
+
+    if ( argc > 0 ) {
+      enum Nan::Encoding encoding = Nan::BUFFER;
+      int callbackIndex = -1;
+
+      if ( argc > 1 && info[argc - 1]->IsFunction() ) {
+        callbackIndex = --argc;
+      }
+
+      if ( info[0]->IsString() ) {
+        encoding = Nan::UTF8;
+
+        if ( argc > 1 && info[1]->IsString() ) {
+          InputData::ReadEncodingString( info[1].As<String>() );
+          (void) InputData::DetermineEncoding( encoding );
+        }
+
+      }
+
+      if ( callbackIndex > -1 ) {
+
+        IncrementalHashUpdater<H,HashValueType,HashLength> *asyncUpdater;
+        Nan::Callback *callback = new Nan::Callback(
+                                    Local<Function>::Cast(info[callbackIndex]));
+
+        if ( self->asyncInProgress ) {
+          Local<Value> argv[] = {
+            v8::Exception::Error(Nan::New<String>(MESSAGE_ERROR_PENDING_UPDATE).ToLocalChecked())
+          };
+          callback->Call(1, argv);
+          delete callback;
+
+          return; // undefined by default
+
+        } else if ( argc > 0 ) {
+          asyncUpdater = new IncrementalHashUpdater<H,HashValueType,HashLength>(
+            callback, self, info[0], encoding);
+        } else {
+          asyncUpdater = new IncrementalHashUpdater<H,HashValueType,HashLength>(callback);
+        }
+
+        self->asyncInProgress = true;
+
+        Nan::AsyncQueueWorker(asyncUpdater);
+
+        return; // undefined by default
+
+      } else if ( self->asyncInProgress ) {
+
+        return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
+
+      } else {
+
+        data.Setup( info[0], encoding );
+
+      }
+    }
+
+    if ( ! data.IsValid() )
+      return Nan::ThrowTypeError(data.Error());
+
+    self->Update( (const void *) *data, (int32_t) data.length());
+
+    info.GetReturnValue().Set( self->handle() );
+  }
+
+  /**
+   * @property {boolean} isBusy - is asynchronous update in progress
+  **/
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_GETTER(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::GetIsBusy))
+  {
+    IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
+    info.GetReturnValue().Set( Nan::New(self->asyncInProgress) );
+  }
+
+  /**
    * @property {number} total - (read only) The total (modulo 2^32) bytes of data
    *                                                              provided so far
   **/
@@ -331,33 +409,34 @@ namespace MurmurHash {
   #undef SINGLE_ARG
 
   /*************************************************/
-  /******************** private ********************/
+  /******************* internal ********************/
   /*************************************************/
 
   /*---------------- constructors -----------------*/
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
-  ::IncrementalHasher(const uint32_t seed) : hasher(seed), total(0) {};
+  ::IncrementalHasher(const uint32_t seed) : hasher(seed), total(0), asyncInProgress(false) {};
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
   ::IncrementalHasher(const IncrementalHasher_T& other) : ObjectWrap(),
                                                           hasher(other.hasher),
-                                                          total(other.total) {};
+                                                          total(other.total),
+                                                          asyncInProgress(false) {};
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
-  ::IncrementalHasher(const uint8_t *serial) : hasher(serial)
+  ::IncrementalHasher(const uint8_t *serial) : hasher(serial), asyncInProgress(false)
   {
     ReadHashBytes<1>(&serial[kHashSerialTotalIndex], &total);
   }
 
-  /*-------------- instance methods ---------------*/
+  /*--------------- static methods ----------------*/
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength>
-  :: IsSerialTypeValid(uint8_t *serial)
+  ::IsSerialTypeValid(uint8_t *serial)
   {
     // check state type
     if (kHashSerialType == (serial[kHashSerialTypeIndex] & kHashSerialTypeMask)) {
@@ -379,9 +458,25 @@ namespace MurmurHash {
     return false;
   }
 
+  /*-------------- instance methods ---------------*/
+
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
-  ::Serialize(uint8_t *serial)
+  :: AsyncUpdateComplete(void)
+  {
+    asyncInProgress = false;
+  }
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  ::Digest(HashValueType *hash) const
+  {
+    hasher.Digest( hash, (uint32_t) total );
+  }
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  ::Serialize(uint8_t *serial) const
   {
     // write state
     hasher.Serialize(serial);
@@ -403,17 +498,10 @@ namespace MurmurHash {
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
-  ::Update(void *data, uint32_t length)
+  ::Update(const void *data, uint32_t length)
   {
     total += (total_t) length;
     hasher.Update( data, length );
-  }
-
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
-  ::Digest(HashValueType *hash)
-  {
-    hasher.Digest( hash, total );
   }
 
   /*------------------ operators ------------------*/
@@ -439,10 +527,13 @@ namespace MurmurHash {
   {
     Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
     tpl->SetClassName( Nan::New<String>(name).ToLocalChecked() );
-   
+
     Local<ObjectTemplate> i_t = tpl->InstanceTemplate();
     i_t->SetInternalFieldCount(1);
-   
+
+    Nan::SetAccessor( i_t, Nan::New<String>("isBusy").ToLocalChecked(), GetIsBusy,
+                            NULL, Local<Value>(), v8::DEFAULT,
+                            static_cast<PropertyAttribute>(DontEnum | DontDelete));
     Nan::SetAccessor( i_t, Nan::New<String>("total").ToLocalChecked(), GetTotal );
    
     Nan::SetTemplate(tpl, Nan::New<String>("SERIAL_BYTE_LENGTH").ToLocalChecked(),
@@ -453,11 +544,11 @@ namespace MurmurHash {
                           Nan::New<Int32>(kHashSerialSize),
                           static_cast<PropertyAttribute>(ReadOnly | DontDelete) );
     Nan::SetPrototypeMethod(tpl, "copy",      Copy);
+    Nan::SetPrototypeMethod(tpl, "digest",    Digest);
     Nan::SetPrototypeMethod(tpl, "serialize", Serialize);
     Nan::SetPrototypeMethod(tpl, "toJSON",    Serialize);
     Nan::SetPrototypeMethod(tpl, "update",    Update);
-    Nan::SetPrototypeMethod(tpl, "digest",    Digest);
-   
+
     Local<Value> fn = Nan::GetFunction(tpl).ToLocalChecked();
     constructor.Reset( tpl );
     if (altname != NULL) {
