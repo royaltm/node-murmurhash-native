@@ -27,51 +27,43 @@ function wrapStream(name) {
 }
 
 [
-  [4, 'MurmurHash', incr.MurmurHash, incr.MurmurHash, hash.murmurHash,
+  [4, 'MurmurHash', incr.MurmurHash, hash.murmurHash,
                0, 2180083513, 1364076727,
-      '00000000', '81f16f39', '514e28b7',
-      'e72d7f37'],
-  [4, 'MurmurHash (stream)', wrapStream('MurmurHash'), strm.MurmurHash, hash.murmurHash,
+      '00000000', '81f16f39', '514e28b7'],
+  [4, 'MurmurHash (stream)', wrapStream('MurmurHash'), hash.murmurHash,
                0, 2180083513, 1364076727,
-      '00000000', '81f16f39', '514e28b7',
-      'e72d7f37'],
-  [16, 'MurmurHash128x64', incr.MurmurHash128x64, incr.MurmurHash128x64, hash.murmurHash128x64,
+      '00000000', '81f16f39', '514e28b7'],
+  [16, 'MurmurHash128x64', incr.MurmurHash128x64, hash.murmurHash128x64,
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
       '4610abe56eff5cb551622daa78f83583',
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
-      '4610abe56eff5cb551622daa78f83583',
-      '18a573e78e997f9b0be9c4b4595e5875'],
-  [16, 'MurmurHash128x64 (stream)', wrapStream('MurmurHash128x64'), strm.MurmurHash, hash.murmurHash128x64,
+      '4610abe56eff5cb551622daa78f83583'],
+  [16, 'MurmurHash128x64 (stream)', wrapStream('MurmurHash128x64'), hash.murmurHash128x64,
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
       '4610abe56eff5cb551622daa78f83583',
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
-      '4610abe56eff5cb551622daa78f83583',
-      '18a573e78e997f9b0be9c4b4595e5875'],
-  [16, 'MurmurHash128x86', incr.MurmurHash128x86, incr.MurmurHash128x86, hash.murmurHash128x86,
+      '4610abe56eff5cb551622daa78f83583'],
+  [16, 'MurmurHash128x86', incr.MurmurHash128x86, hash.murmurHash128x86,
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
       '88c4adec54d201b954d201b954d201b9',
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
-      '88c4adec54d201b954d201b954d201b9',
-      'cf690ba00d5fb908b2978b4d8d77cbee'],
-  [16, 'MurmurHash128x86 (stream)', wrapStream('MurmurHash128x86'), strm.MurmurHash, hash.murmurHash128x86,
+      '88c4adec54d201b954d201b954d201b9'],
+  [16, 'MurmurHash128x86 (stream)', wrapStream('MurmurHash128x86'), hash.murmurHash128x86,
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
       '88c4adec54d201b954d201b954d201b9',
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
-      '88c4adec54d201b954d201b954d201b9',
-      'cf690ba00d5fb908b2978b4d8d77cbee']
+      '88c4adec54d201b954d201b954d201b9']
 ].forEach(function(args)  {
   var size                = args[ 0]
     , label               = args[ 1]
     , MurmurHash          = args[ 2]
-    , klass               = args[ 3]
-    , murmurHash          = args[ 4]
-    , seedZeroNumber      = args[ 5]
-    , seedMinusOneNumber  = args[ 6]
-    , seedPlusOneNumber   = args[ 7]
-    , seedZeroHex         = args[ 8]
-    , seedMinusOneHex     = args[ 9]
-    , seedPlusOneHex      = args[10]
-    , crashTestHex        = args[11]
+    , murmurHash          = args[ 3]
+    , seedZeroNumber      = args[ 4]
+    , seedMinusOneNumber  = args[ 5]
+    , seedPlusOneNumber   = args[ 6]
+    , seedZeroHex         = args[ 7]
+    , seedMinusOneHex     = args[ 8]
+    , seedPlusOneHex      = args[ 9]
     , seedZeroBuffer      = new Buffer(seedZeroHex,  'hex')
     , seedMinusOneBuffer  = new Buffer(seedMinusOneHex, 'hex')
     , seedPlusOneBuffer   = new Buffer(seedPlusOneHex,  'hex')
@@ -100,7 +92,7 @@ function wrapStream(name) {
           t.strictEqual(error.message, "mana mana");
         });
       };
-      t.strictEqual(undefined, MurmurHash().update('', function(err, foo) {
+      t.strictEqual(undefined, MurmurHash().update('', function(err) {
         t.error(err);
         throw new Error("mana mana");
       }));

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// jshint eqnull:true
 "use strict";
 
 var os                = require('os')
@@ -84,32 +85,30 @@ function benchRandomChunks(fun, name, hash, size, maxchunk, minchunk) {
   measure('rndchunks', name, size, parben(parallel, parallel, function(next) {
     var chunks = new RandomStream({maxchunk: maxchunk, minchunk: minchunk, size: size});
     for(var i = 0; i < pipes; ++i) {
-      chunks.pipe(hash.createHash(fun, {encoding: 'hex'})).once('readable', function() {
-        if (!--i) next();
-      });
+      chunks.pipe(hash.createHash(fun, {encoding: 'hex'})).once('readable', cb);
     }
+    function cb() { if (!--i) next(); }
   }));
 }
 
 function createRandomFile(file, size, next) {
   fs.stat(file, function(err, stat) {
-    var oldsize = err ? 0 : stat.size
+    var oldsize = err ? 0 : stat.size;
     if (oldsize < size) {
       new RandomStream({size: size - oldsize}).pipe(fs.createWriteStream(file, {start: oldsize})).on('finish', next);
     } else {
       next();
     }
-  })
+  });
 }
 
 function benchBigfile(file, fun, name, hash, size) {
   measure('bigfile', name, size, parben(parallel, parallel, function(next) {
-    var fstrm = fs.createReadStream(file, {encoding:null})
+    var fstrm = fs.createReadStream(file, {encoding:null});
     for(var i = 0; i < pipes; ++i) {
-      fstrm.pipe(hash.createHash(fun, {encoding: 'hex'})).once('readable', function() {
-        if (!--i) next();
-      });
+      fstrm.pipe(hash.createHash(fun, {encoding: 'hex'})).once('readable', cb);
     }
+    function cb() { if (!--i) next(); }
   }));
 }
 
@@ -117,10 +116,9 @@ function benchRandomStream(fun, name, hash, size) {
   measure('bigchunks', name, size, parben(parallel, parallel, function(next) {
     var rstrm = new RandomStream({size: size});
     for(var i = 0; i < pipes; ++i) {
-      rstrm.pipe(hash.createHash(fun, {encoding: 'hex'})).once('readable', function() {
-        if (!--i) next();
-      });
+      rstrm.pipe(hash.createHash(fun, {encoding: 'hex'})).once('readable', cb);
     }
+    function cb() { if (!--i) next(); }
   }));
 }
 

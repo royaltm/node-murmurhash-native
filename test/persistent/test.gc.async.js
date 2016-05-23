@@ -3,6 +3,8 @@
 if (!global.gc)
   throw new Error("run with --expose-gc");
 
+var gc = global.gc;
+
 var kMaxLength = require('buffer').kMaxLength;
 
 var test = require("tap").test
