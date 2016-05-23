@@ -8,7 +8,8 @@ namespace MurmurHash {
   template<typename HashValueType, int32_t HashLength>
   class IncrementalMurmurHash3A {
     public:
-      NAN_INLINE IncrementalMurmurHash3A(const uint32_t seed = 0) : hstate(seed), carry(0) {}
+      NAN_INLINE IncrementalMurmurHash3A(const uint32_t seed = 0)
+                                    : hstate((HashValueType) seed), carry(0) {}
       NAN_INLINE IncrementalMurmurHash3A(const uint8_t *serial)
       {
         ReadHashBytes<HashLength>( &serial[0], &hstate );
@@ -37,7 +38,7 @@ namespace MurmurHash {
       NAN_INLINE IncrementalMurmurHash128(const uint32_t seed = 0) : carry() {
         HashValueType *p = hstate + HashLength;
         do {
-          *--p = seed;
+          *--p = (HashValueType) seed;
         } while (p > hstate);
       }
       NAN_INLINE IncrementalMurmurHash128(const uint8_t *serial)
