@@ -236,3 +236,11 @@ uint32_t PMurHash32(const void * key, int len, uint32_t seed)
   PMurHash32_Process(&seed, &carry, key, len);
   return PMurHash32_Result(seed, carry, (uint32_t) len);
 }
+
+/* MurmurHash3_x86_32 api */
+void PMurHash32(const void * key, int len, uint32_t seed, void * out)
+{
+  uint32_t carry = 0;
+  PMurHash32_Process(&seed, &carry, key, len);
+  *(uint32_t*)out = PMurHash32_Result(seed, carry, (uint32_t) len);
+}

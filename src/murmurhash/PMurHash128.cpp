@@ -421,6 +421,19 @@ void PMurHash128_Process(uint32_t * const ph, uint32_t * const pcarry, const voi
   pcarry[3] = (k4 & ~0xff) | n;
 } 
 
+/*---------------------------------------------------------------------------*/
+
+/* All in one go */
+
+/* MurmurHash3_x86_128 api */
+void PMurHash128x86(const void * key, const int len, uint32_t seed, void * out)
+{
+  uint32_t carry[4] = {0, 0, 0, 0};
+  uint32_t h[4] = {seed, seed, seed, seed};
+  PMurHash128_Process(h, carry, key, len);
+  PMurHash128_Result(h, carry, (uint32_t) len, (uint32_t *) out);
+}
+
 /*-----------------------------------------------------------------------------*
                                  PMurHash128x64
  *-----------------------------------------------------------------------------*/
@@ -614,3 +627,16 @@ void PMurHash128_Process(uint64_t * const ph, uint64_t * const pcarry, const voi
   pcarry[0] = k1;
   pcarry[1] = (k2 & ~0xff) | n;
 } 
+
+/*---------------------------------------------------------------------------*/
+
+/* All in one go */
+
+/* MurmurHash3_x64_128 api */
+void PMurHash128x64(const void * key, const int len, uint32_t seed, void * out)
+{
+  uint64_t carry[2] = {0, 0};
+  uint64_t h[2] = {seed, seed};
+  PMurHash128_Process(h, carry, key, len);
+  PMurHash128_Result(h, carry, (uint32_t) len, (uint64_t *) out);
+}
