@@ -25,6 +25,7 @@
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
     "test": "tap -C -Rclassic ./test/test*.js",
+    "test-gc": "tap -Rspec ./test/persistent/test.gc.*.js -gc",
     "bench": "sh bench/bench.all.sh",
     "rebuild": "node-pre-gyp rebuild"
   },
