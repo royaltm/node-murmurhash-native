@@ -1,3 +1,8 @@
+v3.0.4
+
+* test cases: incremental digest() method with buffer output
+* fix stream.js wrapper: missing support for offset and length in digest()
+
 v3.0.3
 
 * improved node-pre-gyp configuration so only essential binaries are being packaged
