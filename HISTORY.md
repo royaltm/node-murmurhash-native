@@ -1,3 +1,8 @@
+v3.1.0
+
+* replaced MurmurHash3 implementation with PMurHash and PMurHash128
+* new ability to update incremental hashers asynchronously via libuv
+
 v3.0.4
 
 * test cases: incremental digest() method with buffer output
