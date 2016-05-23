@@ -107,14 +107,16 @@ function wrapStream(name) {
       t.type(hasher, klass);
       t.type(hasher.update, 'function');
       t.type(hasher.digest, 'function');
-      t.strictEqual(hasher.total, 0);
+      t.equal(hasher.total, 0);
+      t.type(hasher.SERIAL_BYTE_LENGTH, 'number');
 
       var hasher1 = MurmurHash(0, 'foo', 'bar', ['baz']);
       t.type(hasher1, 'object');
       t.type(hasher1, klass);
       t.type(hasher1.update, 'function');
       t.type(hasher1.digest, 'function');
-      t.strictEqual(hasher1.total, 0);
+      t.equal(hasher.total, 0);
+      t.type(hasher.SERIAL_BYTE_LENGTH, 'number');
 
       t.end();
     });
@@ -389,6 +391,88 @@ function wrapStream(name) {
       t.deepEqual(hash, match);
       t.type(hash, Buffer, 'hash is buffer');
       t.deepEqual(hash, new Buffer(crashTestHex, 'hex'));
+
+      t.end();
+    });
+
+    t.test('should write digest in the provided buffer', function(t) {
+      var pad = new Buffer(2); pad.fill(42);
+      var output = new Buffer(0);
+      t.strictEqual(new MurmurHash().digest(output), output);
+      t.strictEqual(new MurmurHash().digest(output, 3), output);
+      t.strictEqual(new MurmurHash().digest(output, 3, 3), output);
+      t.strictEqual(new MurmurHash().digest(output, 3, -3), output);
+      t.strictEqual(new MurmurHash().digest(output, -3), output);
+      t.strictEqual(new MurmurHash().digest(output, -3, 3), output);
+      t.strictEqual(new MurmurHash().digest(output, -3, -3), output);
+
+      output = new Buffer(size);
+      t.strictEqual(new MurmurHash().digest(output), output);
+      t.deepEqual(output, seedZeroBuffer);
+      t.strictEqual(new MurmurHash(1).digest(output), output);
+      t.deepEqual(output, seedPlusOneBuffer);
+      t.strictEqual(new MurmurHash(-1).digest(output), output);
+      t.deepEqual(output, seedMinusOneBuffer);
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, 2), output);
+      t.deepEqual(output, Buffer.concat([pad, seedPlusOneBuffer.slice(0, -2)]));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, 2, -size + 2), output);
+      t.deepEqual(output, Buffer.concat([pad, seedPlusOneBuffer.slice(2)]));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, -size-2), output);
+      t.deepEqual(output, Buffer.concat([seedPlusOneBuffer.slice(2), pad]));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, -size, size - 2), output);
+      t.deepEqual(output, Buffer.concat([seedPlusOneBuffer.slice(0, -2), pad]));
+
+      output = new Buffer(size + 2); output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output), output);
+      t.deepEqual(output, Buffer.concat([seedPlusOneBuffer, pad]));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, 2), output);
+      t.deepEqual(output, Buffer.concat([pad, seedPlusOneBuffer]));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, -size), output);
+      t.deepEqual(output, Buffer.concat([pad, seedPlusOneBuffer]));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, -size-2), output);
+      t.deepEqual(output, Buffer.concat([seedPlusOneBuffer, pad]));
+
+      output = new Buffer(size - 2); output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, 0), output);
+      t.deepEqual(output, seedPlusOneBuffer.slice(0, size - 2));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output,  -size), output);
+      t.deepEqual(output, seedPlusOneBuffer.slice(2));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, 0, -size + 2), output);
+      t.deepEqual(output, seedPlusOneBuffer.slice(2));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, -size + 2, -size + 2), output);
+      t.deepEqual(output, seedPlusOneBuffer.slice(2));
+
+      output = new Buffer(3); output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, 0, 1), output);
+      t.deepEqual(output, Buffer.concat([seedPlusOneBuffer.slice(0, 1), pad]));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, 0, -3), output);
+      t.deepEqual(output, seedPlusOneBuffer.slice(-3));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, -1), output);
+      t.deepEqual(output, Buffer.concat([pad, seedPlusOneBuffer.slice(0, 1)]));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, -4, 3), output);
+      t.deepEqual(output, Buffer.concat([seedPlusOneBuffer.slice(1, 3), pad.slice(0, 1)]));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, -4, -3), output);
+      t.deepEqual(output, Buffer.concat([seedPlusOneBuffer.slice(-2), pad.slice(0, 1)]));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, 1), output);
+      t.deepEqual(output, Buffer.concat([pad.slice(0, 1), seedPlusOneBuffer.slice(0, 2)]));
+      output.fill(42);
+      t.strictEqual(new MurmurHash(1).digest(output, 1, -2), output);
+      t.deepEqual(output, Buffer.concat([pad.slice(0, 1), seedPlusOneBuffer.slice(-2)]));
 
       t.end();
     });

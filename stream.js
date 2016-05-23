@@ -85,8 +85,9 @@ MurmurHash.prototype.update = function(data, encoding) {
   return this;
 };
 
-MurmurHash.prototype.digest = function(outputEncoding) {
-  return this._handle.digest(outputEncoding);
+MurmurHash.prototype.digest = function() {
+  var handle = this._handle;
+  return handle.digest.apply(handle, arguments);
 };
 
 MurmurHash.prototype.serialize = function(type, offset) {
