@@ -25,7 +25,8 @@
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
     "test": "tap -C -Rclassic ./test/test*.js",
-    "bench": "sh bench/bench.all.sh"
+    "bench": "sh bench/bench.all.sh",
+    "rebuild": "node-pre-gyp rebuild"
   },
   "binary": {
     "module_name": "murmurhash",
