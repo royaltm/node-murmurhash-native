@@ -99,26 +99,33 @@ function wrapStream(name) {
     });
 
     t.test('should raise error for bad arguments', function(t) {
-      t.plan(1+11*3+6*2);
-      function cberr1(err) {
-        t.type(err, TypeError);
-        t.strictEqual(err.message, "string or Buffer is required");
+      t.plan(1+11*5+6*2);
+      function cberrAsync(arg) {
+        var hasher = new MurmurHash();
+        t.strictEqual(undefined, hasher.update(arg, function(err) {
+          t.type(err, TypeError);
+          t.strictEqual(err.message, "string or Buffer is required");
+          t.equal(hasher.isBusy, false);
+        }));
+        t.equal(hasher.isBusy, true);
       }
       function cberrNotThrow(err) {
         t.error(err);
       }
-      t.throws(function() { new MurmurHash().update(cberr1); }, new TypeError("string or Buffer is required") );
-      t.strictEqual(undefined, new MurmurHash().update(undefined, cberr1));
-      t.strictEqual(undefined, new MurmurHash().update({}, cberr1));
-      t.strictEqual(undefined, new MurmurHash().update([], cberr1));
-      t.strictEqual(undefined, new MurmurHash().update(void(0), cberr1));
-      t.strictEqual(undefined, new MurmurHash().update(null, cberr1));
-      t.strictEqual(undefined, new MurmurHash().update(true, cberr1));
-      t.strictEqual(undefined, new MurmurHash().update(false, cberr1));
-      t.strictEqual(undefined, new MurmurHash().update(0, cberr1));
-      t.strictEqual(undefined, new MurmurHash().update(1, cberr1));
-      t.strictEqual(undefined, new MurmurHash().update(-1, cberr1));
-      t.strictEqual(undefined, new MurmurHash().update(new Date(), cberr1));
+      t.throws(function() {
+        new MurmurHash().update(function() { t.error("should not be called") });
+      }, new TypeError("string or Buffer is required") );
+      cberrAsync(undefined);
+      cberrAsync({});
+      cberrAsync([]);
+      cberrAsync(void(0));
+      cberrAsync(null);
+      cberrAsync(true);
+      cberrAsync(false);
+      cberrAsync(0);
+      cberrAsync(1);
+      cberrAsync(-1);
+      cberrAsync(new Date());
       t.strictEqual(undefined, new MurmurHash().update("", "abcdefghijklmno", cberrNotThrow));
       t.strictEqual(undefined, new MurmurHash().update("", "123456", cberrNotThrow));
       t.strictEqual(undefined, new MurmurHash().update("", "12345", cberrNotThrow));
