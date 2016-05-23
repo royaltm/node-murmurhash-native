@@ -355,7 +355,7 @@ namespace MurmurHash {
 
         } else if ( argc > 0 ) {
           asyncUpdater = new IncrementalHashUpdater<H,HashValueType,HashLength>(
-            callback, self, info[0], encoding);
+                                                      callback, self, info[0], encoding);
         } else {
           asyncUpdater = new IncrementalHashUpdater<H,HashValueType,HashLength>(callback);
         }
