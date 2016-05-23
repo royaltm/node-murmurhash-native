@@ -72,7 +72,7 @@ function wrapStream(name) {
       '88c4adec54d201b954d201b954d201b9',
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
       '88c4adec54d201b954d201b954d201b9',
-      'cf690ba00d5fb908b2978b4d8d77cbee'],
+      'cf690ba00d5fb908b2978b4d8d77cbee']
 ].forEach(function(args)  {
   var size                = args[ 0]
     , label               = args[ 1]
