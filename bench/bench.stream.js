@@ -140,7 +140,7 @@ next();
 
 function measure(label, name, size, promise) {
   promise.then(function(res) {
-    console.log(name + "(" + label + "[" + size + "]): single: %s avg: %s %s",
+    console.log(name + "(" + label + "[" + size + "]): single: %s avg: %s",
       (size / res.single / 1000).toFixed(4) + 'MB/s',
       (size / res.avg / 1000).toFixed(4) + 'MB/s');
     next();
