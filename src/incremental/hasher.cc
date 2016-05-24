@@ -551,11 +551,9 @@ namespace MurmurHash {
 
     Local<Value> fn = Nan::GetFunction(tpl).ToLocalChecked();
     constructor.Reset( tpl );
+    Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), fn);
     if (altname != NULL) {
-      Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), fn);
       Nan::Set(target, Nan::New<String>(altname).ToLocalChecked(), fn);
-    } else {
-      Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), fn);
     }
   }
 
