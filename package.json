@@ -47,7 +47,7 @@
     "bluebird": "^3.3.5",
     "commander": "^2.9.0",
     "murmurhash3js": "^3.0.1",
-    "node-pre-gyp-github": "royaltm/node-pre-gyp-github#remote_path",
+    "node-pre-gyp-github": "^1.2.0",
     "tap": "^5.7.1"
   }
 }
