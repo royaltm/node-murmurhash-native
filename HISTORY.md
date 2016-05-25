@@ -2,6 +2,9 @@ v3.1.0
 
 * replaced MurmurHash3 implementation with PMurHash and PMurHash128
 * new ability to update incremental hashers asynchronously via libuv
+* stream implementation chooses sync vs async update depending on chunk size
+* test: ensure persistence under gc stress
+* bench: streaming
 
 v3.0.4
 
