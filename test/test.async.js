@@ -87,7 +87,7 @@ test("should have murmurHash functions", function(t) {
       }));
     });
 
-    t.test('should throw error for bad arguments', function(t) {
+    t.test('should raise error for bad arguments', function(t) {
       t.plan(21*3);
       function cberr1(err) {
         t.type(err, TypeError);

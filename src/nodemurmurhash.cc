@@ -4,7 +4,8 @@
 #include "nodemurmurhash.h"
 #include "inputdata.h"
 #include "MurmurHash2.h"
-#include "MurmurHash3.h"
+#include "PMurHash.h"
+#include "PMurHash128.h"
 #include "murmurhashutils.h"
 #include "asyncworker.h"
 
@@ -271,18 +272,18 @@ namespace MurmurHash {
 
   NAN_MODULE_INIT(Init)
   {
-    Nan::SetMethod(target, "murmurHash",       MurmurHash<MurmurHash3_x86_32 , uint32_t, 1>);
-    Nan::SetMethod(target, "murmurHash32",     MurmurHash<MurmurHash3_x86_32 , uint32_t, 1>);
-    Nan::SetMethod(target, "murmurHash64x64",  MurmurHash<MurmurHash2_x64_64 , uint64_t, 1>);
-    Nan::SetMethod(target, "murmurHash64x86",  MurmurHash<MurmurHash2_x86_64 , uint64_t, 1>);
-    Nan::SetMethod(target, "murmurHash128x64", MurmurHash<MurmurHash3_x64_128, uint64_t, 2>);
-    Nan::SetMethod(target, "murmurHash128x86", MurmurHash<MurmurHash3_x86_128, uint32_t, 4>);
+    Nan::SetMethod(target, "murmurHash",       MurmurHash<        PMurHash32, uint32_t, 1>);
+    Nan::SetMethod(target, "murmurHash32",     MurmurHash<        PMurHash32, uint32_t, 1>);
+    Nan::SetMethod(target, "murmurHash64x64",  MurmurHash<MurmurHash2_x64_64, uint64_t, 1>);
+    Nan::SetMethod(target, "murmurHash64x86",  MurmurHash<MurmurHash2_x86_64, uint64_t, 1>);
+    Nan::SetMethod(target, "murmurHash128x64", MurmurHash<    PMurHash128x64, uint64_t, 2>);
+    Nan::SetMethod(target, "murmurHash128x86", MurmurHash<    PMurHash128x86, uint32_t, 4>);
   #if defined(NODE_MURMURHASH_DEFAULT_32BIT)
-    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_x86_64 , uint64_t, 1>);
-    Nan::SetMethod(target, "murmurHash128",    MurmurHash<MurmurHash3_x86_128, uint32_t, 4>);
+    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_x86_64, uint64_t, 1>);
+    Nan::SetMethod(target, "murmurHash128",    MurmurHash<    PMurHash128x86, uint32_t, 4>);
   #else
-    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_x64_64 , uint64_t, 1>);
-    Nan::SetMethod(target, "murmurHash128",    MurmurHash<MurmurHash3_x64_128, uint64_t, 2>);
+    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_x64_64, uint64_t, 1>);
+    Nan::SetMethod(target, "murmurHash128",    MurmurHash<    PMurHash128x64, uint64_t, 2>);
   #endif
   }
 

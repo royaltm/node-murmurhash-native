@@ -258,85 +258,95 @@ test('should throw error for bad arguments', function(t) {
       testStream(strm.createHash(algorithm, {seed: seed, encoding: 'hex'}), data, cbfactory2('strictEqual', buffer, seed, 'hex'));
     });
 
-    t.test('should create hash from some random data incrementally', function(t) {
-      t.plan(4+11+7+17);
-      var src = new RandomChunkStream({size: 10007, maxchunksize:101});
-      var strsrc = new stream.PassThrough({encoding: 'binary'});
-      var seed = (Math.random()*4294967296)|0;
-      var hasher0 = strm.createHash(algorithm, {seed: 0, encoding: 'hex'});
-      var hasher1 = strm.createHash(algorithm, {seed: 1, encoding: 'hex'});
-      var hasherS = strm.createHash(algorithm, {seed: seed, encoding: 'hex'});
-      var hasher0str = strm.createHash(algorithm, {seed: 0, encoding: 'hex'});
-      var hasher1str = strm.createHash(algorithm, {seed: 1, encoding: 'hex'});
-      var hasherSstr = strm.createHash(algorithm, {seed: seed, encoding: 'hex'});
-      var bufchunks = 0, bufsize = 0;
-      var strchunks = 0, strsize = 0;
-      src.pipe(strsrc);
-      src.pipe(hasher0);
-      src.pipe(hasher1);
-      src.pipe(hasherS);
-      src.once('data', function(data) {
-        t.type(data, 'Buffer');
-        t.ok(data.length <= src.maxchunksize);
-      }).on('data', function(data) {
-        bufchunks++;
-        bufsize += data.length;
-      });
-      strsrc.pipe(hasher0str);
-      strsrc.pipe(hasher1str);
-      strsrc.pipe(hasherSstr);
-      strsrc.once('data', function(data) {
-        t.type(data, 'string');
-        t.ok(data.length <= src.maxchunksize);
-      }).on('data', function(data) {
-        strchunks++;
-        strsize += data.length;
-      });
-      hasherSstr.once('readable', function() {
-        var buffer = src.buffer;
-        t.equal(bufsize, buffer.length);
-        t.equal(strsize, buffer.length);
-        t.equal(bufchunks, strchunks);
-        t.ok(bufchunks >= src.size / src.maxchunksize);
-        t.ok(strchunks >= src.size / src.maxchunksize);
-        t.equal(hasher0._handle.total, buffer.length);
-        t.equal(hasher1._handle.total, buffer.length);
-        t.equal(hasherS._handle.total, buffer.length);
-        t.equal(hasher0str._handle.total, buffer.length);
-        t.equal(hasher1str._handle.total, buffer.length);
-        t.equal(hasherSstr._handle.total, buffer.length);
-        var data = buffer.toString('binary');
-        t.equal(strm.createHash(algorithm).update(data, 'binary').digest().length, size);
-        t.equal(strm.createHash(algorithm).update(data, 'binary').total, buffer.length);
-        t.equal(strm.createHash(algorithm).update(data, 'binary').digest('buffer').length, size);
-        t.equal(strm.createHash(algorithm).update(buffer).digest().length, size);
-        t.equal(strm.createHash(algorithm).update(buffer).digest('buffer').length, size);
-        t.equal(strm.createHash(algorithm).update(buffer).total, buffer.length);
-        t.strictEqual(strm.createHash(algorithm).update(data, 'binary').digest('number'),
-                      strm.createHash(algorithm).update(buffer).digest('number'));
-        var d0 = hasher0.read();
-        var d1 = hasher1.read();
-        var dS = hasherS.read();
-        var d0str = hasher0str.read();
-        var d1str = hasher1str.read();
-        var dSstr = hasherSstr.read();
-        t.notStrictEqual(d0, d1);
-        t.notStrictEqual(d0, dS);
-        t.strictEqual(d0, d0str);
-        t.strictEqual(d1, d1str);
-        t.strictEqual(dS, dSstr);
-        t.strictEqual(d0, strm.createHash(algorithm).update(buffer).digest('hex'));
-        t.strictEqual(d0, strm.createHash(algorithm).update(data, 'binary').digest('hex'));
-        t.strictEqual(d0, murmurHash(buffer, 0, 'hex'));
-        t.strictEqual(d0, murmurHash(data, 0, 'hex'));
-        t.strictEqual(d1, strm.createHash(algorithm, {seed: 1}).update(buffer).digest('hex'));
-        t.strictEqual(d1, strm.createHash(algorithm, {seed: 1}).update(data, 'binary').digest('hex'));
-        t.strictEqual(d1, murmurHash(buffer, 1, 'hex'));
-        t.strictEqual(d1, murmurHash(data, 1, 'hex'));
-        t.strictEqual(dS, strm.createHash(algorithm, {seed: seed}).update(buffer).digest('hex'));
-        t.strictEqual(dS, strm.createHash(algorithm, {seed: seed}).update(data, 'binary').digest('hex'));
-        t.strictEqual(dS, murmurHash(buffer, seed, 'hex'));
-        t.strictEqual(dS, murmurHash(data, seed, 'hex'));
+    [101, 10009, 32768].forEach(function(maxchunksize) {
+      t.test('should create hash from some random data incrementally', function(t) {
+        t.plan(4+11+7+17);
+        var src = new RandomChunkStream({size: maxchunksize*23-1, maxchunksize:maxchunksize});
+        var strsrc = new stream.PassThrough({encoding: 'binary'});
+        var seed = (Math.random()*4294967296)|0;
+        var hasher0 = strm.createHash(algorithm, {seed: 0, encoding: 'hex'});
+        var hasher1 = strm.createHash(algorithm, {seed: 1, encoding: 'hex'});
+        var hasherS = strm.createHash(algorithm, {seed: seed, encoding: 'hex'});
+        var hasher0str = strm.createHash(algorithm, {seed: 0, encoding: 'hex'});
+        var hasher1str = strm.createHash(algorithm, {seed: 1, encoding: 'hex'});
+        var hasherSstr = strm.createHash(algorithm, {seed: seed, encoding: 'hex'});
+        var bufchunks = 0, bufsize = 0;
+        var strchunks = 0, strsize = 0;
+        src.pipe(strsrc);
+        src.pipe(hasher0);
+        src.pipe(hasher1);
+        src.pipe(hasherS);
+        src.once('data', function(data) {
+          t.type(data, 'Buffer');
+          t.ok(data.length <= src.maxchunksize);
+        }).on('data', function(data) {
+          bufchunks++;
+          bufsize += data.length;
+        });
+        strsrc.pipe(hasher0str);
+        strsrc.pipe(hasher1str);
+        strsrc.pipe(hasherSstr);
+        strsrc.once('data', function(data) {
+          t.type(data, 'string');
+          t.ok(data.length <= src.maxchunksize);
+        }).on('data', function(data) {
+          strchunks++;
+          strsize += data.length;
+        });
+        var countdown = 0;
+        hasher0str.once('readable', done); ++countdown;
+        hasher1str.once('readable', done); ++countdown;
+        hasherSstr.once('readable', done); ++countdown;
+        hasher0.once('readable', done); ++countdown;
+        hasher1.once('readable', done); ++countdown;
+        hasherS.once('readable', done); ++countdown;
+        function done() {
+          if (--countdown) return;
+          var buffer = src.buffer;
+          t.equal(bufsize, buffer.length);
+          t.equal(strsize, buffer.length);
+          t.equal(bufchunks, strchunks);
+          t.ok(bufchunks >= src.size / src.maxchunksize);
+          t.ok(strchunks >= src.size / src.maxchunksize);
+          t.equal(hasher0str._handle.total, buffer.length);
+          t.equal(hasher1str._handle.total, buffer.length);
+          t.equal(hasherSstr._handle.total, buffer.length);
+          t.equal(hasher0._handle.total, buffer.length);
+          t.equal(hasher1._handle.total, buffer.length);
+          t.equal(hasherS._handle.total, buffer.length);
+          var data = buffer.toString('binary');
+          t.equal(strm.createHash(algorithm).update(data, 'binary').digest().length, size);
+          t.equal(strm.createHash(algorithm).update(data, 'binary').total, buffer.length);
+          t.equal(strm.createHash(algorithm).update(data, 'binary').digest('buffer').length, size);
+          t.equal(strm.createHash(algorithm).update(buffer).digest().length, size);
+          t.equal(strm.createHash(algorithm).update(buffer).digest('buffer').length, size);
+          t.equal(strm.createHash(algorithm).update(buffer).total, buffer.length);
+          t.strictEqual(strm.createHash(algorithm).update(data, 'binary').digest('number'),
+                        strm.createHash(algorithm).update(buffer).digest('number'));
+          var d0 = hasher0.read();
+          var d1 = hasher1.read();
+          var dS = hasherS.read();
+          var d0str = hasher0str.read();
+          var d1str = hasher1str.read();
+          var dSstr = hasherSstr.read();
+          t.notStrictEqual(d0, d1);
+          t.notStrictEqual(d0, dS);
+          t.strictEqual(d0, d0str);
+          t.strictEqual(d1, d1str);
+          t.strictEqual(dS, dSstr);
+          t.strictEqual(d0, strm.createHash(algorithm).update(buffer).digest('hex'));
+          t.strictEqual(d0, strm.createHash(algorithm).update(data, 'binary').digest('hex'));
+          t.strictEqual(d0, murmurHash(buffer, 0, 'hex'));
+          t.strictEqual(d0, murmurHash(data, 0, 'hex'));
+          t.strictEqual(d1, strm.createHash(algorithm, {seed: 1}).update(buffer).digest('hex'));
+          t.strictEqual(d1, strm.createHash(algorithm, {seed: 1}).update(data, 'binary').digest('hex'));
+          t.strictEqual(d1, murmurHash(buffer, 1, 'hex'));
+          t.strictEqual(d1, murmurHash(data, 1, 'hex'));
+          t.strictEqual(dS, strm.createHash(algorithm, {seed: seed}).update(buffer).digest('hex'));
+          t.strictEqual(dS, strm.createHash(algorithm, {seed: seed}).update(data, 'binary').digest('hex'));
+          t.strictEqual(dS, murmurHash(buffer, seed, 'hex'));
+          t.strictEqual(dS, murmurHash(data, seed, 'hex'));
+        }
       });
     });
 

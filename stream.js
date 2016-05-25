@@ -71,8 +71,12 @@ function MurmurHash(algorithm, options) {
 util.inherits(MurmurHash, LazyTransform);
 
 MurmurHash.prototype._transform = function(chunk, encoding, callback) {
-  this._handle.update(chunk, encoding);
-  callback();
+  if (chunk.length < 8192) { // this constant was chosen experimentally
+    this._handle.update(chunk, encoding);
+    callback();
+  } else {
+    this._handle.update(chunk, encoding, callback);
+  }
 };
 
 MurmurHash.prototype._flush = function(callback) {
@@ -80,9 +84,9 @@ MurmurHash.prototype._flush = function(callback) {
   callback();
 };
 
-MurmurHash.prototype.update = function(data, encoding) {
-  this._handle.update(data, encoding);
-  return this;
+MurmurHash.prototype.update = function() {
+  var handle = this._handle;
+  return handle.update.apply(handle, arguments) && this;
 };
 
 MurmurHash.prototype.digest = function() {
@@ -106,6 +110,14 @@ MurmurHash.prototype.toJSON = function() {
     seed: handle.toJSON()
   };
 };
+
+Object.defineProperty(MurmurHash.prototype, 'isBusy', {
+  get: function() {
+    return this._handle.isBusy;
+  },
+  enumerable: false,
+  configurable: false
+});
 
 Object.defineProperty(MurmurHash.prototype, 'total', {
   get: function() {

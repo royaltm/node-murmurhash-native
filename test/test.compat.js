@@ -20,11 +20,13 @@ var TEST_STRINGS = [
 
 [
   {hash3js: hash3js.x86.hash32,  hash: hash.murmurHash32    , incr: incr.MurmurHash,
-   serial: 'QmKeaK22XaIAAAJOAi0y', hex: 'ad3e539d'},
+   serial: 'QmKeaK22XaIAAAJOAi0y', hex: 'ad3e539d', hex2: '00fa73be'},
   {hash3js: hash3js.x86.hash128, hash: hash.murmurHash128x86, incr: incr.MurmurHash128x86,
-   serial: 'sxzPmSzltfMCih+J0+iHa7u24JIgk7fg4Ie24K22dP4AAAJO857u', hex: '0f2e9b58f3c8452ede465001eaa2308a'},
+   serial: 'sxzPmSzltfMCih+J0+iHa7u24JIgk7fg4Ie24K22dP4AAAJO857u',
+   hex: '0f2e9b58f3c8452ede465001eaa2308a', hex2: 'beccc960486e04b373c48b0217e02636'},
   {hash3js: hash3js.x64.hash128, hash: hash.murmurHash128x64, incr: incr.MurmurHash128x64,
-   serial: 'pN18VmaZIWFi5XnFQVX5oSCTt+C7tuCSrbbgh7bg3F4AAAJOglRY', hex: 'e49c0577f67e999b841d202f03c5e88d'}
+   serial: 'pN18VmaZIWFi5XnFQVX5oSCTt+C7tuCSrbbgh7bg3F4AAAJOglRY',
+   hex: 'e49c0577f67e999b841d202f03c5e88d', hex2: 'e2a976902222cb37e90d01500bc11db3'}
 ]
 .forEach(function(o) {
 
@@ -74,11 +76,18 @@ var TEST_STRINGS = [
   test("should be comatible with older serialized data", function(t) {
     var hash0 = o.incr(42);
     TEST_STRINGS.forEach(function(text) { hash0.update(text); });
-    t.strictEqual(hash0.serialize(), o.serial);
     t.strictEqual(hash0.digest('hex'), o.hex);
+    t.strictEqual(o.incr(hash0.serialize()).digest('hex'), o.hex);
+    TEST_STRINGS.forEach(function(text) { hash0.update(text); });
+    t.strictEqual(hash0.digest('hex'), o.hex2);
+    t.strictEqual(o.incr(hash0.serialize()).digest('hex'), o.hex2);
     var hash1 = o.incr(o.serial);
-    t.strictEqual(hash1.serialize(), o.serial);
     t.strictEqual(hash1.digest('hex'), o.hex);
+    t.strictEqual(o.incr(hash1.serialize()).digest('hex'), o.hex);
+    t.strictEqual(hash1.serialize(), o.serial);
+    TEST_STRINGS.forEach(function(text) { hash1.update(text); });
+    t.strictEqual(hash1.digest('hex'), o.hex2);
+    t.strictEqual(o.incr(hash1.serialize()).digest('hex'), o.hex2);
     t.end();
   });
 

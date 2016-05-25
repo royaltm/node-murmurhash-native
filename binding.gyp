@@ -4,7 +4,8 @@
       'target_name': 'murmurhash',
       'sources': [
         'src/murmurhash/MurmurHash2.cpp',
-        'src/murmurhash/MurmurHash3.cpp',
+        'src/murmurhash/PMurHash.cpp',
+        'src/murmurhash/PMurHash128.cpp',
         'src/nodemurmurhash.cc'
       ],
       'include_dirs': [

@@ -25,7 +25,9 @@
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
     "test": "tap -C -Rclassic ./test/test*.js",
-    "bench": "sh bench/bench.all.sh"
+    "test-gc": "tap -Rspec ./test/persistent/test.gc.*.js -gc",
+    "bench": "sh bench/bench.all.sh",
+    "rebuild": "node-pre-gyp rebuild"
   },
   "binary": {
     "module_name": "murmurhash",
@@ -45,7 +47,7 @@
     "bluebird": "^3.3.5",
     "commander": "^2.9.0",
     "murmurhash3js": "^3.0.1",
-    "node-pre-gyp-github": "royaltm/node-pre-gyp-github#tag-options",
+    "node-pre-gyp-github": "^1.2.0",
     "tap": "^5.7.1"
   }
 }

@@ -29,9 +29,10 @@ typedef unsigned __int64 uint64_t;
 
 // PMurHash128x64
 void PMurHash128_Process(uint64_t ph[2], uint64_t pcarry[2], const void *key, int len);
-void PMurHash128_Result(const uint64_t * ph, const uint64_t * pcarry, uint32_t total_length, uint64_t out[2]);
-
+void PMurHash128_Result(const uint64_t ph[2], const uint64_t pcarry[2], uint32_t total_length, uint64_t out[2]);
+void PMurHash128x64(const void * key, const int len, uint32_t seed, void * out);
 
 // PMurHash128x86
 void PMurHash128_Process(uint32_t ph[4], uint32_t pcarry[4], const void *key, int len);
 void PMurHash128_Result(const uint32_t ph[4], const uint32_t pcarry[4], uint32_t total_length, uint32_t out[4]);
+void PMurHash128x86(const void * key, const int len, uint32_t seed, void * out);

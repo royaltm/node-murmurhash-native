@@ -72,7 +72,7 @@ function wrapStream(name) {
       '88c4adec54d201b954d201b954d201b9',
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
       '88c4adec54d201b954d201b954d201b9',
-      'cf690ba00d5fb908b2978b4d8d77cbee'],
+      'cf690ba00d5fb908b2978b4d8d77cbee']
 ].forEach(function(args)  {
   var size                = args[ 0]
     , label               = args[ 1]
@@ -109,6 +109,13 @@ function wrapStream(name) {
       t.type(hasher.digest, 'function');
       t.equal(hasher.total, 0);
       t.type(hasher.SERIAL_BYTE_LENGTH, 'number');
+      t.strictEqual(hasher.isBusy, false);
+      if (klass === strm.MurmurHash) {
+        t.deepEqual(Object.keys(hasher), ['_handle', '_options', 'SERIAL_BYTE_LENGTH']);
+      } else {
+        t.deepEqual(Object.keys(hasher), ['total', 'SERIAL_BYTE_LENGTH']);
+      }
+      t.strictEqual(hasher.total, 0);
 
       var hasher1 = MurmurHash(0, 'foo', 'bar', ['baz']);
       t.type(hasher1, 'object');
@@ -117,6 +124,13 @@ function wrapStream(name) {
       t.type(hasher1.digest, 'function');
       t.equal(hasher.total, 0);
       t.type(hasher.SERIAL_BYTE_LENGTH, 'number');
+      t.strictEqual(hasher.isBusy, false);
+      if (klass === strm.MurmurHash) {
+        t.deepEqual(Object.keys(hasher), ['_handle', '_options', 'SERIAL_BYTE_LENGTH']);
+      } else {
+        t.deepEqual(Object.keys(hasher), ['total', 'SERIAL_BYTE_LENGTH']);
+      }
+      t.strictEqual(hasher1.total, 0);
 
       t.end();
     });
@@ -502,6 +516,8 @@ function wrapStream(name) {
         hasher1str.update(buffer.slice(p, n).toString('binary'),'binary');
         hasherSstr.update(buffer.slice(p, n).toString('binary'),'binary');
       }
+      t.equal(n, buffer.length);
+      t.equal(n, 10007);
       t.equal(hasher0.total, buffer.length);
       t.equal(hasher1.total, buffer.length);
       t.equal(hasherS.total, buffer.length);
