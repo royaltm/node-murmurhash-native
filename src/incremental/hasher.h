@@ -4,22 +4,23 @@
 #include "nodemurmurhash.h"
 
 namespace MurmurHash {
-  using std::vector;
+  using v8::Local;
+  using v8::Value;
   using v8::FunctionTemplate;
   using Nan::Persistent;
   using Nan::ObjectWrap;
 
   NAN_MODULE_INIT(Init);
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   class IncrementalHasher : public ObjectWrap {
     public:
-      typedef IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder> IncrementalHasher_T;
+      typedef IncrementalHasher<H,HashValueType,HashLength> IncrementalHasher_T;
       typedef uint32_t total_t;
       typedef uint32_t checksum_t;
 
       static void Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE& target,
-                                                        const char* name, ...);
+                                    const char* name, const char *altname = NULL);
 
       static NAN_METHOD(New);
       static NAN_METHOD(Copy);
@@ -27,6 +28,8 @@ namespace MurmurHash {
       static NAN_METHOD(Serialize);
       static NAN_METHOD(Update);
 
+      static NAN_GETTER(GetEndianness);
+      static NAN_SETTER(SetEndianness);
       static NAN_GETTER(GetIsBusy);
       static NAN_GETTER(GetTotal);
 
@@ -47,9 +50,15 @@ namespace MurmurHash {
       NAN_INLINE void operator=(const IncrementalHasher_T&);
 
       NAN_INLINE bool AsyncUpdateBegin(void);
+      bool SetEndiannessFrom(const Local<Value> &value);
+
+      template<ByteOrderType OutputByteOrder>
+      static NAN_INLINE void Output(const HashValueType hash[HashLength], const OutputType &outputType,
+                            const int &argc, const Nan::NAN_METHOD_ARGS_TYPE info, Local<Value> &result);
 
       H<HashValueType,HashLength> hasher;
       total_t total;
+      ByteOrderType outputByteOrder;
       bool asyncInProgress;
 
       #define BASE64_ENCODED_SIZE(size) ((size + 2 - ((size + 2) % 3)) / 3 * 4)

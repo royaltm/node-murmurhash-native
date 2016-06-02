@@ -127,6 +127,14 @@ Object.defineProperty(MurmurHash.prototype, 'total', {
   configurable: true
 });
 
+Object.defineProperty(MurmurHash.prototype, 'endianness', {
+  get: function() {
+    return this._handle.endianness;
+  },
+  enumerable: true,
+  configurable: false
+});
+
 Object.defineProperty(MurmurHash.prototype, 'SERIAL_BYTE_LENGTH', {
   get: function() {
     Object.defineProperty(this, 'SERIAL_BYTE_LENGTH', {

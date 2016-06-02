@@ -113,11 +113,11 @@ function wrapStream(name) {
       if (klass === strm.MurmurHash) {
         t.deepEqual(Object.keys(hasher), ['_handle', '_options', 'SERIAL_BYTE_LENGTH']);
       } else {
-        t.deepEqual(Object.keys(hasher), ['total', 'SERIAL_BYTE_LENGTH']);
+        t.deepEqual(Object.keys(hasher), ['endianness', 'total', 'SERIAL_BYTE_LENGTH']);
       }
       t.strictEqual(hasher.total, 0);
 
-      var hasher1 = MurmurHash(0, 'foo', 'bar', ['baz']);
+      var hasher1 = MurmurHash(0, null, 'foo', 'bar', ['baz']);
       t.type(hasher1, 'object');
       t.type(hasher1, klass);
       t.type(hasher1.update, 'function');
@@ -128,7 +128,7 @@ function wrapStream(name) {
       if (klass === strm.MurmurHash) {
         t.deepEqual(Object.keys(hasher), ['_handle', '_options', 'SERIAL_BYTE_LENGTH']);
       } else {
-        t.deepEqual(Object.keys(hasher), ['total', 'SERIAL_BYTE_LENGTH']);
+        t.deepEqual(Object.keys(hasher), ['endianness', 'total', 'SERIAL_BYTE_LENGTH']);
       }
       t.strictEqual(hasher1.total, 0);
 
