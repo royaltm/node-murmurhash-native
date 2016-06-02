@@ -1,12 +1,9 @@
-#include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
 #include "nodemurmurhash.h"
-#include "inputdata.h"
 #include "MurmurHash2.h"
 #include "PMurHash.h"
 #include "PMurHash128.h"
 #include "murmurhashutils.h"
+#include "inputdata.h"
 #include "asyncworker.h"
 
 NAN_INLINE void MurmurHash2_x64_64 (

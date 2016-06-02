@@ -170,6 +170,19 @@ namespace MurmurHash {
       WriteHashBytes<OutputByteOrder, HashLength>(hashp, (uint8_t *) bufptr + offset, length, skip);
     }
 
+    NAN_INLINE static char ToLower(const char c) {
+      return c >= 'A' && c <= 'Z' ? c + ('a' - 'A') : c;
+    }
+
+    static bool StringEqualLower(const char* a, const char* b) {
+      do {
+        if (*a == '\0')
+          return *b == '\0';
+        if (*b == '\0') break;
+      } while (ToLower(*a++) == *b++);
+      return false;
+    }
+
   }
 }
 

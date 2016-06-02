@@ -5,11 +5,6 @@
 #include <node_buffer.h>
 #include <v8.h>
 #include <nan.h>
-#include <string.h>
-
-#ifdef _MSC_VER
-#  define strcasecmp _stricmp
-#endif
 
 #define HashSize (static_cast<int32_t>(sizeof(HashValueType) * HashLength))
 

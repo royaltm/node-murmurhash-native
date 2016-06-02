@@ -1,7 +1,7 @@
 #include "static_assert.h"
 #include "hasher.h"
-#include "inputdata.h"
 #include "murmurhashutils.h"
+#include "inputdata.h"
 #include "hasher_impl.h"
 #include "asyncupdate.h"
 
@@ -550,13 +550,13 @@ namespace MurmurHash {
   {
     Nan::Utf8String strval( value );
     if ( *strval != NULL ) {
-      if ( strcasecmp(*strval, "BE") == 0 ) {
+      if ( StringEqualLower(*strval, "be") ) {
         outputByteOrder = MSBFirst;
         return true;
-      } else if ( strcasecmp(*strval, "LE") == 0 ) {
+      } else if ( StringEqualLower(*strval, "le") ) {
         outputByteOrder = LSBFirst;
         return true;
-      } else if ( strcasecmp(*strval, "platform") == 0 ) {
+      } else if ( StringEqualLower(*strval, "platform") ) {
         outputByteOrder = IsBigEndian() ? MSBFirst : LSBFirst;
         return true;
       }
