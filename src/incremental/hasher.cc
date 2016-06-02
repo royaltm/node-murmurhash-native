@@ -1,3 +1,4 @@
+#include <cstdarg>
 #include "static_assert.h"
 #include "hasher.h"
 #include "inputdata.h"
@@ -529,8 +530,10 @@ namespace MurmurHash {
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
   void IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
-  ::Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE& target, const char* name, const vector<const char *> altnames)
+  ::Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE& target, const char* name, ...)
   {
+    va_list altnames;
+
     Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
     tpl->SetClassName( Nan::New<String>(name).ToLocalChecked() );
 
@@ -558,25 +561,28 @@ namespace MurmurHash {
     Local<Value> fn = Nan::GetFunction(tpl).ToLocalChecked();
     constructor.Reset( tpl );
     Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), fn);
-    for ( vector<const char *>::const_iterator iter = altnames.begin(); iter != altnames.end(); ++iter ) {
-      Nan::Set(target, Nan::New<String>(*iter).ToLocalChecked(), fn);
+
+    va_start(altnames, name);
+    for (const char * altname = va_arg(altnames, char *); altname != 0; altname = va_arg(altnames, char *)) {
+      Nan::Set(target, Nan::New<String>(altname).ToLocalChecked(), fn);
     }
+    va_end(altnames);
   }
 
   NAN_MODULE_INIT(Init)
   {
-    IncrementalHasher<IncrementalMurmurHash3A,  uint32_t, 1, MSBFirst>::Init(target, "MurmurHash",         { "MurmurHashBE" });
-    IncrementalHasher<IncrementalMurmurHash3A,  uint32_t, 1, LSBFirst>::Init(target, "MurmurHashLE");
+    IncrementalHasher<IncrementalMurmurHash3A,  uint32_t, 1, MSBFirst>::Init(target, "MurmurHash",   "MurmurHashBE", 0);
+    IncrementalHasher<IncrementalMurmurHash3A,  uint32_t, 1, LSBFirst>::Init(target, "MurmurHashLE", 0);
   #if defined(NODE_MURMURHASH_DEFAULT_32BIT)
-    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, MSBFirst>::Init(target, "MurmurHash128x64",   { "MurmurHash128x64BE" });
-    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, LSBFirst>::Init(target, "MurmurHash128x64LE");
-    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, MSBFirst>::Init(target, "MurmurHash128x86",   { "MurmurHash128x86BE", "MurmurHash128", "MurmurHash128BE" });
-    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, LSBFirst>::Init(target, "MurmurHash128x86LE", { "MurmurHash128LE" });
+    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, MSBFirst>::Init(target, "MurmurHash128x64",   "MurmurHash128x64BE", 0);
+    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, LSBFirst>::Init(target, "MurmurHash128x64LE", 0);
+    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, MSBFirst>::Init(target, "MurmurHash128x86",   "MurmurHash128x86BE", "MurmurHash128", "MurmurHash128BE", 0);
+    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, LSBFirst>::Init(target, "MurmurHash128x86LE", "MurmurHash128LE", 0);
   #else
-    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, MSBFirst>::Init(target, "MurmurHash128x64",   { "MurmurHash128x64BE", "MurmurHash128", "MurmurHash128BE" });
-    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, LSBFirst>::Init(target, "MurmurHash128x64LE", { "MurmurHash128LE" });
-    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, MSBFirst>::Init(target, "MurmurHash128x86",   { "MurmurHash128x86BE" });
-    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, LSBFirst>::Init(target, "MurmurHash128x86LE");
+    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, MSBFirst>::Init(target, "MurmurHash128x64",   "MurmurHash128x64BE", "MurmurHash128", "MurmurHash128BE", 0);
+    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, LSBFirst>::Init(target, "MurmurHash128x64LE", "MurmurHash128LE", 0);
+    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, MSBFirst>::Init(target, "MurmurHash128x86",   "MurmurHash128x86BE", 0);
+    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, LSBFirst>::Init(target, "MurmurHash128x86LE", 0);
   #endif
   }
 

@@ -19,7 +19,7 @@ namespace MurmurHash {
       typedef uint32_t checksum_t;
 
       static void Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE& target,
-                        const char* name, const vector<const char *> altnames = {});
+                                                        const char* name, ...);
 
       static NAN_METHOD(New);
       static NAN_METHOD(Copy);
