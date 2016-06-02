@@ -7,7 +7,6 @@
 namespace MurmurHash {
   using v8::Local;
   using v8::Value;
-  using v8::String;
 
   namespace {
     template<int32_t HashLength, typename HashValueType>

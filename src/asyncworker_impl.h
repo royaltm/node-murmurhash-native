@@ -37,7 +37,7 @@ namespace MurmurHash {
   }
 
   template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
-  NAN_INLINE void MurmurHashWorker<HashFunction,HashValueType,HashLength,OutputByteOrder>
+  void MurmurHashWorker<HashFunction,HashValueType,HashLength,OutputByteOrder>
   ::Execute()
   {
     if ( ! data_.IsValid() )
@@ -60,7 +60,7 @@ namespace MurmurHash {
   }
 
   template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
-  NAN_INLINE void MurmurHashWorker<HashFunction,HashValueType,HashLength,OutputByteOrder>
+  void MurmurHashWorker<HashFunction,HashValueType,HashLength,OutputByteOrder>
   ::HandleOKCallback()
   {
     Nan::HandleScope scope;
@@ -111,7 +111,7 @@ namespace MurmurHash {
   }
 
   template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
-  NAN_INLINE void MurmurHashWorker<HashFunction,HashValueType,HashLength,OutputByteOrder>
+  void MurmurHashWorker<HashFunction,HashValueType,HashLength,OutputByteOrder>
   ::HandleErrorCallback() {
     Nan::HandleScope scope;
 

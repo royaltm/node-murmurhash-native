@@ -33,12 +33,12 @@ namespace MurmurHash {
       static NAN_GETTER(GetIsBusy);
       static NAN_GETTER(GetTotal);
 
-      static NAN_INLINE bool IsSerialTypeValid(uint8_t *serial);
+      NAN_INLINE static bool IsSerialTypeValid(uint8_t *serial);
 
       static Persistent<FunctionTemplate> constructor;
 
       NAN_INLINE void AsyncUpdateComplete(void);
-      NAN_INLINE bool CheckAsyncUpdateInProgress(void);
+      NAN_INLINE bool CheckAsyncUpdateInProgress(void) const;
       NAN_INLINE void Digest(HashValueType *hash) const;
       NAN_INLINE void Serialize(uint8_t *serial) const;
       NAN_INLINE void Update(const void *data, uint32_t length);
@@ -49,12 +49,12 @@ namespace MurmurHash {
       NAN_INLINE IncrementalHasher(const IncrementalHasher_T& other);
       NAN_INLINE void operator=(const IncrementalHasher_T&);
 
+      template<ByteOrderType OutputByteOrder>
+      NAN_INLINE static void Output(const HashValueType hash[HashLength], const OutputType &outputType,
+                            const int &argc, const Nan::NAN_METHOD_ARGS_TYPE info, Local<Value> &result);
+
       NAN_INLINE bool AsyncUpdateBegin(void);
       bool SetEndiannessFrom(const Local<Value> &value);
-
-      template<ByteOrderType OutputByteOrder>
-      static NAN_INLINE void Output(const HashValueType hash[HashLength], const OutputType &outputType,
-                            const int &argc, const Nan::NAN_METHOD_ARGS_TYPE info, Local<Value> &result);
 
       H<HashValueType,HashLength> hasher;
       total_t total;

@@ -441,8 +441,9 @@ namespace MurmurHash {
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   template<ByteOrderType OutputByteOrder>
-  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>::Output(const HashValueType hash[HashLength],
-          const OutputType &outputType, const int &argc, const Nan::NAN_METHOD_ARGS_TYPE info, Local<Value> &result)
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  ::Output(const HashValueType hash[HashLength], const OutputType &outputType,
+           const int &argc, const Nan::NAN_METHOD_ARGS_TYPE info, Local<Value> &result)
   {
     switch(outputType) {
       case HexStringOutputType:
@@ -506,7 +507,7 @@ namespace MurmurHash {
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength>
-  ::CheckAsyncUpdateInProgress()
+  ::CheckAsyncUpdateInProgress() const
   {
     if (asyncInProgress) {
       Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
