@@ -5,10 +5,10 @@ namespace MurmurHash {
   using v8::Local;
   using v8::Value;
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
   class IncrementalHashUpdater : public Nan::AsyncWorker {
     public:
-        typedef IncrementalHasher<H,HashValueType,HashLength> IncrementalHasher_T;
+        typedef IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder> IncrementalHasher_T;
 
         NAN_INLINE IncrementalHashUpdater(Nan::Callback *callback,
                     IncrementalHasher_T* hasher,

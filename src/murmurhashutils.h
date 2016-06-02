@@ -1,46 +1,17 @@
 #if !defined(MURMURHASHUTILS_HEADER)
 #define MURMURHASHUTILS_HEADER
 
+#define FORCE_INLINE NAN_INLINE
+#include "endianness.h"
+
 namespace MurmurHash {
   using v8::Local;
   using v8::Value;
   using v8::String;
 
   namespace {
-    static const int kHexstrSize = 2;
-
-    template<typename T>
-    NAN_INLINE static char *WriteHexString(T value, char * const out)
-    {
-      static const char hex[]= "0123456789abcdef";
-      char * const endp = out + (sizeof(value) * kHexstrSize);
-      for(char * ptr = endp ; ; value >>= 4) {
-        *(--ptr) = hex[value & 0x0f];
-        value >>= 4;
-        *(--ptr) = hex[value & 0x0f];
-        if (ptr == out) break;
-      }
-      return endp;
-    }
-
     template<int32_t HashLength, typename HashValueType>
-    static Local<Value> HashToHexString(const HashValueType hashp[HashLength])
-    {
-      Nan::EscapableHandleScope scope;
-
-      char str[HashSize * kHexstrSize];
-      char *out = str;
-
-      const HashValueType * const valt = hashp + HashLength;
-      while(hashp < valt) {
-        out = WriteHexString( *(hashp++), out );
-      }
-
-      return scope.Escape(Nan::New<String>(str, (HashSize * kHexstrSize)).ToLocalChecked());
-    }
-
-    template<int32_t HashLength, typename HashValueType>
-    static void ReadHashBytes(const uint8_t * in, HashValueType hashp[HashLength])
+    static void ReadHashBytesMSB(const uint8_t * in, HashValueType hashp[HashLength])
     {
       for(HashValueType * hashend = hashp + HashLength ;;) {
         HashValueType val = (HashValueType) *(in++);
@@ -54,8 +25,21 @@ namespace MurmurHash {
     }
 
     template<int32_t HashLength, typename HashValueType>
-    static void WriteHashBytes(const HashValueType hashp[HashLength], uint8_t * out,
-                                    int32_t length = HashSize, int32_t skip = 0)
+    static void WriteHashBytesPlatform(const HashValueType hashp[HashLength],
+                    uint8_t * out, int32_t length = HashSize, int32_t skip = 0)
+    {
+      // sanity check
+      if (length <= 0) return;
+      // normalize skip
+      skip &= HashSize - 1;
+      // normalize length
+      length = std::min(length, HashSize - skip);
+      std::memcpy((void *) out, (void *)( (uint8_t *) hashp + skip ), (size_t) length);
+    }
+
+    template<int32_t HashLength, typename HashValueType>
+    static void WriteHashBytesMSB(const HashValueType hashp[HashLength],
+                    uint8_t * const out, int32_t length = HashSize, int32_t skip = 0)
     {
       // sanity check
       if (length <= 0) return;
@@ -86,21 +70,78 @@ namespace MurmurHash {
     }
 
     template<int32_t HashLength, typename HashValueType>
-    static Local<Value> HashToEncodedString(const HashValueType * hash, enum Nan::Encoding enc)
+    static void WriteHashBytesLSB(const HashValueType hashp[HashLength],
+                    uint8_t * out, int32_t length = HashSize, int32_t skip = 0)
+    {
+      // sanity check
+      if (length <= 0) return;
+      // normalize skip
+      skip &= HashSize - 1;
+      // normalize length
+      length = std::min(length, HashSize - skip);
+      // let hashp point to the first hash value
+      hashp += skip / (int32_t) sizeof(HashValueType);
+      // get first hash value
+      HashValueType val = *(hashp++);
+      // preliminary shift value when length is not aligned with hash value type
+      int shift = skip & ((int32_t) sizeof(HashValueType) - 1);
+      val >>= 8 * shift;
+      // set termination byte pointer at the end of output
+      uint8_t * const outt = out + length;
+      // get initial number of bytes to write for a single value
+      length = std::min(length, (int32_t) sizeof(HashValueType) - shift);
+
+      for(;; val = *(hashp++)) {
+        for(;; val >>= 8) {
+          *(out++) = (uint8_t) (val & 0x0ff);
+          if (--length == 0) break;
+        }
+        length = std::min((int32_t)(outt - out), (int32_t) sizeof(HashValueType));
+        if (length == 0) break;
+      }
+    }
+
+    template<ByteOrderType OutputByteOrder, int32_t HashLength, typename HashValueType>
+    NAN_INLINE static void WriteHashBytes(const HashValueType hashp[HashLength],
+                    uint8_t * out, int32_t length = HashSize, int32_t skip = 0)
+    {
+      // constant folded
+      if (OutputByteOrder == LSBFirst && IsBigEndian()) {
+        WriteHashBytesLSB<HashLength>(hashp, out, length, skip);
+      } else if (OutputByteOrder == MSBFirst && !IsBigEndian()) {
+        WriteHashBytesMSB<HashLength>(hashp, out, length, skip);
+      } else {
+        WriteHashBytesPlatform<HashLength>(hashp, out, length, skip);
+      }
+    }
+
+    template<ByteOrderType OutputByteOrder, int32_t HashLength, typename HashValueType>
+    inline static Local<Value> HashToEncodedString(const HashValueType hashp[HashLength], enum Nan::Encoding enc)
     {
       Nan::EscapableHandleScope scope;
 
-      uint8_t str[HashSize];
+      Local<Value> result;
 
-      WriteHashBytes<HashLength>(hash, str);
+      // constant folded
+      if (OutputByteOrder == LSBFirst && IsBigEndian()) {
+        uint8_t str[HashSize];
+        WriteHashBytesLSB<HashLength>(hashp, str);
+        result = Nan::Encode((void *) str, (size_t) HashSize, enc);
+      } else if (OutputByteOrder == MSBFirst && !IsBigEndian()) {
+        uint8_t str[HashSize];
+        WriteHashBytesMSB<HashLength>(hashp, str);
+        result = Nan::Encode((void *) str, (size_t) HashSize, enc);
+      } else {
+        result = Nan::Encode((void *) hashp, (size_t) HashSize, enc);
+      }
 
-      return scope.Escape(Nan::Encode((void *) str, (size_t) HashSize, enc));
+      return scope.Escape(result);
     }
 
-    template<int32_t HashLength, typename HashValueType>
-    NAN_INLINE static void WriteHashToBuffer(const HashValueType * hash,
-                                      char *bufptr, int32_t bufsize,
-                                      int32_t offset, int32_t length)
+    template<ByteOrderType OutputByteOrder, int32_t HashLength, typename HashValueType>
+    inline static void WriteHashToBuffer(const HashValueType hashp[HashLength],
+                                          char *bufptr, int32_t bufsize,
+                                          int32_t offset, int32_t length)
     {
       int32_t skip = 0;
 
@@ -126,7 +167,7 @@ namespace MurmurHash {
       }
 
       length = std::min(length, bufsize - offset);
-      WriteHashBytes<HashLength>(hash, (uint8_t *) bufptr + offset, length, skip);
+      WriteHashBytes<OutputByteOrder, HashLength>(hashp, (uint8_t *) bufptr + offset, length, skip);
     }
 
   }

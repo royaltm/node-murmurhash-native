@@ -7,7 +7,7 @@ namespace MurmurHash {
   using v8::String;
   using v8::Uint32;
 
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
+  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
   class MurmurHashWorker : public Nan::AsyncWorker {
     public:
         NAN_INLINE MurmurHashWorker(Nan::Callback *callback);

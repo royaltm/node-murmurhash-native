@@ -34,8 +34,8 @@ namespace MurmurHash {
    * @param {MurmurHash} hash - an instance of another MurmurHash of the same type
    * @param {string|Buffer} serial - serialized state of the same MurmurHash type
   **/
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::New))
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>::New))
   {
 
     IncrementalHasher_T *self;
@@ -117,8 +117,8 @@ namespace MurmurHash {
    *                              of the same type
    * @return {MurmurHash} target
   **/
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Copy))
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>::Copy))
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
 
@@ -164,8 +164,8 @@ namespace MurmurHash {
    *       hash, bytes are written only up to the hash size
    * @return {Buffer|string|number} murmur hash
   **/
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Digest))
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>::Digest))
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
 
@@ -192,28 +192,28 @@ namespace MurmurHash {
 
     switch(outputType) {
       case HexStringOutputType:
-        result = HashToHexString<HashLength>( hash );
+        result = HashToEncodedString<OutputByteOrder, HashLength>( hash, Nan::HEX );
         break;
 
       case BinaryStringOutputType:
-        result = HashToEncodedString<HashLength>( hash, Nan::BINARY );
+        result = HashToEncodedString<OutputByteOrder, HashLength>( hash, Nan::BINARY );
         break;
 
       case Base64StringOutputType:
-        result = HashToEncodedString<HashLength>( hash, Nan::BASE64 );
+        result = HashToEncodedString<OutputByteOrder, HashLength>( hash, Nan::BASE64 );
         break;
 
       case NumberOutputType:
         if (HashSize == sizeof(uint32_t)) {
           result = Nan::New<Uint32>( (uint32_t) (*hash) );
         } else {
-          result = HashToHexString<HashLength>( hash );
+          result = HashToEncodedString<OutputByteOrder, HashLength>( hash, Nan::HEX );
         }
         break;
 
       case ProvidedBufferOutputType:
         result = info[0];
-        WriteHashToBuffer<HashLength>(
+        WriteHashToBuffer<OutputByteOrder, HashLength>(
               hash,
               node::Buffer::Data(result),
               (int32_t) node::Buffer::Length(result),
@@ -225,7 +225,7 @@ namespace MurmurHash {
 
       default:
         result = Nan::NewBuffer( HashSize ).ToLocalChecked();
-        WriteHashBytes<HashLength>(hash, (uint8_t *) node::Buffer::Data(result));
+        WriteHashBytes<OutputByteOrder, HashLength>(hash, (uint8_t *) node::Buffer::Data(result));
         break;
     }
 
@@ -246,8 +246,8 @@ namespace MurmurHash {
    * @param {number} offset - offset at output
    * @return {string|Buffer}
   **/
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Serialize))
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>::Serialize))
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
 
@@ -302,8 +302,8 @@ namespace MurmurHash {
    *       memory may render undetermined results
    * @return {MurmurHash} this
   **/
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::Update))
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_METHOD(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>::Update))
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
 
@@ -372,8 +372,8 @@ namespace MurmurHash {
   /**
    * @property {boolean} isBusy - is asynchronous update in progress
   **/
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_GETTER(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::GetIsBusy))
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_GETTER(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>::GetIsBusy))
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
     info.GetReturnValue().Set( Nan::New( self->asyncInProgress ) );
@@ -383,8 +383,8 @@ namespace MurmurHash {
    * @property {number} total - (read only) The total (modulo 2^32) bytes of data
    *                                                              provided so far
   **/
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_GETTER(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::GetTotal))
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_GETTER(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>::GetTotal))
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
     info.GetReturnValue().Set( Nan::New<Uint32>(self->total) );
@@ -398,28 +398,28 @@ namespace MurmurHash {
 
   /*---------------- constructors -----------------*/
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
   ::IncrementalHasher(const uint32_t seed) : hasher(seed), total(0), asyncInProgress(false) {};
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
   ::IncrementalHasher(const IncrementalHasher_T& other) : ObjectWrap(),
                                                           hasher(other.hasher),
                                                           total(other.total),
                                                           asyncInProgress(false) {};
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
   ::IncrementalHasher(const uint8_t *serial) : hasher(serial), asyncInProgress(false)
   {
-    ReadHashBytes<1>(&serial[kHashSerialTotalIndex], &total);
+    ReadHashBytesMSB<1>(&serial[kHashSerialTotalIndex], &total);
   }
 
   /*--------------- static methods ----------------*/
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
   ::IsSerialTypeValid(uint8_t *serial)
   {
     // check state type
@@ -444,16 +444,16 @@ namespace MurmurHash {
 
   /*-------------- instance methods ---------------*/
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
   ::AsyncUpdateComplete()
   {
     Unref();
     asyncInProgress = false;
   }
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
   ::AsyncUpdateBegin()
   {
     if (asyncInProgress) return false;
@@ -462,8 +462,8 @@ namespace MurmurHash {
     return true;
   }
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
   ::CheckAsyncUpdateInProgress()
   {
     if (asyncInProgress) {
@@ -473,15 +473,15 @@ namespace MurmurHash {
     return false;
   }
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
   ::Digest(HashValueType *hash) const
   {
     hasher.Digest( hash, (uint32_t) total );
   }
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
   ::Serialize(uint8_t *serial) const
   {
     // write state
@@ -489,7 +489,7 @@ namespace MurmurHash {
     // write state type
     serial[kHashSerialTypeIndex] |= kHashSerialType;
     // write total
-    WriteHashBytes<1>(&total, &serial[kHashSerialTotalIndex]);
+    WriteHashBytesMSB<1>(&total, &serial[kHashSerialTotalIndex]);
     // build checksum
     checksum_t chksum = PMurHash32(serial, kHashSerialSize - kHashSerialCkSize, kHashSerialCkSeed);
     if (kHashSerialCkSize < sizeof(checksum_t)) {
@@ -502,8 +502,8 @@ namespace MurmurHash {
     }
   }
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
   ::Update(const void *data, uint32_t length)
   {
     total += (total_t) length;
@@ -512,8 +512,8 @@ namespace MurmurHash {
 
   /*------------------ operators ------------------*/
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
   ::operator=(const IncrementalHasher_T& other)
   {
     hasher = other.hasher;
@@ -522,14 +522,14 @@ namespace MurmurHash {
 
   /*-------------- static variables ---------------*/
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  Persistent<FunctionTemplate> IncrementalHasher<H,HashValueType,HashLength>::constructor;
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  Persistent<FunctionTemplate> IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>::constructor;
 
   /*------------------ node init ------------------*/
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  void IncrementalHasher<H,HashValueType,HashLength>
-  ::Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE& target, const char* name, const char *altname)
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  void IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder>
+  ::Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE& target, const char* name, const vector<const char *> altnames)
   {
     Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
     tpl->SetClassName( Nan::New<String>(name).ToLocalChecked() );
@@ -558,22 +558,28 @@ namespace MurmurHash {
     Local<Value> fn = Nan::GetFunction(tpl).ToLocalChecked();
     constructor.Reset( tpl );
     Nan::Set(target, Nan::New<String>(name).ToLocalChecked(), fn);
-    if (altname != NULL) {
-      Nan::Set(target, Nan::New<String>(altname).ToLocalChecked(), fn);
+    for ( vector<const char *>::const_iterator iter = altnames.begin(); iter != altnames.end(); ++iter ) {
+      Nan::Set(target, Nan::New<String>(*iter).ToLocalChecked(), fn);
     }
   }
 
   NAN_MODULE_INIT(Init)
   {
-    IncrementalHasher<IncrementalMurmurHash3A,  uint32_t, 1>::Init(target, "MurmurHash");
+    IncrementalHasher<IncrementalMurmurHash3A,  uint32_t, 1, MSBFirst>::Init(target, "MurmurHash",         { "MurmurHashBE" });
+    IncrementalHasher<IncrementalMurmurHash3A,  uint32_t, 1, LSBFirst>::Init(target, "MurmurHashLE");
   #if defined(NODE_MURMURHASH_DEFAULT_32BIT)
-    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2>::Init(target, "MurmurHash128x64");
-    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4>::Init(target, "MurmurHash128x86", "MurmurHash128");
+    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, MSBFirst>::Init(target, "MurmurHash128x64",   { "MurmurHash128x64BE" });
+    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, LSBFirst>::Init(target, "MurmurHash128x64LE");
+    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, MSBFirst>::Init(target, "MurmurHash128x86",   { "MurmurHash128x86BE", "MurmurHash128", "MurmurHash128BE" });
+    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, LSBFirst>::Init(target, "MurmurHash128x86LE", { "MurmurHash128LE" });
   #else
-    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2>::Init(target, "MurmurHash128x64", "MurmurHash128");
-    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4>::Init(target, "MurmurHash128x86");
+    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, MSBFirst>::Init(target, "MurmurHash128x64",   { "MurmurHash128x64BE", "MurmurHash128", "MurmurHash128BE" });
+    IncrementalHasher<IncrementalMurmurHash128, uint64_t, 2, LSBFirst>::Init(target, "MurmurHash128x64LE", { "MurmurHash128LE" });
+    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, MSBFirst>::Init(target, "MurmurHash128x86",   { "MurmurHash128x86BE" });
+    IncrementalHasher<IncrementalMurmurHash128, uint32_t, 4, LSBFirst>::Init(target, "MurmurHash128x86LE");
   #endif
   }
+
 }
 
 NODE_MODULE(murmurhashincremental, MurmurHash::Init)

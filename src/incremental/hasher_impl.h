@@ -12,13 +12,13 @@ namespace MurmurHash {
                                     : hstate((HashValueType) seed), carry(0) {}
       NAN_INLINE IncrementalMurmurHash3A(const uint8_t *serial)
       {
-        ReadHashBytes<HashLength>( &serial[0], &hstate );
-        ReadHashBytes<HashLength>( &serial[sizeof(hstate)],  &carry );
+        ReadHashBytesMSB<HashLength>( &serial[0], &hstate );
+        ReadHashBytesMSB<HashLength>( &serial[sizeof(hstate)],  &carry );
       }
       NAN_INLINE void Serialize(uint8_t *serial) const
       {
-        WriteHashBytes<HashLength>( &hstate, &serial[0] );
-        WriteHashBytes<HashLength>( &carry,  &serial[sizeof(hstate)] );
+        WriteHashBytesMSB<HashLength>( &hstate, &serial[0] );
+        WriteHashBytesMSB<HashLength>( &carry,  &serial[sizeof(hstate)] );
       }
       NAN_INLINE void Update(const void *data, int32_t length)
       {
@@ -43,13 +43,13 @@ namespace MurmurHash {
       }
       NAN_INLINE IncrementalMurmurHash128(const uint8_t *serial)
       {
-        ReadHashBytes<HashLength>(&serial[0], hstate);
-        ReadHashBytes<HashLength>(&serial[sizeof(hstate)],  carry);
+        ReadHashBytesMSB<HashLength>(&serial[0], hstate);
+        ReadHashBytesMSB<HashLength>(&serial[sizeof(hstate)],  carry);
       }
       NAN_INLINE void Serialize(uint8_t *serial) const
       {
-        WriteHashBytes<HashLength>(hstate, &serial[0]);
-        WriteHashBytes<HashLength>(carry,  &serial[sizeof(hstate)]);
+        WriteHashBytesMSB<HashLength>(hstate, &serial[0]);
+        WriteHashBytesMSB<HashLength>(carry,  &serial[sizeof(hstate)]);
       }
       NAN_INLINE void Update(const void *data, int32_t length)
       {

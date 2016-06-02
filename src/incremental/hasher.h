@@ -4,21 +4,22 @@
 #include "nodemurmurhash.h"
 
 namespace MurmurHash {
+  using std::vector;
   using v8::FunctionTemplate;
   using Nan::Persistent;
   using Nan::ObjectWrap;
 
   NAN_MODULE_INIT(Init);
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
   class IncrementalHasher : public ObjectWrap {
     public:
-      typedef IncrementalHasher<H,HashValueType,HashLength> IncrementalHasher_T;
+      typedef IncrementalHasher<H,HashValueType,HashLength,OutputByteOrder> IncrementalHasher_T;
       typedef uint32_t total_t;
       typedef uint32_t checksum_t;
 
       static void Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE& target,
-                                 const char* name, const char *altname = NULL);
+                        const char* name, const vector<const char *> altnames = {});
 
       static NAN_METHOD(New);
       static NAN_METHOD(Copy);

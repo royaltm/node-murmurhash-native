@@ -28,6 +28,11 @@ namespace MurmurHash {
     ProvidedBufferOutputType,
     UnknownOutputType,
   } OutputType;
+
+  typedef enum {
+    MSBFirst,
+    LSBFirst
+  } ByteOrderType;
 }
 
 #endif

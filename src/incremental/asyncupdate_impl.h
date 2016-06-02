@@ -7,8 +7,8 @@ namespace MurmurHash {
     enum { kInputBufferIndex };
   }
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE IncrementalHashUpdater<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE IncrementalHashUpdater<H,HashValueType,HashLength,OutputByteOrder>
   ::IncrementalHashUpdater(
                 Nan::Callback *callback,
                 IncrementalHasher_T* hasher,
@@ -20,8 +20,8 @@ namespace MurmurHash {
       SaveToPersistent(kInputBufferIndex, key);
   }
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHashUpdater<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE void IncrementalHashUpdater<H,HashValueType,HashLength,OutputByteOrder>
   ::Execute()
   {
     if ( ! data_.IsValid() )
@@ -30,8 +30,8 @@ namespace MurmurHash {
     hasher_->Update( (const void *) *data_, (int32_t) data_.length() );
   }
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHashUpdater<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE void IncrementalHashUpdater<H,HashValueType,HashLength,OutputByteOrder>
   ::HandleOKCallback()
   {
     hasher_->AsyncUpdateComplete();
@@ -39,8 +39,8 @@ namespace MurmurHash {
     Nan::AsyncWorker::HandleOKCallback();
   }
 
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHashUpdater<H,HashValueType,HashLength>
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
+  NAN_INLINE void IncrementalHashUpdater<H,HashValueType,HashLength,OutputByteOrder>
   ::HandleErrorCallback()
   {
     Nan::HandleScope scope;
