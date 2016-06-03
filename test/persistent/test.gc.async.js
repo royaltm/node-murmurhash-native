@@ -23,10 +23,18 @@ var test = require("tap").test
     var bigone = new Buffer(kMaxLength);
     murmurHash(bigone, function(err) {
       t.error(err);
-      t.end();
+      gc(); gc(); gc(); gc();
+      setImmediate(gc);
+      setImmediate(function(){ t.end(); });
     });
     bigone = undefined;
     gc(); gc(); gc(); gc();
+    gc(); gc(); gc(); gc();
+    gc(); gc(); gc(); gc();
+    setImmediate(gc);
+    setImmediate(gc);
+    setImmediate(gc);
+    setImmediate(gc);
     setImmediate(gc);
   });
 
@@ -35,10 +43,18 @@ var test = require("tap").test
     var bigtwo = new Buffer(kMaxLength);
     murmurHash(bigone, bigtwo, 0, function(err) {
       t.error(err);
-      t.end();
+      gc(); gc(); gc(); gc();
+      setImmediate(gc);
+      setImmediate(function(){ t.end(); });
     });
     bigtwo = bigone = undefined;
     gc(); gc(); gc(); gc();
+    gc(); gc(); gc(); gc();
+    gc(); gc(); gc(); gc();
+    setImmediate(gc);
+    setImmediate(gc);
+    setImmediate(gc);
+    setImmediate(gc);
     setImmediate(gc);
   });
 

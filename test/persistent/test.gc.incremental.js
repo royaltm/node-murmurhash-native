@@ -21,10 +21,18 @@ var test = require("tap").test
     var bigone = new Buffer(kMaxLength);
     MurmurHash().update(bigone, function(err) {
       t.error(err);
-      t.end();
+      gc(); gc(); gc(); gc();
+      setImmediate(gc);
+      setImmediate(function(){ t.end(); });
     });
     bigone = undefined;
     gc(); gc(); gc(); gc();
+    gc(); gc(); gc(); gc();
+    gc(); gc(); gc(); gc();
+    setImmediate(gc);
+    setImmediate(gc);
+    setImmediate(gc);
+    setImmediate(gc);
     setImmediate(gc);
   });
 
