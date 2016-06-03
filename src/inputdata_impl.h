@@ -145,7 +145,7 @@ namespace MurmurHash {
 
   NAN_INLINE char *InputData::EnsureBuffer(size_t bytelength, Type& type)
   {
-    if ( useStatic && bytelength <= NODE_MURMURHASH_KEY_BUFFER_SIZE ) {
+    if ( (useStatic && bytelength <= NODE_MURMURHASH_KEY_BUFFER_SIZE) || bytelength == 0 ) {
       type = Static;
       return StaticKeyBuffer();
     } else {
