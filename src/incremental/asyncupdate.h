@@ -10,7 +10,6 @@ namespace MurmurHash {
     public:
         typedef IncrementalHasher<H,HashValueType,HashLength> IncrementalHasher_T;
 
-        NAN_INLINE IncrementalHashUpdater(Nan::Callback *callback);
         NAN_INLINE IncrementalHashUpdater(Nan::Callback *callback,
                     IncrementalHasher_T* hasher,
                     Local<Value> key, const enum Nan::Encoding encoding);

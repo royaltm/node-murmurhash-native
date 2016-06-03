@@ -52,9 +52,7 @@ namespace MurmurHash {
           // hasher instance
           IncrementalHasher_T *other = ObjectWrap::Unwrap<IncrementalHasher_T>( info[0].As<Object>() );
 
-          if ( other->asyncInProgress ) {
-            return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
-          }
+          if ( other->CheckAsyncUpdateInProgress() ) return;
 
           self = new IncrementalHasher_T(*other);
 
@@ -124,12 +122,12 @@ namespace MurmurHash {
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
 
-    if ( self->asyncInProgress ) return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
+    if ( self->CheckAsyncUpdateInProgress() ) return;
 
     if ( info.Length() > 0 && Nan::New(constructor)->HasInstance( info[0] ) ) {
       IncrementalHasher_T *other = ObjectWrap::Unwrap<IncrementalHasher_T>( info[0].As<Object>() );
       if ( other == self ) return Nan::ThrowError("Target must not be the same instance");
-      if ( other->asyncInProgress ) return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
+      if ( other->CheckAsyncUpdateInProgress() ) return;
       *other = *self;
     } else {
       return Nan::ThrowTypeError("Target must be another instance of the same murmur hash type utility");
@@ -171,9 +169,7 @@ namespace MurmurHash {
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
 
-    if ( self->asyncInProgress ) {
-      return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
-    }
+    if ( self->CheckAsyncUpdateInProgress() ) return;
 
     OutputType outputType( DefaultOutputType );
 
@@ -255,9 +251,7 @@ namespace MurmurHash {
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
 
-    if ( self->asyncInProgress ) {
-      return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
-    }
+    if ( self->CheckAsyncUpdateInProgress() ) return;
 
     int argc = info.Length();
 
@@ -336,36 +330,29 @@ namespace MurmurHash {
       }
 
       if ( callbackIndex > -1 ) {
-
-        IncrementalHashUpdater<H,HashValueType,HashLength> *asyncUpdater;
         Nan::Callback *callback = new Nan::Callback(
                                     Local<Function>::Cast(info[callbackIndex]));
 
-        if ( self->asyncInProgress ) {
-          Local<Value> argv[] = {
+        if ( self->AsyncUpdateBegin() ) {
+
+          Nan::AsyncQueueWorker(new IncrementalHashUpdater<H,HashValueType,HashLength>(
+                                                      callback, self, info[0], encoding));
+
+        } else {
+
+          Local<Value> argv[1] = {
             v8::Exception::Error(Nan::New<String>(MESSAGE_ERROR_PENDING_UPDATE).ToLocalChecked())
           };
           callback->Call(1, argv);
           delete callback;
 
-          return; // undefined by default
-
-        } else if ( argc > 0 ) {
-          asyncUpdater = new IncrementalHashUpdater<H,HashValueType,HashLength>(
-                                                      callback, self, info[0], encoding);
-        } else {
-          asyncUpdater = new IncrementalHashUpdater<H,HashValueType,HashLength>(callback);
         }
 
-        self->asyncInProgress = true;
+        return;
 
-        Nan::AsyncQueueWorker(asyncUpdater);
+      } else if ( self->CheckAsyncUpdateInProgress() ) {
 
-        return; // undefined by default
-
-      } else if ( self->asyncInProgress ) {
-
-        return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
+        return;
 
       } else {
 
@@ -389,7 +376,7 @@ namespace MurmurHash {
   NAN_GETTER(SINGLE_ARG(IncrementalHasher<H,HashValueType,HashLength>::GetIsBusy))
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
-    info.GetReturnValue().Set( Nan::New(self->asyncInProgress) );
+    info.GetReturnValue().Set( Nan::New( self->asyncInProgress ) );
   }
 
   /**
@@ -459,9 +446,31 @@ namespace MurmurHash {
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE void IncrementalHasher<H,HashValueType,HashLength>
-  :: AsyncUpdateComplete(void)
+  ::AsyncUpdateComplete()
   {
+    Unref();
     asyncInProgress = false;
+  }
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength>
+  ::AsyncUpdateBegin()
+  {
+    if (asyncInProgress) return false;
+    asyncInProgress = true;
+    Ref();
+    return true;
+  }
+
+  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
+  NAN_INLINE bool IncrementalHasher<H,HashValueType,HashLength>
+  ::CheckAsyncUpdateInProgress()
+  {
+    if (asyncInProgress) {
+      Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
+      return true;
+    }
+    return false;
   }
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>

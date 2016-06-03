@@ -10,12 +10,6 @@ namespace MurmurHash {
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE IncrementalHashUpdater<H,HashValueType,HashLength>
   ::IncrementalHashUpdater(
-                Nan::Callback *callback)
-              : Nan::AsyncWorker(callback), data_(false), hasher_(NULL) {}
-
-  template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE IncrementalHashUpdater<H,HashValueType,HashLength>
-  ::IncrementalHashUpdater(
                 Nan::Callback *callback,
                 IncrementalHasher_T* hasher,
                 Local<Value> key, const enum Nan::Encoding encoding)
