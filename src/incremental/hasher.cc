@@ -276,8 +276,6 @@ namespace MurmurHash {
    * @param {Function} callback - optional callback(err)
    *       if provided the hash will be updated asynchronously using libuv
    *       worker queue, the return value in this instance will be `undefined`
-   *       Be carefull as reading and writing by multiple threads to the same
-   *       memory may render undetermined results
    * @return {MurmurHash} this
   **/
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
