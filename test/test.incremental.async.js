@@ -18,52 +18,105 @@ test("should have murmurHash constructors", function(t) {
 });
 
 function wrapStream(name) {
-  return function(seed) {
+  return function(seed, endian) {
     var hasher = (seed instanceof strm.MurmurHash)
-               ? new strm.MurmurHash(seed)
-               : new strm.MurmurHash(name, {seed: seed});
+               ? new strm.MurmurHash(seed, {endianness: endian})
+               : new strm.MurmurHash(name, {seed: seed, endianness: endian});
     return hasher;
   };
 }
 
 [
-  [4, 'MurmurHash', incr.MurmurHash, hash.murmurHash,
+  [4, 'MurmurHash', void(0), incr.MurmurHash, hash.murmurHash,
                0, 2180083513, 1364076727,
       '00000000', '81f16f39', '514e28b7'],
-  [4, 'MurmurHash (stream)', wrapStream('MurmurHash'), hash.murmurHash,
+  [4, 'MurmurHash', 'BE', incr.MurmurHash, hash.BE.murmurHash,
                0, 2180083513, 1364076727,
       '00000000', '81f16f39', '514e28b7'],
-  [16, 'MurmurHash128x64', incr.MurmurHash128x64, hash.murmurHash128x64,
+  [4, 'MurmurHash', 'LE', incr.MurmurHash, hash.LE.murmurHash,
+               0, 2180083513, 1364076727,
+      '00000000', '396ff181', 'b7284e51'],
+  [4, 'MurmurHash (stream)', void(0), wrapStream('MurmurHash'), hash.murmurHash,
+               0, 2180083513, 1364076727,
+      '00000000', '81f16f39', '514e28b7'],
+  [4, 'MurmurHash (stream)', 'BE', wrapStream('MurmurHash'), hash.BE.murmurHash,
+               0, 2180083513, 1364076727,
+      '00000000', '81f16f39', '514e28b7'],
+  [4, 'MurmurHash (stream)', 'LE', wrapStream('MurmurHash'), hash.LE.murmurHash,
+               0, 2180083513, 1364076727,
+      '00000000', '396ff181', 'b7284e51'],
+  [16, 'MurmurHash128x64', void(0), incr.MurmurHash128x64, hash.murmurHash128x64,
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
       '4610abe56eff5cb551622daa78f83583',
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
       '4610abe56eff5cb551622daa78f83583'],
-  [16, 'MurmurHash128x64 (stream)', wrapStream('MurmurHash128x64'), hash.murmurHash128x64,
+  [16, 'MurmurHash128x64', 'BE', incr.MurmurHash128x64, hash.BE.murmurHash128x64,
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
       '4610abe56eff5cb551622daa78f83583',
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
       '4610abe56eff5cb551622daa78f83583'],
-  [16, 'MurmurHash128x86', incr.MurmurHash128x86, hash.murmurHash128x86,
+  [16, 'MurmurHash128x64', 'LE', incr.MurmurHash128x64, hash.LE.murmurHash128x64,
+      '00000000000000000000000000000000', 'ecc93b9d4ddff16a6b44e61e12217485',
+      'b55cff6ee5ab10468335f878aa2d6251',
+      '00000000000000000000000000000000', 'ecc93b9d4ddff16a6b44e61e12217485',
+      'b55cff6ee5ab10468335f878aa2d6251'],
+  [16, 'MurmurHash128x64 (stream)', void(0), wrapStream('MurmurHash128x64'), hash.murmurHash128x64,
+      '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
+      '4610abe56eff5cb551622daa78f83583',
+      '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
+      '4610abe56eff5cb551622daa78f83583'],
+  [16, 'MurmurHash128x64 (stream)', 'BE', wrapStream('MurmurHash128x64'), hash.BE.murmurHash128x64,
+      '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
+      '4610abe56eff5cb551622daa78f83583',
+      '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
+      '4610abe56eff5cb551622daa78f83583'],
+  [16, 'MurmurHash128x64 (stream)', 'LE', wrapStream('MurmurHash128x64'), hash.LE.murmurHash128x64,
+      '00000000000000000000000000000000', 'ecc93b9d4ddff16a6b44e61e12217485',
+      'b55cff6ee5ab10468335f878aa2d6251',
+      '00000000000000000000000000000000', 'ecc93b9d4ddff16a6b44e61e12217485',
+      'b55cff6ee5ab10468335f878aa2d6251'],
+  [16, 'MurmurHash128x86', void(0), incr.MurmurHash128x86, hash.murmurHash128x86,
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
       '88c4adec54d201b954d201b954d201b9',
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
       '88c4adec54d201b954d201b954d201b9'],
-  [16, 'MurmurHash128x86 (stream)', wrapStream('MurmurHash128x86'), hash.murmurHash128x86,
+  [16, 'MurmurHash128x86', 'BE', incr.MurmurHash128x86, hash.BE.murmurHash128x86,
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
       '88c4adec54d201b954d201b954d201b9',
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
-      '88c4adec54d201b954d201b954d201b9']
+      '88c4adec54d201b954d201b954d201b9'],
+  [16, 'MurmurHash128x86', 'LE', incr.MurmurHash128x86, hash.LE.murmurHash128x86,
+      '00000000000000000000000000000000', 'a9081e05f7499d98f7499d98f7499d98',
+      'ecadc488b901d254b901d254b901d254',
+      '00000000000000000000000000000000', 'a9081e05f7499d98f7499d98f7499d98',
+      'ecadc488b901d254b901d254b901d254'],
+  [16, 'MurmurHash128x86 (stream)', void(0), wrapStream('MurmurHash128x86'), hash.murmurHash128x86,
+      '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
+      '88c4adec54d201b954d201b954d201b9',
+      '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
+      '88c4adec54d201b954d201b954d201b9'],
+  [16, 'MurmurHash128x86 (stream)', 'BE', wrapStream('MurmurHash128x86'), hash.BE.murmurHash128x86,
+      '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
+      '88c4adec54d201b954d201b954d201b9',
+      '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
+      '88c4adec54d201b954d201b954d201b9'],
+  [16, 'MurmurHash128x86 (stream)', 'LE', wrapStream('MurmurHash128x86'), hash.LE.murmurHash128x86,
+      '00000000000000000000000000000000', 'a9081e05f7499d98f7499d98f7499d98',
+      'ecadc488b901d254b901d254b901d254',
+      '00000000000000000000000000000000', 'a9081e05f7499d98f7499d98f7499d98',
+      'ecadc488b901d254b901d254b901d254']
 ].forEach(function(args)  {
   var size                = args[ 0]
     , label               = args[ 1]
-    , MurmurHash          = args[ 2]
-    , murmurHash          = args[ 3]
-    , seedZeroNumber      = args[ 4]
-    , seedMinusOneNumber  = args[ 5]
-    , seedPlusOneNumber   = args[ 6]
-    , seedZeroHex         = args[ 7]
-    , seedMinusOneHex     = args[ 8]
-    , seedPlusOneHex      = args[ 9]
+    , endian              = args[ 2]
+    , MurmurHash          = args[ 3]
+    , murmurHash          = args[ 4]
+    , seedZeroNumber      = args[ 5]
+    , seedMinusOneNumber  = args[ 6]
+    , seedPlusOneNumber   = args[ 7]
+    , seedZeroHex         = args[ 8]
+    , seedMinusOneHex     = args[ 9]
+    , seedPlusOneHex      = args[10]
     , seedZeroBuffer      = new Buffer(seedZeroHex,  'hex')
     , seedMinusOneBuffer  = new Buffer(seedMinusOneHex, 'hex')
     , seedPlusOneBuffer   = new Buffer(seedPlusOneHex,  'hex')
@@ -92,7 +145,7 @@ function wrapStream(name) {
           t.strictEqual(error.message, "mana mana");
         });
       };
-      t.strictEqual(undefined, MurmurHash().update('', function(err) {
+      t.strictEqual(undefined, MurmurHash(void(0), endian).update('', function(err) {
         t.error(err);
         throw new Error("mana mana");
       }));
@@ -102,6 +155,7 @@ function wrapStream(name) {
       t.plan(1+11*5+6*2);
       function cberrAsync(arg) {
         var hasher = new MurmurHash();
+        hasher.endianness = endian || 'platform';
         t.strictEqual(undefined, hasher.update(arg, function(err) {
           t.type(err, TypeError);
           t.strictEqual(err.message, "string or Buffer is required");
@@ -113,7 +167,7 @@ function wrapStream(name) {
         t.error(err);
       }
       t.throws(function() {
-        new MurmurHash().update(function() { t.error("should not be called") });
+        new MurmurHash(null, endian).update(function() { t.error("should not be called") });
       }, new TypeError("string or Buffer is required") );
       cberrAsync(undefined);
       cberrAsync({});
@@ -126,17 +180,17 @@ function wrapStream(name) {
       cberrAsync(1);
       cberrAsync(-1);
       cberrAsync(new Date());
-      t.strictEqual(undefined, new MurmurHash().update("", "abcdefghijklmno", cberrNotThrow));
-      t.strictEqual(undefined, new MurmurHash().update("", "123456", cberrNotThrow));
-      t.strictEqual(undefined, new MurmurHash().update("", "12345", cberrNotThrow));
-      t.strictEqual(undefined, new MurmurHash().update("", "1234", cberrNotThrow));
-      t.strictEqual(undefined, new MurmurHash().update("", "123", cberrNotThrow));
-      t.strictEqual(undefined, new MurmurHash().update("", "", cberrNotThrow));
+      t.strictEqual(undefined, new MurmurHash(void(0), endian).update("", "abcdefghijklmno", cberrNotThrow));
+      t.strictEqual(undefined, new MurmurHash(void(0), endian).update("", "123456", cberrNotThrow));
+      t.strictEqual(undefined, new MurmurHash(void(0), endian).update("", "12345", cberrNotThrow));
+      t.strictEqual(undefined, new MurmurHash(void(0), endian).update("", "1234", cberrNotThrow));
+      t.strictEqual(undefined, new MurmurHash(void(0), endian).update("", "123", cberrNotThrow));
+      t.strictEqual(undefined, new MurmurHash(void(0), endian).update("", "", cberrNotThrow));
     });
 
     t.test('should raise in-progress error', function(t) {
       t.plan(16);
-      var hasher = new MurmurHash();
+      var hasher = new MurmurHash(void(0), endian);
       function cb1(err) {
         t.error(err);
         t.strictEqual(hasher.isBusy, false);
@@ -154,10 +208,10 @@ function wrapStream(name) {
       t.throws(function() { hasher.digest(); }, new Error("Asynchronous update still in progress") );
       t.throws(function() { hasher.serialize(); }, new Error("Asynchronous update still in progress") );
       t.throws(function() { hasher.toJSON(); }, new Error("Asynchronous update still in progress") );
-      t.throws(function() { hasher.copy(new MurmurHash()); }, new Error("Asynchronous update still in progress") );
-      t.throws(function() { new MurmurHash().copy(hasher); }, new Error("Asynchronous update still in progress") );
+      t.throws(function() { hasher.copy(new MurmurHash(void(0), endian)); }, new Error("Asynchronous update still in progress") );
+      t.throws(function() { new MurmurHash(void(0), endian).copy(hasher); }, new Error("Asynchronous update still in progress") );
       t.throws(function() { new MurmurHash(hasher); }, new Error("Asynchronous update still in progress") );
-      t.throws(function() { MurmurHash(hasher); }, new Error("Asynchronous update still in progress") );
+      t.throws(function() { MurmurHash(hasher, endian); }, new Error("Asynchronous update still in progress") );
 
     });
 
@@ -179,18 +233,18 @@ function wrapStream(name) {
           t.strictEqual(hasher.digest('binary'), binvalue);
         }));
       }
-      async(new MurmurHash(), '', seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
-      async(new MurmurHash(0), '', seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
-      async(new MurmurHash(), new Buffer(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
-      async(new MurmurHash(0), new Buffer(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
-      async(new MurmurHash(-1), '', seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
-      async(new MurmurHash(-1), new Buffer(''), seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
-      async(new MurmurHash(4294967295), '', seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
-      async(new MurmurHash(4294967295), new Buffer(''), seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
-      async(new MurmurHash(4294967296), '', seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
-      async(new MurmurHash(4294967296), new Buffer(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
-      async(new MurmurHash(1), '', seedPlusOneBuffer, seedPlusOneHex, seedPlusOneNumber, seedPlusOneBase64, seedPlusOneBinary);
-      async(new MurmurHash(1), new Buffer(''), seedPlusOneBuffer, seedPlusOneHex, seedPlusOneNumber, seedPlusOneBase64, seedPlusOneBinary);
+      async(new MurmurHash(void(0), endian), '', seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
+      async(new MurmurHash(0, endian), '', seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
+      async(new MurmurHash(void(0), endian), new Buffer(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
+      async(new MurmurHash(0, endian), new Buffer(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
+      async(new MurmurHash(-1, endian), '', seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
+      async(new MurmurHash(-1, endian), new Buffer(''), seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
+      async(new MurmurHash(4294967295, endian), '', seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
+      async(new MurmurHash(4294967295, endian), new Buffer(''), seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
+      async(new MurmurHash(4294967296, endian), '', seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
+      async(new MurmurHash(4294967296, endian), new Buffer(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
+      async(new MurmurHash(1, endian), '', seedPlusOneBuffer, seedPlusOneHex, seedPlusOneNumber, seedPlusOneBase64, seedPlusOneBinary);
+      async(new MurmurHash(1, endian), new Buffer(''), seedPlusOneBuffer, seedPlusOneHex, seedPlusOneNumber, seedPlusOneBase64, seedPlusOneBinary);
 
     });
 
@@ -201,12 +255,12 @@ function wrapStream(name) {
         , hex = 'e188a0c582c3b3c5bc6b6f';
 
       function async(string, encoding) {
-        var hasher1 = new MurmurHash();
+        var hasher1 = new MurmurHash(void(0), endian);
         t.strictEqual(undefined, encoding ? hasher1.update(string, encoding, cb) : hasher1.update(string, cb));
         function cb(err) {
           t.error(err);
           encoding = encoding || 'utf8';
-          var hasher2 = new MurmurHash();
+          var hasher2 = new MurmurHash(void(0), endian);
           t.strictEqual(undefined, hasher2.update(new Buffer(string, encoding), function(err) {
             t.error(err);
             t.deepEqual(hasher2.digest(), hasher1.digest());
@@ -235,7 +289,7 @@ function wrapStream(name) {
       for (var i = 0; i < strlen; ++i) data += String.fromCharCode((Math.random()*32768)|0);
       var buffer = new Buffer(data, 'utf8');
       function async(seed) {
-        var hasher1 = new MurmurHash(seed);
+        var hasher1 = new MurmurHash(seed, endian);
         t.strictEqual(undefined, hasher1.update(data, function(err) {
           t.error(err);
           t.equal(hasher1.digest().length, size);
@@ -245,7 +299,7 @@ function wrapStream(name) {
           t.strictEqual(hasher1.digest('hex'), murmurHash(data, 'utf8', seed|0, 'hex'));
           t.strictEqual(hasher1.digest('base64'), murmurHash(data, 'utf8', seed|0, 'base64'));
           t.strictEqual(hasher1.digest('binary'), murmurHash(data, 'utf8', seed|0, 'binary'));
-          var hasher2 = new MurmurHash(seed);
+          var hasher2 = new MurmurHash(seed, endian);
           t.strictEqual(undefined, hasher2.update(buffer, function(err) {
             t.error(err);
             t.equal(hasher2.digest().length, size);
@@ -273,12 +327,12 @@ function wrapStream(name) {
       var maxchunksize = 101;
       var buffer = new Buffer(10007);
       var seed = (Math.random()*4294967296)|0;
-      var hasher0 = new MurmurHash(0);
-      var hasher1 = new MurmurHash(1);
-      var hasherS = new MurmurHash(seed);
-      var hasher0str = new MurmurHash(0);
-      var hasher1str = new MurmurHash(1);
-      var hasherSstr = new MurmurHash(seed);
+      var hasher0 = new MurmurHash(0, endian);
+      var hasher1 = new MurmurHash(1, endian);
+      var hasherS = new MurmurHash(seed, endian);
+      var hasher0str = new MurmurHash(0, endian);
+      var hasher1str = new MurmurHash(1, endian);
+      var hasherSstr = new MurmurHash(seed, endian);
       var lastErr = null;
       var n = 0;
       var feed = function() {
@@ -317,14 +371,14 @@ function wrapStream(name) {
         t.equal(hasher1str.total, buffer.length);
         t.equal(hasherSstr.total, buffer.length);
         var data = buffer.toString('binary');
-        t.equal(new MurmurHash().update(data, 'binary').digest().length, size);
-        t.equal(new MurmurHash().update(data, 'binary').total, buffer.length);
-        t.equal(new MurmurHash().update(data, 'binary').digest('buffer').length, size);
-        t.equal(new MurmurHash().update(buffer).digest().length, size);
-        t.equal(new MurmurHash().update(buffer).digest('buffer').length, size);
-        t.equal(new MurmurHash().update(buffer).total, buffer.length);
-        t.strictEqual(new MurmurHash().update(data, 'binary').digest('number'),
-                      new MurmurHash().update(buffer).digest('number'));
+        t.equal(new MurmurHash(void(0), endian).update(data, 'binary').digest().length, size);
+        t.equal(new MurmurHash(void(0), endian).update(data, 'binary').total, buffer.length);
+        t.equal(new MurmurHash(void(0), endian).update(data, 'binary').digest('buffer').length, size);
+        t.equal(new MurmurHash(void(0), endian).update(buffer).digest().length, size);
+        t.equal(new MurmurHash(void(0), endian).update(buffer).digest('buffer').length, size);
+        t.equal(new MurmurHash(void(0), endian).update(buffer).total, buffer.length);
+        t.strictEqual(new MurmurHash(void(0), endian).update(data, 'binary').digest('number'),
+                      new MurmurHash(void(0), endian).update(buffer).digest('number'));
         var d0 = hasher0.digest('number');
         var d1 = hasher1.digest('number');
         var dS = hasherS.digest('number');
@@ -336,16 +390,16 @@ function wrapStream(name) {
         t.strictEqual(d0, d0str);
         t.strictEqual(d1, d1str);
         t.strictEqual(dS, dSstr);
-        t.strictEqual(d0, new MurmurHash().update(buffer).digest('number'));
-        t.strictEqual(d0, new MurmurHash().update(data, 'binary').digest('number'));
+        t.strictEqual(d0, new MurmurHash(void(0), endian).update(buffer).digest('number'));
+        t.strictEqual(d0, new MurmurHash(void(0), endian).update(data, 'binary').digest('number'));
         t.strictEqual(d0, murmurHash(buffer));
         t.strictEqual(d0, murmurHash(data));
-        t.strictEqual(d1, new MurmurHash(1).update(buffer).digest('number'));
-        t.strictEqual(d1, new MurmurHash(1).update(data, 'binary').digest('number'));
+        t.strictEqual(d1, new MurmurHash(1, endian).update(buffer).digest('number'));
+        t.strictEqual(d1, new MurmurHash(1, endian).update(data, 'binary').digest('number'));
         t.strictEqual(d1, murmurHash(buffer, 1));
         t.strictEqual(d1, murmurHash(data, 1));
-        t.strictEqual(dS, new MurmurHash(seed).update(buffer).digest('number'));
-        t.strictEqual(dS, new MurmurHash(seed).update(data, 'binary').digest('number'));
+        t.strictEqual(dS, new MurmurHash(seed, endian).update(buffer).digest('number'));
+        t.strictEqual(dS, new MurmurHash(seed, endian).update(data, 'binary').digest('number'));
         t.strictEqual(dS, murmurHash(buffer, seed));
         t.strictEqual(dS, murmurHash(data, seed));
       }
