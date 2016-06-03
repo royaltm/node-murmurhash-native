@@ -16,7 +16,7 @@ Key features:
 * additional MurmurHash3 32 and 128 bit progressive implementations based on [PMurHash][PMurHash]
 * stream wrapper for progressive hasher with [crypto.Hash-like][crypto.Hash] bi-api interface
 * serializable state of the progressive hasher
-* control over output byte order of hashes
+* controllable output byte order of hashes
 * promise wrapper
 * prebuilt binaries for most standard system configurations
 
@@ -68,6 +68,7 @@ var murmurHash128x86 = require('murmurhash-native').murmurHash128x86
 murmurHash128x86( 'hash me!' ) // 'c7009299985a5627a9280372a9280372'
 
 // output byte order (default is BE)
+
 var murmurHashLE = require('murmurhash-native').LE.murmurHash;
 murmurHashLE( 'hash me!', 0x12345789, 'buffer' ) // <Buffer 35 55 c4 71>
 murmurHashLE( 'hash me!', 0x12345789, 'hex' ) // '3555c471'
@@ -159,7 +160,7 @@ hash.update(' me!').digest('hex'); // 'c7009299985a5627a9280372a9280372'
 Streaming api
 
 ```js
-var hash = murmur.createHash('murmurhash32', {seed: 123, encoding: 'hex'});
+var hash = murmur.createHash('murmurhash32', {seed: 123, encoding: 'hex', endianness: 'LE'});
 fs.createReadStream('README.md').pipe(hash).pipe(process.stdout);
 ```
 
