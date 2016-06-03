@@ -16,7 +16,7 @@ Key features:
 * additional MurmurHash3 32 and 128 bit progressive implementations based on [PMurHash][PMurHash]
 * stream wrapper for progressive hasher with [crypto.Hash-like][crypto.Hash] bi-api interface
 * serializable state of the progressive hasher
-* controllable output byte order of hashes
+* variants with BE and LE byte order of hashes
 * promise wrapper
 * prebuilt binaries for most standard system configurations
 
@@ -67,15 +67,15 @@ murmurHash128x64( 'hash me!' ) // 'c43668294e89db0ba5772846e5804467'
 var murmurHash128x86 = require('murmurhash-native').murmurHash128x86
 murmurHash128x86( 'hash me!' ) // 'c7009299985a5627a9280372a9280372'
 
+// asynchronous
+
+murmurHash( 'hash me!', function(err, hash) { assert.equal(hash, 2061152078) });
+
 // output byte order (default is BE)
 
 var murmurHashLE = require('murmurhash-native').LE.murmurHash;
 murmurHashLE( 'hash me!', 0x12345789, 'buffer' ) // <Buffer 35 55 c4 71>
 murmurHashLE( 'hash me!', 0x12345789, 'hex' ) // '3555c471'
-
-// asynchronous
-
-murmurHash( 'hash me!', function(err, hash) { assert.equal(hash, 2061152078) });
 ```
 
 These functions are awaiting your command:
@@ -155,6 +155,10 @@ Incremental (a.k.a. progressive) api
 var hash = murmur.createHash('murmurhash128x86');
 hash.update('hash').digest('hex'); // '0d872bbf2cd001722cd001722cd00172'
 hash.update(' me!').digest('hex'); // 'c7009299985a5627a9280372a9280372'
+
+var hash = murmur.createHash('murmurhash128x86', {endianness: 'LE'});
+hash.update('hash').digest('hex'); // 'bf2b870d7201d02c7201d02c7201d02c'
+hash.update(' me!').digest('hex'); // '999200c727565a98720328a9720328a9'
 ```
 
 Streaming api
