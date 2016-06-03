@@ -27,7 +27,7 @@ var LazyTransform = require('./lazy_transform');
 /**
  * Creates and returns a MurmurHash object that can be used to generate murmurhash digests.
  * 
- * Except murmur's `seed` option, the rest of the options are passed to
+ * Except murmur's `seed` and `endianness` options, the rest of the options are passed to
  * stream.Transform constructor.
  *
  * @param {string|MurmurHash} algorithm|hasher - one of available algorithms
@@ -36,19 +36,20 @@ var LazyTransform = require('./lazy_transform');
  **/
 exports.createHash = exports.MurmurHash = MurmurHash;
 function MurmurHash(algorithm, options) {
-  var seed;
+  var seed, endianness;
 
   if (!(this instanceof MurmurHash))
     return new MurmurHash(algorithm, options);
 
   if (options && 'object' === typeof options) {
     seed = options.seed;
+    endianness = options.endianness;
   } else {
     seed = options; options = undefined;
   }
 
   if (algorithm instanceof MurmurHash) {
-    this._handle = new algorithm._handle.constructor(algorithm._handle);
+    this._handle = new algorithm._handle.constructor(algorithm._handle, endianness);
   } else if (algorithm) {
     // handle object from json
     if ('object' === typeof algorithm) {
@@ -57,7 +58,7 @@ function MurmurHash(algorithm, options) {
     }
     var Handle = algorithms[algorithm.toLowerCase()];
     if (Handle) {
-      this._handle = new Handle(seed);
+      this._handle = new Handle(seed, endianness);
     } else {
       throw new Error("Algorithm not supported");
     }
@@ -130,6 +131,9 @@ Object.defineProperty(MurmurHash.prototype, 'total', {
 Object.defineProperty(MurmurHash.prototype, 'endianness', {
   get: function() {
     return this._handle.endianness;
+  },
+  set: function(value) {
+    this._handle.endianness = value;
   },
   enumerable: true,
   configurable: false
