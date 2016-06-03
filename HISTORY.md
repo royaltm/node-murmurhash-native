@@ -1,3 +1,8 @@
+v3.1.1
+
+* fix incremental async: ensure hasher is not GC'ed before worker completes
+* fix incremental async: prevent from copying state over busy target
+
 v3.1.0
 
 * replaced MurmurHash3 implementation with PMurHash and PMurHash128
