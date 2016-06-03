@@ -5,7 +5,7 @@ if (!global.gc)
 
 var gc = global.gc;
 
-var kMaxLength = require('buffer').kMaxLength;
+var kMaxLength = require('buffer').kMaxLength || 0x3fffffff;
 
 var test = require("tap").test
   , incr = require('../../incremental')
