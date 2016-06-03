@@ -135,7 +135,7 @@ function wrapStream(name) {
     });
 
     t.test('should raise in-progress error', function(t) {
-      t.plan(15);
+      t.plan(16);
       var hasher = new MurmurHash();
       function cb1(err) {
         t.error(err);
@@ -155,6 +155,7 @@ function wrapStream(name) {
       t.throws(function() { hasher.serialize(); }, new Error("Asynchronous update still in progress") );
       t.throws(function() { hasher.toJSON(); }, new Error("Asynchronous update still in progress") );
       t.throws(function() { hasher.copy(new MurmurHash()); }, new Error("Asynchronous update still in progress") );
+      t.throws(function() { new MurmurHash().copy(hasher); }, new Error("Asynchronous update still in progress") );
       t.throws(function() { new MurmurHash(hasher); }, new Error("Asynchronous update still in progress") );
       t.throws(function() { MurmurHash(hasher); }, new Error("Asynchronous update still in progress") );
 

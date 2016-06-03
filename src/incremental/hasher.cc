@@ -124,15 +124,12 @@ namespace MurmurHash {
   {
     IncrementalHasher_T *self = ObjectWrap::Unwrap<IncrementalHasher_T>( info.Holder() );
 
-    if ( self->asyncInProgress ) {
-      return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
-    }
+    if ( self->asyncInProgress ) return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
 
     if ( info.Length() > 0 && Nan::New(constructor)->HasInstance( info[0] ) ) {
       IncrementalHasher_T *other = ObjectWrap::Unwrap<IncrementalHasher_T>( info[0].As<Object>() );
-      if ( other == self ) {
-        return Nan::ThrowError("Target must not be the same instance");
-      }
+      if ( other == self ) return Nan::ThrowError("Target must not be the same instance");
+      if ( other->asyncInProgress ) return Nan::ThrowError(MESSAGE_ERROR_PENDING_UPDATE);
       *other = *self;
     } else {
       return Nan::ThrowTypeError("Target must be another instance of the same murmur hash type utility");
