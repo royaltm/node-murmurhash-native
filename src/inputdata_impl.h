@@ -4,7 +4,7 @@
 
 namespace MurmurHash {
 
-  NAN_INLINE InputData::InputData(bool allowStaticBuffer) : useStatic(allowStaticBuffer),
+  NAN_INLINE InputData::InputData(char *staticBuffer) : staticBufferPtr(staticBuffer),
                 buffer(NULL), size(0), type(Static), error("string or Buffer is required") {}
 
   NAN_INLINE void InputData::Setup(Local<Value> key, const enum Nan::Encoding encoding, const bool validEncoding)
@@ -56,7 +56,7 @@ namespace MurmurHash {
     if ( siz == 0 || buf == NULL ) {
       size = 0;
       if ( t == ExternalBuffer ) {
-        buffer = StaticKeyBuffer();
+        buffer = staticBufferPtr;
         type = t;
       } else {
         buffer = buf;
@@ -138,16 +138,11 @@ namespace MurmurHash {
     return UnknownOutputType;
   }
 
-  NAN_INLINE char *InputData::StaticKeyBuffer()
-  {
-    return keyBuffer;
-  }
-
   NAN_INLINE char *InputData::EnsureBuffer(size_t bytelength, Type& type)
   {
-    if ( (useStatic && bytelength <= NODE_MURMURHASH_KEY_BUFFER_SIZE) || bytelength == 0 ) {
+    if ( bytelength <= NODE_MURMURHASH_KEY_BUFFER_SIZE ) {
       type = Static;
-      return StaticKeyBuffer();
+      return staticBufferPtr;
     } else {
       type = Own;
       return new char[bytelength];

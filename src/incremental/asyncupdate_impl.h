@@ -13,7 +13,7 @@ namespace MurmurHash {
                 Nan::Callback *callback,
                 IncrementalHasher_T* hasher,
                 Local<Value> key, const enum Nan::Encoding encoding)
-              : Nan::AsyncWorker(callback), data_(false), hasher_(hasher)
+              : Nan::AsyncWorker(callback), data_(hasher->dataBuffer), hasher_(hasher)
   {
     data_.Setup(key, encoding);
     if (data_.IsFromBuffer())

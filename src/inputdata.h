@@ -17,7 +17,7 @@ namespace MurmurHash {
         Static, Own, ExternalBuffer
       };
 
-      NAN_INLINE InputData(bool allowStaticBuffer = true);
+      NAN_INLINE InputData(char staticBuffer[NODE_MURMURHASH_KEY_BUFFER_SIZE] = keyBuffer);
       NAN_INLINE void Setup(Local<Value> key, const enum Nan::Encoding encoding, const bool validEncoding = true);
       NAN_INLINE bool IsValid() const;
       NAN_INLINE bool IsFromBuffer() const;
@@ -31,7 +31,7 @@ namespace MurmurHash {
       static OutputType DetermineOutputType();
 
     private:
-      bool useStatic;
+      char *staticBufferPtr;
       char *buffer;
       size_t size;
       Type type;
@@ -40,7 +40,6 @@ namespace MurmurHash {
       NAN_INLINE void reset(char *buf = NULL, size_t siz = 0, Type t = Static);
       NAN_INLINE char *EnsureBuffer(size_t bytelength, Type& type);
 
-      NAN_INLINE static char *StaticKeyBuffer();
       static char keyBuffer[NODE_MURMURHASH_KEY_BUFFER_SIZE];
       static char encCstr[sizeof("utf-16le")];
 

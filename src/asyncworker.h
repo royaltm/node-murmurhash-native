@@ -25,6 +25,7 @@ namespace MurmurHash {
         int32_t offset_;
         int32_t length_;
         HashValueType hash_[HashLength];
+        char dataBuffer[NODE_MURMURHASH_KEY_BUFFER_SIZE];
   };
 
 }

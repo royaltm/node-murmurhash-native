@@ -43,6 +43,8 @@ namespace MurmurHash {
       NAN_INLINE void Serialize(uint8_t *serial) const;
       NAN_INLINE void Update(const void *data, uint32_t length);
 
+      char dataBuffer[NODE_MURMURHASH_KEY_BUFFER_SIZE];
+
     private:
       NAN_INLINE IncrementalHasher(const uint32_t seed = 0U);
       NAN_INLINE IncrementalHasher(const uint8_t *serial);
