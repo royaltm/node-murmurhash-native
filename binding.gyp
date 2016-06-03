@@ -78,7 +78,7 @@
         {
           "files": [
             "<(PRODUCT_DIR)/murmurhash.node",
-            "<(PRODUCT_DIR)/murmurhashincremental.node",
+            "<(PRODUCT_DIR)/murmurhashincremental.node"
           ],
           "destination": "<(module_path)"
         }

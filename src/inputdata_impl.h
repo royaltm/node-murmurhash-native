@@ -4,7 +4,7 @@
 
 namespace MurmurHash {
 
-  NAN_INLINE InputData::InputData(bool allowStaticBuffer) : useStatic(allowStaticBuffer),
+  NAN_INLINE InputData::InputData(char *staticBuffer) : staticBufferPtr(staticBuffer),
                 buffer(NULL), size(0), type(Static), error("string or Buffer is required") {}
 
   NAN_INLINE void InputData::Setup(Local<Value> key, const enum Nan::Encoding encoding, const bool validEncoding)
@@ -56,7 +56,7 @@ namespace MurmurHash {
     if ( siz == 0 || buf == NULL ) {
       size = 0;
       if ( t == ExternalBuffer ) {
-        buffer = StaticKeyBuffer();
+        buffer = staticBufferPtr;
         type = t;
       } else {
         buffer = buf;
@@ -89,32 +89,32 @@ namespace MurmurHash {
 
   bool InputData::DetermineEncoding(enum Nan::Encoding& enc)
   {
-    if ( strcasecmp(encCstr, "utf16le") == 0 ||
-         strcasecmp(encCstr, "utf-16le") == 0 ) {
+    if ( StringEqualLower(encCstr, "utf16le") ||
+         StringEqualLower(encCstr, "utf-16le") ) {
       enc = Nan::UCS2;
       return true;
-    } else if ( strcasecmp(encCstr, "base64") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "base64") ) {
       enc = Nan::BASE64;
       return true;
-    } else if ( strcasecmp(encCstr, "binary") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "binary") ) {
       enc = Nan::BINARY;
       return true;
-    } else if ( strcasecmp(encCstr, "ascii") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "ascii") ) {
       enc = Nan::ASCII;
       return true;
-    } else if ( strcasecmp(encCstr, "utf-8") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "utf-8") ) {
       enc = Nan::UTF8;
       return true;
-    } else if ( strcasecmp(encCstr, "ucs-2") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "ucs-2") ) {
       enc = Nan::UCS2;
       return true;
-    } else if ( strcasecmp(encCstr, "utf8") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "utf8") ) {
       enc = Nan::UTF8;
       return true;
-    } else if ( strcasecmp(encCstr, "ucs2") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "ucs2") ) {
       enc = Nan::UCS2;
       return true;
-    } else if ( strcasecmp(encCstr, "hex") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "hex") ) {
       enc = Nan::HEX;
       return true;
     }
@@ -123,31 +123,26 @@ namespace MurmurHash {
 
   OutputType InputData::DetermineOutputType()
   {
-    if ( strcasecmp(encCstr, "buffer") == 0 ) {
+    if ( StringEqualLower(encCstr, "buffer") ) {
       return BufferOutputType;
-    } else if ( strcasecmp(encCstr, "number") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "number") ) {
       return NumberOutputType;
-    } else if ( strcasecmp(encCstr, "base64") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "base64") ) {
       return Base64StringOutputType;
-    } else if ( strcasecmp(encCstr, "binary") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "binary") ) {
       return BinaryStringOutputType;
-    } else if ( strcasecmp(encCstr, "hex") == 0 ) {
+    } else if ( StringEqualLower(encCstr, "hex") ) {
       return HexStringOutputType;
     }
 
     return UnknownOutputType;
   }
 
-  NAN_INLINE char *InputData::StaticKeyBuffer()
-  {
-    return keyBuffer;
-  }
-
   NAN_INLINE char *InputData::EnsureBuffer(size_t bytelength, Type& type)
   {
-    if ( useStatic && bytelength <= NODE_MURMURHASH_KEY_BUFFER_SIZE ) {
+    if ( bytelength <= NODE_MURMURHASH_KEY_BUFFER_SIZE ) {
       type = Static;
-      return StaticKeyBuffer();
+      return staticBufferPtr;
     } else {
       type = Own;
       return new char[bytelength];

@@ -2,8 +2,10 @@
 "use strict";
 
 var os             = require('os')
+,   assert         = require('assert')
 ,   parben         = require('./parben').parallel
 ,   hash           = require('..')
+,   incr           = require('../incremental')
 ,   duration       = 1000
 ,   parallel       = os.cpus().length
 ,   stringEncoding = 'binary'
@@ -41,12 +43,24 @@ if (program.parallel) {
 console.log('parallel threads: %d', parallel);
 console.log('test duration: %d ms', duration);
 
+function incremental(constr) {
+  return function(data, encoding, outputType, next) {
+    var hash = new constr();
+    return hash.update(data, encoding, function(err) {
+      next(err, hash.digest(outputType));
+    });
+  };
+}
+
 var funmatrix = [
   [hash.murmurHash,       'murmurHash          '],
   [hash.murmurHash64x86,  'murmurHash64x86     '],
   [hash.murmurHash64x64,  'murmurHash64x64     '],
   [hash.murmurHash128x86, 'murmurHash128x86    '],
   [hash.murmurHash128x64, 'murmurHash128x64    '],
+  [incremental(incr.MurmurHash),       'MurmurHash          '],
+  [incremental(incr.MurmurHash128x86), 'MurmurHash128x86    '],
+  [incremental(incr.MurmurHash128x64), 'MurmurHash128x64    ']
 ];
 
 var queued = [];
@@ -85,11 +99,14 @@ function measure(label, fun, name, duration, parallel, size, arg) {
     return parben(iters, parallel, cb);
   })
   .then(function(res) {
-    console.log(name + "(" + label + "[" + size + "]): single: %s avg: %s %s",
-      (size / res.single / 1000).toFixed(4) + 'MB/s',
-      (size / res.avg / 1000).toFixed(4) + 'MB/s',
-      fun(arg, stringEncoding, outputType));
-    next();
+    fun(arg, stringEncoding, outputType, function(err, digest) {
+      assert.ifError(err);
+      console.log(name + "(" + label + "[" + size + "]): single: %s avg: %s %s",
+        (size / res.single / 1000).toFixed(4) + 'MB/s',
+        (size / res.avg / 1000).toFixed(4) + 'MB/s',
+        digest);
+      next();
+    });
   });
 }
 

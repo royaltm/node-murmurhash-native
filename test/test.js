@@ -1,6 +1,7 @@
 "use strict";
 
-var test = require("tap").test
+var os   = require("os")
+  , test = require("tap").test
   , hash = require('..')
 ;
 
@@ -16,7 +17,14 @@ test("should have murmurHash functions", function(t) {
   ].forEach(function(name) {
     t.type(hash[name], 'function');
     t.strictEqual(hash[name].name, name);
+    t.type(hash.BE[name], 'function');
+    t.strictEqual(hash.BE[name].name, name);
+    t.type(hash.LE[name], 'function');
+    t.strictEqual(hash.LE[name].name, name);
+    t.type(hash.platform[name], 'function');
+    t.strictEqual(hash.platform[name].name, name);
   });
+  t.strictEqual(hash.platform, hash[os.endianness()]);
   t.end();
 });
 
@@ -27,26 +35,78 @@ test("should have murmurHash functions", function(t) {
   [4, 'murmurHash', hash.murmurHash32, 0, 2180083513, 1364076727,
       '00000000', '81f16f39', '514e28b7',
       '50191cd1'],
+  [4, 'murmurHash', hash.BE.murmurHash, 0, 2180083513, 1364076727,
+      '00000000', '81f16f39', '514e28b7',
+      '50191cd1'],
+  [4, 'murmurHash', hash.BE.murmurHash32, 0, 2180083513, 1364076727,
+      '00000000', '81f16f39', '514e28b7',
+      '50191cd1'],
+  [4, 'murmurHash', hash.LE.murmurHash, 0, 2180083513, 1364076727,
+      '00000000', '396ff181', 'b7284e51',
+      'd11c1950'],
+  [4, 'murmurHash', hash.LE.murmurHash32, 0, 2180083513, 1364076727,
+      '00000000', '396ff181', 'b7284e51',
+      'd11c1950'],
   [8, 'murmurHash64x64', hash.murmurHash64x64,
       '0000000000000000', '952d4201a42f3c31', 'c6a4a7935bd064dc',
       '0000000000000000', '952d4201a42f3c31', 'c6a4a7935bd064dc',
       'e5718ae073beb171'],
+  [8, 'murmurHash64x64', hash.BE.murmurHash64x64,
+      '0000000000000000', '952d4201a42f3c31', 'c6a4a7935bd064dc',
+      '0000000000000000', '952d4201a42f3c31', 'c6a4a7935bd064dc',
+      'e5718ae073beb171'],
+  [8, 'murmurHash64x64', hash.LE.murmurHash64x64,
+      '0000000000000000', '313c2fa401422d95', 'dc64d05b93a7a4c6',
+      '0000000000000000', '313c2fa401422d95', 'dc64d05b93a7a4c6',
+      '71b1be73e08a71e5'],
   [8, 'murmurHash64x86', hash.murmurHash64x86,
       '0000000000000000', 'f107ca78f6c98ab0', 'dd9f019f79505248',
       '0000000000000000', 'f107ca78f6c98ab0', 'dd9f019f79505248',
       '20010cf69cfc8f5b'],
+  [8, 'murmurHash64x86', hash.BE.murmurHash64x86,
+      '0000000000000000', 'f107ca78f6c98ab0', 'dd9f019f79505248',
+      '0000000000000000', 'f107ca78f6c98ab0', 'dd9f019f79505248',
+      '20010cf69cfc8f5b'],
+  [8, 'murmurHash64x86', hash.LE.murmurHash64x86,
+      '0000000000000000', 'b08ac9f678ca07f1', '485250799f019fdd',
+      '0000000000000000', 'b08ac9f678ca07f1', '485250799f019fdd',
+      '5b8ffc9cf60c0120'],
   [16, 'murmurHash128x64', hash.murmurHash128x64,
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
       '4610abe56eff5cb551622daa78f83583',
       '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
       '4610abe56eff5cb551622daa78f83583',
       '56ca212715c05cb53aa4737dfb49076f'],
+  [16, 'murmurHash128x64', hash.BE.murmurHash128x64,
+      '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
+      '4610abe56eff5cb551622daa78f83583',
+      '00000000000000000000000000000000', '6af1df4d9d3bc9ec857421121ee6446b',
+      '4610abe56eff5cb551622daa78f83583',
+      '56ca212715c05cb53aa4737dfb49076f'],
+  [16, 'murmurHash128x64', hash.LE.murmurHash128x64,
+      '00000000000000000000000000000000', 'ecc93b9d4ddff16a6b44e61e12217485',
+      'b55cff6ee5ab10468335f878aa2d6251',
+      '00000000000000000000000000000000', 'ecc93b9d4ddff16a6b44e61e12217485',
+      'b55cff6ee5ab10468335f878aa2d6251',
+      'b55cc0152721ca566f0749fb7d73a43a'],
   [16, 'murmurHash128x86', hash.murmurHash128x86,
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
       '88c4adec54d201b954d201b954d201b9',
       '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
       '88c4adec54d201b954d201b954d201b9',
       '09cc949d260a8dd2de241315de241315'],
+  [16, 'murmurHash128x86', hash.BE.murmurHash128x86,
+      '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
+      '88c4adec54d201b954d201b954d201b9',
+      '00000000000000000000000000000000', '051e08a9989d49f7989d49f7989d49f7',
+      '88c4adec54d201b954d201b954d201b9',
+      '09cc949d260a8dd2de241315de241315'],
+  [16, 'murmurHash128x86', hash.LE.murmurHash128x86,
+      '00000000000000000000000000000000', 'a9081e05f7499d98f7499d98f7499d98',
+      'ecadc488b901d254b901d254b901d254',
+      '00000000000000000000000000000000', 'a9081e05f7499d98f7499d98f7499d98',
+      'ecadc488b901d254b901d254b901d254',
+      '9d94cc09d28d0a26151324de151324de']
 ].forEach(function(args)  {
 
   var size                = args[ 0]

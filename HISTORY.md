@@ -1,3 +1,12 @@
+v3.2.0
+
+* bump nan to 2.3.5
+* removed strcasecmp dependency
+* asynchronous: static byte array for small strings added to the worker
+* incremental async: static byte array for small strings added to the hasher
+* incremental: endianness configurable via property and argument to the constructor
+* variants of murmur hash functions producing BE (MSB) or LE (LSB) results
+
 v3.1.1
 
 * fix incremental async: ensure hasher is not GC'ed before worker completes

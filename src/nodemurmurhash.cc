@@ -1,12 +1,9 @@
-#include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
 #include "nodemurmurhash.h"
-#include "inputdata.h"
 #include "MurmurHash2.h"
 #include "PMurHash.h"
 #include "PMurHash128.h"
 #include "murmurhashutils.h"
+#include "inputdata.h"
 #include "asyncworker.h"
 
 NAN_INLINE void MurmurHash2_x64_64 (
@@ -22,8 +19,12 @@ NAN_INLINE void MurmurHash2_x86_64 (
 }
 
 namespace MurmurHash {
+  using v8::Object;
   using v8::Uint32;
   using v8::Function;
+  using v8::PropertyAttribute;
+  using v8::ReadOnly;
+  using v8::DontDelete;
 
   #define GET_ARG_OFFSET(INFO,INDEX,ARGC)                        \
             ((INDEX) + 1 < (ARGC)                                \
@@ -84,7 +85,7 @@ namespace MurmurHash {
    * 
    * @return {number|Buffer|String|undefined}
   **/
-  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength>
+  template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
   NAN_METHOD(MurmurHash)
   {
     InputData data;
@@ -185,15 +186,15 @@ namespace MurmurHash {
 
 
     if ( callbackIndex > -1 ) {
-      MurmurHashWorker<HashFunction,HashValueType,HashLength> *asyncWorker;
+      MurmurHashWorker<HashFunction,HashValueType,HashLength,OutputByteOrder> *asyncWorker;
       Nan::Callback *callback = new Nan::Callback(
                                   Local<Function>::Cast(info[callbackIndex]));
 
       if ( argc > 0 ) {
-        asyncWorker = new MurmurHashWorker<HashFunction,HashValueType,HashLength>(
+        asyncWorker = new MurmurHashWorker<HashFunction,HashValueType,HashLength,OutputByteOrder>(
           callback, outputType, seed, info[0], encoding, validEncoding);
       } else {
-        asyncWorker = new MurmurHashWorker<HashFunction,HashValueType,HashLength>(callback);
+        asyncWorker = new MurmurHashWorker<HashFunction,HashValueType,HashLength,OutputByteOrder>(callback);
       }
 
       if (outputType == ProvidedBufferOutputType) {
@@ -228,30 +229,30 @@ namespace MurmurHash {
           if (HashSize == sizeof(uint32_t)) {
             result = Nan::New<Uint32>( (uint32_t) (*hash) );
           } else {
-            result = HashToHexString<HashLength>( hash );
+            result = HashToEncodedString<OutputByteOrder, HashLength>( hash, Nan::HEX );
           }
           break;
 
         case HexStringOutputType:
-          result = HashToHexString<HashLength>( hash );
+          result = HashToEncodedString<OutputByteOrder, HashLength>( hash, Nan::HEX );
           break;
 
         case BinaryStringOutputType:
-          result = HashToEncodedString<HashLength>( hash, Nan::BINARY );
+          result = HashToEncodedString<OutputByteOrder, HashLength>( hash, Nan::BINARY );
           break;
 
         case Base64StringOutputType:
-          result = HashToEncodedString<HashLength>( hash, Nan::BASE64 );
+          result = HashToEncodedString<OutputByteOrder, HashLength>( hash, Nan::BASE64 );
           break;
 
         case BufferOutputType:
           result = Nan::NewBuffer( HashSize ).ToLocalChecked();
-          WriteHashBytes<HashLength>(hash, (uint8_t *) node::Buffer::Data(result));
+          WriteHashBytes<OutputByteOrder, HashLength>(hash, (uint8_t *) node::Buffer::Data(result));
           break;
 
         case ProvidedBufferOutputType:
           result = info[outputTypeIndex];
-          WriteHashToBuffer<HashLength>(
+          WriteHashToBuffer<OutputByteOrder, HashLength>(
                 hash,
                 node::Buffer::Data(result),
                 (int32_t) node::Buffer::Length(result),
@@ -270,21 +271,41 @@ namespace MurmurHash {
   #undef GET_ARG_OFFSET
   #undef GET_ARG_LENGTH
 
+  template<ByteOrderType OutputByteOrder>
+  NAN_MODULE_INIT(InitWithOrder)
+  {
+    Nan::SetMethod(target, "murmurHash",       MurmurHash<        PMurHash32, uint32_t, 1, OutputByteOrder>);
+    Nan::SetMethod(target, "murmurHash32",     MurmurHash<        PMurHash32, uint32_t, 1, OutputByteOrder>);
+    Nan::SetMethod(target, "murmurHash64x64",  MurmurHash<MurmurHash2_x64_64, uint64_t, 1, OutputByteOrder>);
+    Nan::SetMethod(target, "murmurHash64x86",  MurmurHash<MurmurHash2_x86_64, uint64_t, 1, OutputByteOrder>);
+    Nan::SetMethod(target, "murmurHash128x64", MurmurHash<    PMurHash128x64, uint64_t, 2, OutputByteOrder>);
+    Nan::SetMethod(target, "murmurHash128x86", MurmurHash<    PMurHash128x86, uint32_t, 4, OutputByteOrder>);
+  #if defined(NODE_MURMURHASH_DEFAULT_32BIT)
+    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_x86_64, uint64_t, 1, OutputByteOrder>);
+    Nan::SetMethod(target, "murmurHash128",    MurmurHash<    PMurHash128x86, uint32_t, 4, OutputByteOrder>);
+  #else
+    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_x64_64, uint64_t, 1, OutputByteOrder>);
+    Nan::SetMethod(target, "murmurHash128",    MurmurHash<    PMurHash128x64, uint64_t, 2, OutputByteOrder>);
+  #endif
+  }
+
   NAN_MODULE_INIT(Init)
   {
-    Nan::SetMethod(target, "murmurHash",       MurmurHash<        PMurHash32, uint32_t, 1>);
-    Nan::SetMethod(target, "murmurHash32",     MurmurHash<        PMurHash32, uint32_t, 1>);
-    Nan::SetMethod(target, "murmurHash64x64",  MurmurHash<MurmurHash2_x64_64, uint64_t, 1>);
-    Nan::SetMethod(target, "murmurHash64x86",  MurmurHash<MurmurHash2_x86_64, uint64_t, 1>);
-    Nan::SetMethod(target, "murmurHash128x64", MurmurHash<    PMurHash128x64, uint64_t, 2>);
-    Nan::SetMethod(target, "murmurHash128x86", MurmurHash<    PMurHash128x86, uint32_t, 4>);
-  #if defined(NODE_MURMURHASH_DEFAULT_32BIT)
-    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_x86_64, uint64_t, 1>);
-    Nan::SetMethod(target, "murmurHash128",    MurmurHash<    PMurHash128x86, uint32_t, 4>);
-  #else
-    Nan::SetMethod(target, "murmurHash64",     MurmurHash<MurmurHash2_x64_64, uint64_t, 1>);
-    Nan::SetMethod(target, "murmurHash128",    MurmurHash<    PMurHash128x64, uint64_t, 2>);
-  #endif
+    InitWithOrder<MSBFirst>( target );
+
+    Local<Object> bigEndian( Nan::New<Object>() );
+    InitWithOrder<MSBFirst>( bigEndian );
+    Nan::ForceSet(target, Nan::New<String>("BE").ToLocalChecked(), bigEndian,
+                        static_cast<PropertyAttribute>(ReadOnly | DontDelete) ).FromJust();
+
+    Local<Object> littleEndian( Nan::New<Object>() );
+    InitWithOrder<LSBFirst>( littleEndian );
+    Nan::ForceSet(target, Nan::New<String>("LE").ToLocalChecked(), littleEndian,
+                        static_cast<PropertyAttribute>(ReadOnly | DontDelete) ).FromJust();
+
+    Nan::ForceSet(target, Nan::New<String>("platform").ToLocalChecked(),
+                  IsBigEndian() ? bigEndian : littleEndian,
+                  static_cast<PropertyAttribute>(ReadOnly | DontDelete) ).FromJust();
   }
 
 }

@@ -13,7 +13,7 @@ namespace MurmurHash {
                 Nan::Callback *callback,
                 IncrementalHasher_T* hasher,
                 Local<Value> key, const enum Nan::Encoding encoding)
-              : Nan::AsyncWorker(callback), data_(false), hasher_(hasher)
+              : Nan::AsyncWorker(callback), data_(hasher->dataBuffer), hasher_(hasher)
   {
     data_.Setup(key, encoding);
     if (data_.IsFromBuffer())
@@ -21,7 +21,7 @@ namespace MurmurHash {
   }
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHashUpdater<H,HashValueType,HashLength>
+  void IncrementalHashUpdater<H,HashValueType,HashLength>
   ::Execute()
   {
     if ( ! data_.IsValid() )
@@ -31,7 +31,7 @@ namespace MurmurHash {
   }
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHashUpdater<H,HashValueType,HashLength>
+  void IncrementalHashUpdater<H,HashValueType,HashLength>
   ::HandleOKCallback()
   {
     hasher_->AsyncUpdateComplete();
@@ -40,7 +40,7 @@ namespace MurmurHash {
   }
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
-  NAN_INLINE void IncrementalHashUpdater<H,HashValueType,HashLength>
+  void IncrementalHashUpdater<H,HashValueType,HashLength>
   ::HandleErrorCallback()
   {
     Nan::HandleScope scope;

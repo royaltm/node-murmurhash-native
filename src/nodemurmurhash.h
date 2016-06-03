@@ -5,12 +5,6 @@
 #include <node_buffer.h>
 #include <v8.h>
 #include <nan.h>
-#include <string.h>
-
-#ifdef _MSC_VER
-#  define strncasecmp _strnicmp
-#  define strcasecmp _stricmp
-#endif
 
 #define HashSize (static_cast<int32_t>(sizeof(HashValueType) * HashLength))
 
@@ -28,6 +22,11 @@ namespace MurmurHash {
     ProvidedBufferOutputType,
     UnknownOutputType,
   } OutputType;
+
+  typedef enum {
+    MSBFirst,
+    LSBFirst
+  } ByteOrderType;
 }
 
 #endif

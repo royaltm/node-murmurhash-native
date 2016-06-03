@@ -12,14 +12,27 @@ module.exports = function(promise) {
     throw new Error("Promise constructor required");
   }
 
-  var hash = {};
+  var promisify = function(object) {
+    var value, hash = {};
 
-  for(var name in murmurhash) {
-    if (murmurhash.hasOwnProperty(name) && ('function' === typeof murmurhash[name])) {
-      hash[name + 'Async'] = wrap(promise, murmurhash[name]);
+    for(var name in object) {
+      if (object.hasOwnProperty(name)) {
+        if (!!(value = object[name])) {
+          switch(typeof value) {
+            case 'function':
+              hash[name + 'Async'] = wrap(promise, value);
+              break;
+            case 'object':
+              hash[name] = promisify(value);
+              break;
+          }
+        }
+      }
     }
-  }
-  return hash;
+    return hash;
+  };
+
+  return promisify(murmurhash);
 };
 
 function wrap(promise, fn) {
