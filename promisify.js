@@ -30,7 +30,7 @@ module.exports = function(promise) {
       }
     }
     return hash;
-  }
+  };
 
   return promisify(murmurhash);
 };

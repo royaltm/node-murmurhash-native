@@ -167,7 +167,7 @@ function wrapStream(name) {
         t.error(err);
       }
       t.throws(function() {
-        new MurmurHash(null, endian).update(function() { t.error("should not be called") });
+        new MurmurHash(null, endian).update(function() { t.error("should not be called"); });
       }, new TypeError("string or Buffer is required") );
       cberrAsync(undefined);
       cberrAsync({});

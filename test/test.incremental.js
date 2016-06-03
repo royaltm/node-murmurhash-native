@@ -284,7 +284,7 @@ function wrapStream(name) {
       t.throws(function() { new MurmurHash(void(0), 0); }, new TypeError("Unknown endianness: should be \"BE\", \"LE\" or \"platform\"") );
       t.throws(function() { new MurmurHash(void(0), []); }, new TypeError("Unknown endianness: should be \"BE\", \"LE\" or \"platform\"") );
       t.throws(function() { new MurmurHash(void(0), {}); }, new TypeError("Unknown endianness: should be \"BE\", \"LE\" or \"platform\"") );
-      t.throws(function() { new MurmurHash(void(0), new Date); }, new TypeError("Unknown endianness: should be \"BE\", \"LE\" or \"platform\"") );
+      t.throws(function() { new MurmurHash(void(0), new Date()); }, new TypeError("Unknown endianness: should be \"BE\", \"LE\" or \"platform\"") );
       t.throws(function() { new MurmurHash(void(0), true); }, new TypeError("Unknown endianness: should be \"BE\", \"LE\" or \"platform\"") );
       t.throws(function() { new MurmurHash(void(0), false); }, new TypeError("Unknown endianness: should be \"BE\", \"LE\" or \"platform\"") );
       t.throws(function() { new MurmurHash().endianness = ''; }, new TypeError("Unknown endianness: should be \"BE\", \"LE\" or \"platform\"") );
