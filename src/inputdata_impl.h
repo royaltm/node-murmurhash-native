@@ -55,12 +55,11 @@ namespace MurmurHash {
 
     if ( siz == 0 || buf == NULL ) {
       size = 0;
+      type = t;
       if ( t == ExternalBuffer ) {
         buffer = staticBufferPtr;
-        type = t;
       } else {
         buffer = buf;
-        type = Static;
       }
     } else {
       buffer = buf;
