@@ -16,7 +16,7 @@ namespace MurmurHash {
   template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
   NAN_INLINE MurmurHashWorker<HashFunction,HashValueType,HashLength,OutputByteOrder>
   ::MurmurHashWorker(
-                Nan::Callback *callback, OutputType outputType, uint32_t seed,
+                Nan::Callback *callback, const OutputType outputType, const uint32_t seed,
                 Local<Value> key, const enum Nan::Encoding encoding, const bool validEncoding)
               : Nan::AsyncWorker(callback), data_(dataBuffer), outputType_(outputType), seed_(seed)
               // offset_(0), length_(0)

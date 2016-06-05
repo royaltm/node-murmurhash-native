@@ -11,7 +11,7 @@ namespace MurmurHash {
   class MurmurHashWorker : public Nan::AsyncWorker {
     public:
         NAN_INLINE MurmurHashWorker(Nan::Callback *callback);
-        NAN_INLINE MurmurHashWorker(Nan::Callback *callback, OutputType outputType, uint32_t seed,
+        NAN_INLINE MurmurHashWorker(Nan::Callback *callback, const OutputType outputType, const uint32_t seed,
                                       Local<Value> key, const enum Nan::Encoding encoding, const bool validEncoding);
         NAN_INLINE void SaveOutputBuffer(const Local<Value> &buffer, int32_t offset, int32_t length);
         void Execute();

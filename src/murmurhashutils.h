@@ -12,7 +12,7 @@ namespace MurmurHash {
     template<int32_t HashLength, typename HashValueType>
     static void ReadHashBytesMSB(const uint8_t * in, HashValueType hashp[HashLength])
     {
-      for(HashValueType * hashend = hashp + HashLength ;;) {
+      for(HashValueType * const hashend = hashp + HashLength ;;) {
         HashValueType val = (HashValueType) *(in++);
         for(int length = sizeof(HashValueType) ;--length; ) {
           val <<= 8;
@@ -25,7 +25,7 @@ namespace MurmurHash {
 
     template<int32_t HashLength, typename HashValueType>
     static void WriteHashBytesPlatform(const HashValueType hashp[HashLength],
-                    uint8_t * out, int32_t length = HashSize, int32_t skip = 0)
+                    uint8_t * const out, int32_t length = HashSize, int32_t skip = 0)
     {
       // sanity check
       if (length <= 0) return;
@@ -51,7 +51,7 @@ namespace MurmurHash {
       // get first hash value
       HashValueType val = *(hashp--);
       // preliminary shift value when length is not aligned with hash value type
-      int shift = ((-(length + skip)) & ((int32_t) sizeof(HashValueType) - 1));
+      const int shift = ((-(length + skip)) & ((int32_t) sizeof(HashValueType) - 1));
       val >>= 8 * shift;
       // set byte pointer at the end of output
       uint8_t * outp = out + length;
@@ -83,7 +83,7 @@ namespace MurmurHash {
       // get first hash value
       HashValueType val = *(hashp++);
       // preliminary shift value when length is not aligned with hash value type
-      int shift = skip & ((int32_t) sizeof(HashValueType) - 1);
+      const int shift = skip & ((int32_t) sizeof(HashValueType) - 1);
       val >>= 8 * shift;
       // set termination byte pointer at the end of output
       uint8_t * const outt = out + length;
@@ -139,7 +139,7 @@ namespace MurmurHash {
 
     template<ByteOrderType OutputByteOrder, int32_t HashLength, typename HashValueType>
     inline static void WriteHashToBuffer(const HashValueType hashp[HashLength],
-                                          char *bufptr, int32_t bufsize,
+                                          char * const bufptr, int32_t bufsize,
                                           int32_t offset, int32_t length)
     {
       int32_t skip = 0;

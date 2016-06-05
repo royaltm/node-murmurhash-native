@@ -47,7 +47,7 @@ namespace MurmurHash {
 
     private:
       NAN_INLINE IncrementalHasher(const uint32_t seed = 0U);
-      NAN_INLINE IncrementalHasher(const uint8_t *serial);
+      NAN_INLINE IncrementalHasher(const uint8_t * const serial);
       NAN_INLINE IncrementalHasher(const IncrementalHasher_T& other);
       NAN_INLINE void operator=(const IncrementalHasher_T&);
 

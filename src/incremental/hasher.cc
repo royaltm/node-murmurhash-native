@@ -235,7 +235,7 @@ namespace MurmurHash {
 
     if ( self->CheckAsyncUpdateInProgress() ) return;
 
-    int argc = info.Length();
+    const int argc = info.Length();
 
     Local<Value> result;
 
@@ -409,7 +409,7 @@ namespace MurmurHash {
 
   template<template <typename,int32_t>class H, typename HashValueType, int32_t HashLength>
   NAN_INLINE IncrementalHasher<H,HashValueType,HashLength>
-  ::IncrementalHasher(const uint8_t *serial) :
+  ::IncrementalHasher(const uint8_t * const serial) :
     hasher(serial), outputByteOrder(MSBFirst), asyncInProgress(false)
   {
     ReadHashBytesMSB<1>(&serial[kHashSerialTotalIndex], &total);
@@ -429,7 +429,7 @@ namespace MurmurHash {
           ++i < kHashSerialSize;
           chksum = (chksum << 8) | serial[i]);
       // build verify
-      checksum_t verify = PMurHash32(serial, kHashSerialSize - kHashSerialCkSize, kHashSerialCkSeed);
+      const checksum_t verify = PMurHash32(serial, kHashSerialSize - kHashSerialCkSize, kHashSerialCkSeed);
       STATIC_ASSERT(kHashSerialCkSize > 0 && kHashSerialCkSize <= sizeof(checksum_t),
                     "must have 1 <= kHashSerialCkSize <= sizeof(checksum_t)");
       if (kHashSerialCkSize < sizeof(checksum_t)) {
