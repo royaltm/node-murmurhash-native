@@ -597,6 +597,8 @@ namespace MurmurHash {
   void IncrementalHasher<H,HashValueType,HashLength>
   ::Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE& target, const char* name, const char *altname)
   {
+    STATIC_ASSERT((HashSize & 0x1c) && (HashSize|(HashSize-1))+1 == HashSize<<1, "HashSize is not 4, 8 or 16");
+
     Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
     tpl->SetClassName( Nan::New<String>(name).ToLocalChecked() );
 

@@ -1,3 +1,4 @@
+#include "static_assert.h"
 #include "nodemurmurhash.h"
 #include "MurmurHash2.h"
 #include "PMurHash.h"
@@ -89,6 +90,8 @@ namespace MurmurHash {
   template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
   NAN_METHOD(MurmurHash)
   {
+    STATIC_ASSERT((HashSize & 0x1c) && (HashSize|(HashSize-1))+1 == HashSize<<1, "HashSize is not 4, 8 or 16");
+
     InputData data;
 
     OutputType outputType( DefaultOutputType );
