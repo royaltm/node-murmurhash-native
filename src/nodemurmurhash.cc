@@ -61,7 +61,7 @@ namespace MurmurHash {
    *       negative offset starts from the end of the output buffer
    * @param {number} length - a number of bytes to write from calculated hash;
    *       negative length starts from the end of the hash;
-   *       if absolute value of length is larger than the size of a calculated
+   *       if absolute value of length is larger than the size of calculated
    *       hash, bytes are written only up to the hash size
    * @param {string} output_type - a string indicating return type:
    *       'number' - for murmurHash32 an unsigned 32-bit integer,

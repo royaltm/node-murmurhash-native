@@ -102,34 +102,36 @@ murmurHash(data, encoding, output_type[, callback])
 murmurHash(data{String}, encoding, output[, offset[, length]][, callback])
 murmurHash(data{String}, encoding, seed[, output[, offset[, length]]][, callback])
 murmurHash(data{String}, encoding, seed[, output_type][, callback])
+```
 
-@param {string|Buffer} data - a byte-string to calculate hash from
-@param {string} encoding - data string encoding, should be:
-      'utf8', 'ucs2', 'ascii', 'hex', 'base64' or 'binary';
-      'binary' by default
-@param {Uint32} seed - murmur hash seed, 0 by default
-@param {Buffer} output - a Buffer object to write hash bytes to;
-      the same object will be returned
-@param {number} offset - start writing into output at offset byte;
-      negative offset starts from the end of the output buffer
-@param {number} length - a number of bytes to write from calculated hash;
-      negative length starts from the end of the hash;
-      if absolute value of length is larger than the size of a calculated
-      hash, bytes are written only up to the hash size
-@param {string} output_type - a string indicating return type:
-      'number' - for murmurHash32 an unsigned 32-bit integer,
-                 other hashes - hexadecimal string
-      'hex'    - hexadecimal string
-      'base64' - base64 string
-      'binary' - binary string
-      'buffer' - a new Buffer object;
-      'number' by default
-@param {Function} callback - optional callback(err, result)
-      if provided the hash will be calculated asynchronously using libuv
-      worker queue, the return value in this instance will be `undefined`
-      and the result will be provided to the callback function;
-      Be carefull as reading and writing by multiple threads to the same
-      memory may render undetermined results
+* `@param` `{string|Buffer}` `data` - a byte-string to calculate hash from
+* `@param` `{string}` `encoding` - data string encoding, should be:
+    "utf8", "ucs2", "ascii", "hex", "base64" or "binary";
+    "binary" by default
+* `@param` `{Uint32}` `seed` - murmur hash seed, 0 by default
+* `@param` `{Buffer}` `output` - a Buffer object to write hash bytes to;
+    the same object will be returned
+* `@param` `{number}` `offset` - start writing into output at offset byte;
+    negative offset starts from the end of the output buffer
+* `@param` `{number}` `length` - a number of bytes to write from calculated hash;
+    negative length starts from the end of the hash;
+    if absolute value of length is larger than the size of calculated
+    hash, bytes are written only up to the hash size
+* `@param` `{string}` `output_type` - a string indicating return type:
+    - "number" - (default) for murmurHash32 an unsigned 32-bit integer,
+               other hashes - hexadecimal string
+    - "hex"    - hexadecimal string
+    - "base64" - base64 string
+    - "binary" - binary string
+    - "buffer" - a new Buffer object;
+* `@param` `{Function}` `callback` - optional callback(err, result)
+    if provided the hash will be calculated asynchronously using libuv
+    worker queue, the return value in this instance will be `undefined`
+    and the result will be provided to the callback function;
+    Be carefull as reading and writing by multiple threads to the same
+    memory may render undetermined results
+
+* `@return` `{number|Buffer|String|undefined}`
 
 The order of bytes written to a Buffer or encoded string depends on
 function's endianness.
@@ -137,8 +139,6 @@ function's endianness.
 `data` and `output` arguments might reference the same Buffer object
 or buffers referencing the same memory (views).
 
-@return {number|Buffer|String|undefined}
-```
 
 There are additional namespaces, each for different variant of function endianness:
 
