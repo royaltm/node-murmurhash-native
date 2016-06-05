@@ -26,11 +26,11 @@ var endianness    = os.endianness();
     t.type(MurmurHash, 'function');
 
     t.test('should render same results', function(t) {
-      t.plan(2*2*(2 + 3*2));
+      t.plan(6*2*(2 + 3*2));
 
-      var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
+      var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
 
-      ['', crypto.randomBytes(10007)]
+      ['', new Buffer(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('utf8'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('utf8')]
       .forEach(function(input) {
 
         t.deepEqual(
@@ -68,11 +68,11 @@ var endianness    = os.endianness();
     });
 
     t.test('should render swapped results', function(t) {
-      t.plan(2*(2 + 3*2));
+      t.plan(6*(2 + 3*2));
 
-      var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
+      var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
 
-      ['', crypto.randomBytes(10007)]
+      ['', new Buffer(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('utf8'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('utf8')]
       .forEach(function(input) {
 
         t.deepEqual(

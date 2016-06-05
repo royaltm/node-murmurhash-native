@@ -352,7 +352,7 @@ test('should throw error for bad arguments', function(t) {
 
     t.test('should JSON serialize and deserialize', function(t) {
       t.plan(3);
-      var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
+      var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
       var hasher0 = strm.createHash(algorithm, {seed: seed, encoding: 'hex'});
       hasher0.write('foo');
       var json = JSON.stringify(hasher0);

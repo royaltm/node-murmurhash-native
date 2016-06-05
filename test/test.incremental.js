@@ -713,7 +713,7 @@ function wrapStream(name) {
     });
 
     t.test('should copy internal state and create instance from copy', function(t) {
-      var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
+      var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
       var hasher0 = new MurmurHash(seed, endian).update('foo');
       t.throws(function() { hasher0.copy(); }, new TypeError("Target must be another instance of the same murmur hash type utility"));
       t.throws(function() { hasher0.copy([]); }, new TypeError("Target must be another instance of the same murmur hash type utility"));
@@ -749,7 +749,7 @@ function wrapStream(name) {
     });
 
     t.test('should serialize internal state and create instance from serial', function(t) {
-      var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
+      var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
       var hasher0 = new MurmurHash(seed, endian).update('foo');
       t.throws(function() { hasher0.serialize(new Buffer(0)); }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
       t.throws(function() { hasher0.serialize(new Buffer(1000), -1); }, new Error("Serialized state does not fit in the provided buffer at the given offset"));

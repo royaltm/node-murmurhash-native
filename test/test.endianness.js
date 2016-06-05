@@ -35,11 +35,11 @@ var os            = require("os")
     t.type(murmurHashOS, 'function');
 
     t.test('should render same results', function(t) {
-      t.plan(2*2*(1 + 3));
+      t.plan(6*2*(1 + 3));
 
-      var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
+      var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
 
-      ['', crypto.randomBytes(10007)]
+      ['', new Buffer(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('binary'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('binary')]
       .forEach(function(input) {
         t.deepEqual(murmurHash(input, seed, 'buffer'), murmurHashBE(input, seed, 'buffer'));
         ['hex', 'binary', 'base64'].forEach(function(encoding) {
@@ -54,11 +54,11 @@ var os            = require("os")
     });
 
     t.test('should render swapped results', function(t) {
-      t.plan(2*(2 + 3*2));
+      t.plan(6*(2 + 3*2));
 
-      var seed = (Math.random() * 0xFFFFFFFF)>>>0 + 1;
+      var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
 
-      ['', crypto.randomBytes(10007)]
+      ['', new Buffer(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('binary'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('binary')]
       .forEach(function(input) {
         t.deepEqual(
             murmurHashLE(input, seed, 'buffer'),
