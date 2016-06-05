@@ -5,6 +5,7 @@
 "use strict";
 
 var test = require("tap").test
+  , byteOrderSwap = require('./byteorderswap')
   , hash = require('../..')
   , incr = require('../../incremental')
 ;
@@ -38,38 +39,17 @@ function testHashIncr(t, MurmurHash, input, seed, expectation) {
 }
 
 function swap(value, hasher) {
+  var buf = new Buffer(value, "binary");
   switch(hasher.name.toLowerCase()) {
     case "murmurhash":
     case "murmurhash32":
     case "murmurhash64x86":
     case "murmurhash128x86":
-      return swap32(value);
+      return byteOrderSwap(buf, 32, 0, buf.length & 0x7ffffffc).toString("binary");
     case "murmurhash64x64":
     case "murmurhash128x64":
-      return swap64(value);
+      return byteOrderSwap(buf, 64, 0, buf.length & 0x7ffffff8).toString("binary");
     default:
       throw new Error("unknown function");
   }
-}
-
-function swap32(value) {
-  var buf = new Buffer(value, "binary");
-  var size = (buf.length & 0x7ffffffc) / 4;
-  while(size-- > 0) {
-    var offset = size * 4;
-    buf.writeUInt32LE(buf.readUInt32BE(offset), offset);
-  }
-  return buf.toString("binary");
-}
-
-function swap64(value) {
-  var buf = new Buffer(value, "binary");
-  var size = (buf.length & 0x7ffffff8) / 8;
-  while(size-- > 0) {
-    var offset = size * 8;
-    var val = buf.readUInt32BE(offset + 4);
-    buf.writeUInt32LE(buf.readUInt32BE(offset), offset + 4);
-    buf.writeUInt32LE(val, offset);
-  }
-  return buf.toString("binary");
 }
