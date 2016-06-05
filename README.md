@@ -131,13 +131,22 @@ murmurHash(data{String}, encoding, seed[, output_type][, callback])
       Be carefull as reading and writing by multiple threads to the same
       memory may render undetermined results
 
-The order of bytes written to a Buffer is platform independent.
+The order of bytes written to a Buffer or encoded string depends on
+function's endianness.
 
 `data` and `output` arguments might reference the same Buffer object
 or buffers referencing the same memory (views).
 
 @return {number|Buffer|String|undefined}
 ```
+
+There are additional namespaces, each for different variant of function endianness:
+
+* `BE` - big-endian (most significant byte first or network byte order)
+* `LE` - little-endian (least significant byte first)
+* `platform` - compatible with `os.endianness()`
+
+Functions in the root namespace are big-endian.
 
 
 Streaming and incremental api

@@ -162,8 +162,12 @@ namespace MurmurHash {
    * - 'binary' - binary string
    * - 'buffer' - a new Buffer object
    *
-   * If neither output nor known output_type is provided a Buffer is returned.
+   * If neither output nor known output_type is provided a new Buffer instance
+   * is returned.
    * 
+   * The order of bytes written to a Buffer or encoded string depends on
+   * `endianness` property.
+   *
    * @param {string} [output_type]
    * @param {Buffer} output - a Buffer object to write hash bytes to;
    *       the same object will be returned

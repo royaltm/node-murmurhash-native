@@ -78,7 +78,8 @@ namespace MurmurHash {
    *       Be carefull as reading and writing by multiple threads to the same
    *       memory may render undetermined results
    * 
-   * The order of bytes written to a Buffer is platform independent.
+   * The order of bytes written to a Buffer or encoded string depends on
+   * function's endianness.
    * 
    * `data` and `output` arguments might reference the same Buffer object
    * or buffers referencing the same memory (views).
