@@ -11,16 +11,26 @@ var test = require("tap").test
 ;
 
 test("should have murmurHash functions", function(t) {
-  testHash(t, hash.murmurHash32, "My hovercraft is full of eels.", 25, 2520298415);
-  testHash(t, hash.murmurHash32, "I will not buy this record, it is scratched.", 0, 2832214938);
-  testHash(t, hash.murmurHash64x86, "I will not buy this record, it is scratched.", 0, "455c071b8e33c356");
-  testHash(t, hash.murmurHash64x64, "I will not buy this record, it is scratched.", 0, "9bcc0bed3798d9ea");
-  testHash(t, hash.murmurHash128x86, "I will not buy this tobacconist's, it is scratched.", 0, "9b5b7ba2ef3f7866889adeaf00f3f98e");
-  testHash(t, hash.murmurHash128x64, "I will not buy this tobacconist's, it is scratched.", 0, "d30654abbd8227e367d73523f0079673");
-  testHashIncr(t, incr.MurmurHash, "My hovercraft is full of eels.", 25, 2520298415);
-  testHashIncr(t, incr.MurmurHash, "I will not buy this record, it is scratched.", 0, 2832214938);
-  testHashIncr(t, incr.MurmurHash128x86, "I will not buy this tobacconist's, it is scratched.", 0, "9b5b7ba2ef3f7866889adeaf00f3f98e");
-  testHashIncr(t, incr.MurmurHash128x64, "I will not buy this tobacconist's, it is scratched.", 0, "d30654abbd8227e367d73523f0079673");
+  testHash(t, hash.murmurHash32, "My hovercraft is full of eels.", 25, 'afb33896');
+  testHash(t, hash.murmurHash32, "I will not buy this record, it is scratched.", 0, '9a2bd0a8');
+  testHash(t, hash.murmurHash64x86, "I will not buy this record, it is scratched.", 0, "56c3338e1b075c45");
+  testHash(t, hash.murmurHash64x64, "I will not buy this record, it is scratched.", 0, "ead99837ed0bcc9b");
+  testHash(t, hash.murmurHash128x86, "I will not buy this tobacconist's, it is scratched.", 0, "a27b5b9b66783fefafde9a888ef9f300");
+  testHash(t, hash.murmurHash128x64, "I will not buy this tobacconist's, it is scratched.", 0, "e32782bdab5406d3739607f02335d767");
+  testHash(t, hash.LE.murmurHash32, "My hovercraft is full of eels.", 25, 'afb33896');
+  testHash(t, hash.LE.murmurHash32, "I will not buy this record, it is scratched.", 0, '9a2bd0a8');
+  testHash(t, hash.LE.murmurHash64x86, "I will not buy this record, it is scratched.", 0, "56c3338e1b075c45");
+  testHash(t, hash.LE.murmurHash64x64, "I will not buy this record, it is scratched.", 0, "ead99837ed0bcc9b");
+  testHash(t, hash.LE.murmurHash128x86, "I will not buy this tobacconist's, it is scratched.", 0, "a27b5b9b66783fefafde9a888ef9f300");
+  testHash(t, hash.LE.murmurHash128x64, "I will not buy this tobacconist's, it is scratched.", 0, "e32782bdab5406d3739607f02335d767");
+  testHashIncr(t, void(0), incr.MurmurHash, "My hovercraft is full of eels.", 25, 'afb33896');
+  testHashIncr(t, void(0), incr.MurmurHash, "I will not buy this record, it is scratched.", 0, '9a2bd0a8');
+  testHashIncr(t, void(0), incr.MurmurHash128x86, "I will not buy this tobacconist's, it is scratched.", 0, "a27b5b9b66783fefafde9a888ef9f300");
+  testHashIncr(t, void(0), incr.MurmurHash128x64, "I will not buy this tobacconist's, it is scratched.", 0, "e32782bdab5406d3739607f02335d767");
+  testHashIncr(t, 'LE', incr.MurmurHash, "My hovercraft is full of eels.", 25, 'afb33896');
+  testHashIncr(t, 'LE', incr.MurmurHash, "I will not buy this record, it is scratched.", 0, '9a2bd0a8');
+  testHashIncr(t, 'LE', incr.MurmurHash128x86, "I will not buy this tobacconist's, it is scratched.", 0, "a27b5b9b66783fefafde9a888ef9f300");
+  testHashIncr(t, 'LE', incr.MurmurHash128x64, "I will not buy this tobacconist's, it is scratched.", 0, "e32782bdab5406d3739607f02335d767");
   t.end();
 });
 
@@ -28,14 +38,14 @@ function testHash(t, murmurHash, input, seed, expectation) {
   // console.log(input);
   input = swap(input, murmurHash);
   // console.log(input);
-  t.strictEqual(murmurHash(input, seed), expectation);
+  t.strictEqual(murmurHash(input, seed, 'hex'), expectation);
 }
 
-function testHashIncr(t, MurmurHash, input, seed, expectation) {
+function testHashIncr(t, endian, MurmurHash, input, seed, expectation) {
   // console.log(input);
   input = swap(input, MurmurHash);
   // console.log(input);
-  t.strictEqual(MurmurHash(seed).update(input).digest('number'), expectation);
+  t.strictEqual(MurmurHash(seed, endian).update(input).digest('hex'), expectation);
 }
 
 function swap(value, hasher) {
