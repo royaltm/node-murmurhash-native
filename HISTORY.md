@@ -1,3 +1,10 @@
+v3.2.1
+
+* bump nan to 2.6.2, node-pre-gyp to 0.6.34
+* bump development dependencies
+* test and release binaries for node v7
+* appveyor: pin npm versions
+
 v3.2.0
 
 * bump nan to 2.3.5
