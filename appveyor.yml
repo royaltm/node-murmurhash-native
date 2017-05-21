@@ -4,12 +4,12 @@ environment:
     secure: 2Wp9FGQvuP51EiQKjKFeMRL8Tbq1d0eY4UxjRPlQweH4Uo6LLqgpPPLzUQidwTpi
 
   matrix:
-    - nodejs_version: "0.10"
-    - nodejs_version: "0.12"
-    - nodejs_version: "4"
-    - nodejs_version: "5"
-    - nodejs_version: "6"
-    - nodejs_version: "7"
+    - nodejs_version: "0.10", npm_version: "2"
+    - nodejs_version: "0.12", npm_version: "2"
+    - nodejs_version: "4", npm_version: "3"
+    - nodejs_version: "5", npm_version: "3"
+    - nodejs_version: "6", npm_version: "3"
+    - nodejs_version: "7", npm_version: "4"
 
 platform:
   - x86
@@ -23,7 +23,7 @@ matrix:
 
 install:
   - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform;
-  - npm -g install npm
+  - npm -g install "npm@$env:npm_version";
   - ps: $env:Path += ";$(pwd)\node_modules\.bin;$env:AppData\npm";
   - ps: >
       @{
