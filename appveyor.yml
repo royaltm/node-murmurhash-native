@@ -4,8 +4,6 @@ environment:
     secure: 2Wp9FGQvuP51EiQKjKFeMRL8Tbq1d0eY4UxjRPlQweH4Uo6LLqgpPPLzUQidwTpi
 
   matrix:
-    # - {"nodejs_version": "0.10", "npm_version": "3"}
-    # - {"nodejs_version": "0.12", "npm_version": "3"}
     - {"nodejs_version": "4", "npm_version": "3"}
     - {"nodejs_version": "5", "npm_version": "3"}
     - {"nodejs_version": "6", "npm_version": "3"}
