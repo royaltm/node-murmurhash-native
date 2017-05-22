@@ -57,8 +57,7 @@ test_script:
   - npm test
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release 2>&1)
-  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean)
-  - IF %PUBLISH_BINARY% == 1 (npm install --fallback-to-build=false)
+  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean install)
 
 # Set build version format here instead of in the admin panel.
 version: "{build}"
