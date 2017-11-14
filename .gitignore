@@ -16,3 +16,4 @@ sftp-config.json
 .nyc_output
 *.tgz
 /lib
+package-lock.json
