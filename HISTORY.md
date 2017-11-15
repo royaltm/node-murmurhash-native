@@ -1,3 +1,12 @@
+v3.2.2
+
+* bump nan to 2.7.0, node-pre-gyp to 0.6.39
+* bump development dependencies
+* replace deprecated Nan::ForceSet with Nan::DefineOwnProperty
+* test and release binaries for node v8 and v9
+* appveyor: pin npm version 5.3 for node v9 to workaround npm's issue #16649
+* npmrc: turn off package-lock
+
 v3.2.1
 
 * bump nan to 2.6.2, node-pre-gyp to 0.6.34
