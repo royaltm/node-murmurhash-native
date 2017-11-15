@@ -299,15 +299,15 @@ namespace MurmurHash {
 
     Local<Object> bigEndian( Nan::New<Object>() );
     InitWithOrder<MSBFirst>( bigEndian );
-    Nan::ForceSet(target, Nan::New<String>("BE").ToLocalChecked(), bigEndian,
+    Nan::DefineOwnProperty(target, Nan::New<String>("BE").ToLocalChecked(), bigEndian,
                         static_cast<PropertyAttribute>(ReadOnly | DontDelete) ).FromJust();
 
     Local<Object> littleEndian( Nan::New<Object>() );
     InitWithOrder<LSBFirst>( littleEndian );
-    Nan::ForceSet(target, Nan::New<String>("LE").ToLocalChecked(), littleEndian,
+    Nan::DefineOwnProperty(target, Nan::New<String>("LE").ToLocalChecked(), littleEndian,
                         static_cast<PropertyAttribute>(ReadOnly | DontDelete) ).FromJust();
 
-    Nan::ForceSet(target, Nan::New<String>("platform").ToLocalChecked(),
+    Nan::DefineOwnProperty(target, Nan::New<String>("platform").ToLocalChecked(),
                   IsBigEndian() ? bigEndian : littleEndian,
                   static_cast<PropertyAttribute>(ReadOnly | DontDelete) ).FromJust();
   }
