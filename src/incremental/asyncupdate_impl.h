@@ -50,7 +50,7 @@ namespace MurmurHash {
     Local<Value> argv[] = {
       v8::Exception::TypeError(Nan::New<String>(ErrorMessage()).ToLocalChecked())
     };
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
   }
 
 }

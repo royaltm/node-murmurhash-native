@@ -107,7 +107,7 @@ namespace MurmurHash {
         void(0);
     }
 
-    callback->Call(2, argv);
+    callback->Call(2, argv, async_resource);
   }
 
   template<MurmurHashFunctionType HashFunction, typename HashValueType, int32_t HashLength, ByteOrderType OutputByteOrder>
@@ -118,6 +118,6 @@ namespace MurmurHash {
     Local<Value> argv[] = {
       v8::Exception::TypeError(Nan::New<String>(ErrorMessage()).ToLocalChecked())
     };
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
   }
 }

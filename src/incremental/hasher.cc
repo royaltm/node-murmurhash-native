@@ -323,7 +323,7 @@ namespace MurmurHash {
           Local<Value> argv[1] = {
             v8::Exception::Error(Nan::New<String>(MESSAGE_ERROR_PENDING_UPDATE).ToLocalChecked())
           };
-          callback->Call(1, argv);
+          Nan::Call(*callback, 1, argv);
           delete callback;
 
         }
