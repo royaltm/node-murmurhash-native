@@ -1,3 +1,9 @@
+v3.2.3
+
+* bump nan to 2.10.0, node-pre-gyp to 0.9.03
+* replaced deprecated synchronous Nan::Callback::Call with Nan::Call
+* updated arguments to asynchronous Nan::Callback::Call
+
 v3.2.2
 
 * bump nan to 2.7.0, node-pre-gyp to 0.6.39
