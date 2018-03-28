@@ -1,6 +1,6 @@
 v3.2.3
 
-* bump nan to 2.10, node-pre-gyp to 0.9, tap to 8, commander to 2.15
+* bump nan to 2.10, node-pre-gyp to 0.9, tap to 9, commander to 2.15
 * replaced deprecated synchronous Nan::Callback::Call with Nan::Call
 * removed redundant const Nan::NAN_METHOD_ARGS_TYPE
 * updated arguments to asynchronous Nan::Callback::Call
