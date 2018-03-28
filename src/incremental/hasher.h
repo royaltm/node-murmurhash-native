@@ -53,7 +53,7 @@ namespace MurmurHash {
 
       template<ByteOrderType OutputByteOrder>
       NAN_INLINE static void Output(const HashValueType hash[HashLength], const OutputType &outputType,
-                            const int &argc, const Nan::NAN_METHOD_ARGS_TYPE info, Local<Value> &result);
+                            const int &argc, Nan::NAN_METHOD_ARGS_TYPE info, Local<Value> &result);
 
       NAN_INLINE bool AsyncUpdateBegin(void);
       bool SetEndiannessFrom(const Local<Value> &value);
