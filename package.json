@@ -37,7 +37,7 @@
   },
   "main": "index.js",
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=4"
   },
   "dependencies": {
     "nan": "^2.10.0",

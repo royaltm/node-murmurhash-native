@@ -1,8 +1,11 @@
 v3.2.3
 
-* bump nan to 2.10.0, node-pre-gyp to 0.9.03
+* bump nan to 2.10, node-pre-gyp to 0.9, tap to 8, commander to 2.15
 * replaced deprecated synchronous Nan::Callback::Call with Nan::Call
+* removed redundant const Nan::NAN_METHOD_ARGS_TYPE
 * updated arguments to asynchronous Nan::Callback::Call
+* dropped support for node pre v4 (broken node-gyp 0.12.18 on XCode LLVM 8.1)
+  on other systems it might still work though - not looking into it anymore
 
 v3.2.2
 
