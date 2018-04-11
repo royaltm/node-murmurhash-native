@@ -5,7 +5,7 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - g++-4.8
+    - g++-4.9
 os:
 - linux
 - osx
@@ -27,7 +27,7 @@ before_install:
 - node --version
 - npm --version
 # use g++-4.8 on Linux
-- if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
+- if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.9; fi
 - "$CXX --version"
 # figure out if we should publish
 - PUBLISH_BINARY=no
