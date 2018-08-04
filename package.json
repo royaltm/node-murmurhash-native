@@ -20,7 +20,7 @@
   "homepage": "http://github.com/royaltm/node-murmurhash-native",
   "repository": {
     "type": "git",
-    "url": "git://github.com/royaltm/node-murmurhash-native.git"
+    "url": "git+https://github.com/royaltm/node-murmurhash-native.git"
   },
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
