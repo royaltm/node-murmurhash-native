@@ -39,7 +39,7 @@ var os            = require("os")
 
       var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
 
-      ['', new Buffer(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('binary'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('binary')]
+      ['', Buffer.alloc(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('binary'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('binary')]
       .forEach(function(input) {
         t.deepEqual(murmurHash(input, seed, 'buffer'), murmurHashBE(input, seed, 'buffer'));
         ['hex', 'binary', 'base64'].forEach(function(encoding) {
@@ -58,7 +58,7 @@ var os            = require("os")
 
       var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
 
-      ['', new Buffer(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('binary'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('binary')]
+      ['', Buffer.alloc(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('binary'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('binary')]
       .forEach(function(input) {
         t.deepEqual(
             murmurHashLE(input, seed, 'buffer'),
@@ -71,10 +71,10 @@ var os            = require("os")
         ['hex', 'binary', 'base64'].forEach(function(encoding) {
           t.strictEqual(
             murmurHashLE(input, seed, encoding),
-            byteOrderSwap(new Buffer(
+            byteOrderSwap(Buffer.from(
               murmurHashBE(input, seed, encoding), encoding), wordBits, 0, size).toString(encoding));
           t.strictEqual(
-            byteOrderSwap(new Buffer(
+            byteOrderSwap(Buffer.from(
               murmurHashLE(input, seed, encoding), encoding), wordBits, 0, size).toString(encoding),
             murmurHashBE(input, seed, encoding));
         });

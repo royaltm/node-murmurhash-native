@@ -11,7 +11,7 @@ module.exports = RandomChunkStream;
 function RandomChunkStream(options) {
   this.maxchunksize = options.maxchunksize>>>0;
   this.size = options.size>>>0;
-  this.buffer = new Buffer(this.size);
+  this.buffer = Buffer.allocUnsafe(this.size);
   this.cursor = 0;
   Readable.call(this, options);
 }

@@ -49,7 +49,7 @@ function testHashIncr(t, endian, MurmurHash, input, seed, expectation) {
 }
 
 function swap(value, hasher) {
-  var buf = new Buffer(value, "binary");
+  var buf = Buffer.from(value, "binary");
   switch(hasher.name.toLowerCase()) {
     case "murmurhash":
     case "murmurhash32":

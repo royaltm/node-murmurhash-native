@@ -45,11 +45,11 @@ var TEST_STRINGS = [
     }
 
     function testStrings(s) {
-      var s1 = new Buffer(s, 'utf8').toString('binary');
+      var s1 = Buffer.from(s, 'utf8').toString('binary');
       var args1 = [s1].concat([].slice.call(arguments, 1));
       var args2 = [s, 'utf-8'].concat(args1.slice(1));
       t.strictEqual( o.hash3js.apply(o, args1), o.hash.apply(o, args2) );
-      args1[0] = new Buffer(s, 'binary').toString('binary');
+      args1[0] = Buffer.from(s, 'binary').toString('binary');
       args2[1] = 'binary';
       t.strictEqual( o.hash3js.apply(o, args1), o.hash.apply(o, args2) );
       args2.splice(1, 1);

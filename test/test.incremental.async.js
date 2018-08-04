@@ -117,9 +117,9 @@ function wrapStream(name) {
     , seedZeroHex         = args[ 8]
     , seedMinusOneHex     = args[ 9]
     , seedPlusOneHex      = args[10]
-    , seedZeroBuffer      = new Buffer(seedZeroHex,  'hex')
-    , seedMinusOneBuffer  = new Buffer(seedMinusOneHex, 'hex')
-    , seedPlusOneBuffer   = new Buffer(seedPlusOneHex,  'hex')
+    , seedZeroBuffer      = Buffer.from(seedZeroHex,  'hex')
+    , seedMinusOneBuffer  = Buffer.from(seedMinusOneHex, 'hex')
+    , seedPlusOneBuffer   = Buffer.from(seedPlusOneHex,  'hex')
     , seedZeroBase64      = seedZeroBuffer.toString('base64')
     , seedMinusOneBase64  = seedMinusOneBuffer.toString('base64')
     , seedPlusOneBase64   = seedPlusOneBuffer.toString('base64')
@@ -235,16 +235,16 @@ function wrapStream(name) {
       }
       async(new MurmurHash(void(0), endian), '', seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
       async(new MurmurHash(0, endian), '', seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
-      async(new MurmurHash(void(0), endian), new Buffer(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
-      async(new MurmurHash(0, endian), new Buffer(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
+      async(new MurmurHash(void(0), endian), Buffer.from(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
+      async(new MurmurHash(0, endian), Buffer.from(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
       async(new MurmurHash(-1, endian), '', seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
-      async(new MurmurHash(-1, endian), new Buffer(''), seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
+      async(new MurmurHash(-1, endian), Buffer.from(''), seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
       async(new MurmurHash(4294967295, endian), '', seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
-      async(new MurmurHash(4294967295, endian), new Buffer(''), seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
+      async(new MurmurHash(4294967295, endian), Buffer.from(''), seedMinusOneBuffer, seedMinusOneHex, seedMinusOneNumber, seedMinusOneBase64, seedMinusOneBinary);
       async(new MurmurHash(4294967296, endian), '', seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
-      async(new MurmurHash(4294967296, endian), new Buffer(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
+      async(new MurmurHash(4294967296, endian), Buffer.from(''), seedZeroBuffer, seedZeroHex, seedZeroNumber, seedZeroBase64, seedZeroBinary);
       async(new MurmurHash(1, endian), '', seedPlusOneBuffer, seedPlusOneHex, seedPlusOneNumber, seedPlusOneBase64, seedPlusOneBinary);
-      async(new MurmurHash(1, endian), new Buffer(''), seedPlusOneBuffer, seedPlusOneHex, seedPlusOneNumber, seedPlusOneBase64, seedPlusOneBinary);
+      async(new MurmurHash(1, endian), Buffer.from(''), seedPlusOneBuffer, seedPlusOneHex, seedPlusOneNumber, seedPlusOneBase64, seedPlusOneBinary);
 
     });
 
@@ -261,7 +261,7 @@ function wrapStream(name) {
           t.error(err);
           encoding = encoding || 'utf8';
           var hasher2 = new MurmurHash(void(0), endian);
-          t.strictEqual(undefined, hasher2.update(new Buffer(string, encoding), function(err) {
+          t.strictEqual(undefined, hasher2.update(Buffer.from(string, encoding), function(err) {
             t.error(err);
             t.deepEqual(hasher2.digest(), hasher1.digest());
             t.deepEqual(hasher2.digest(), murmurHash(string, encoding, 'buffer'));
@@ -287,7 +287,7 @@ function wrapStream(name) {
       var data = '';
       var strlen = 1000;
       for (var i = 0; i < strlen; ++i) data += String.fromCharCode((Math.random()*32768)|0);
-      var buffer = new Buffer(data, 'utf8');
+      var buffer = Buffer.from(data, 'utf8');
       function async(seed) {
         var hasher1 = new MurmurHash(seed, endian);
         t.strictEqual(undefined, hasher1.update(data, function(err) {
@@ -325,7 +325,7 @@ function wrapStream(name) {
     t.test('should create hash from some random data incrementally', function(t) {
       t.plan(33);
       var maxchunksize = 101;
-      var buffer = new Buffer(10007);
+      var buffer = Buffer.allocUnsafe(10007);
       var seed = (Math.random()*4294967296)|0;
       var hasher0 = new MurmurHash(0, endian);
       var hasher1 = new MurmurHash(1, endian);

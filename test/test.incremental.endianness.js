@@ -30,7 +30,7 @@ var endianness    = os.endianness();
 
       var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
 
-      ['', new Buffer(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('utf8'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('utf8')]
+      ['', Buffer.alloc(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('utf8'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('utf8')]
       .forEach(function(input) {
 
         t.deepEqual(
@@ -72,7 +72,7 @@ var endianness    = os.endianness();
 
       var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
 
-      ['', new Buffer(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('utf8'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('utf8')]
+      ['', Buffer.alloc(0), crypto.randomBytes(10007), crypto.randomBytes(10007).toString('utf8'), crypto.randomBytes(Math.random() * 100>>>0), crypto.randomBytes(Math.random() * 100>>>0).toString('utf8')]
       .forEach(function(input) {
 
         t.deepEqual(
@@ -87,10 +87,10 @@ var endianness    = os.endianness();
         ['hex', 'binary', 'base64'].forEach(function(encoding) {
           t.strictEqual(
             new MurmurHash(seed, 'LE').update(input).digest(encoding),
-            byteOrderSwap(new Buffer(
+            byteOrderSwap(Buffer.from(
               MurmurHash(seed, 'BE').update(input).digest(encoding), encoding), wordBits, 0, size).toString(encoding));
           t.strictEqual(
-            byteOrderSwap(new Buffer(
+            byteOrderSwap(Buffer.from(
               MurmurHash(seed, 'LE').update(input).digest(encoding), encoding), wordBits, 0, size).toString(encoding),
             new MurmurHash(seed, 'BE').update(input).digest(encoding));
         });

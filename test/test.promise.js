@@ -98,9 +98,9 @@ test("should have murmurHash functions", function(t) {
     , seedZeroHex         = args[ 6]
     , seedMinusOneHex     = args[ 7]
     , seedPlusOneHex      = args[ 8]
-    , seedZeroBuffer      = new Buffer(seedZeroHex,  'hex')
-    , seedMinusOneBuffer  = new Buffer(seedMinusOneHex, 'hex')
-    , seedPlusOneBuffer   = new Buffer(seedPlusOneHex,  'hex')
+    , seedZeroBuffer      = Buffer.from(seedZeroHex,  'hex')
+    , seedMinusOneBuffer  = Buffer.from(seedMinusOneHex, 'hex')
+    , seedPlusOneBuffer   = Buffer.from(seedPlusOneHex,  'hex')
 ;
 
   test(label, function(t) {
@@ -140,48 +140,48 @@ test("should have murmurHash functions", function(t) {
       t.plan(20);
       murmurHash('').then(function(res) { t.strictEqual(res, seedZeroDefault); });
       murmurHash('', 'number').then(function(res) { t.strictEqual(res, seedZeroDefault); });
-      murmurHash(new Buffer('')).then(function(res) { t.strictEqual(res, seedZeroDefault); });
-      murmurHash(new Buffer(''), 'number').then(function(res) { t.strictEqual(res, seedZeroDefault); });
+      murmurHash(Buffer.from('')).then(function(res) { t.strictEqual(res, seedZeroDefault); });
+      murmurHash(Buffer.from(''), 'number').then(function(res) { t.strictEqual(res, seedZeroDefault); });
       murmurHash('', -1).then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
       murmurHash('', -1, 'number').then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
-      murmurHash(new Buffer(''), -1).then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
-      murmurHash(new Buffer(''), -1, 'number').then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
+      murmurHash(Buffer.from(''), -1).then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
+      murmurHash(Buffer.from(''), -1, 'number').then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
       murmurHash('', 4294967295).then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
       murmurHash('', 4294967295, 'number').then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
-      murmurHash(new Buffer(''), 4294967295).then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
-      murmurHash(new Buffer(''), 4294967295, 'number').then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
+      murmurHash(Buffer.from(''), 4294967295).then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
+      murmurHash(Buffer.from(''), 4294967295, 'number').then(function(res) { t.strictEqual(res, seedMinusOneDefault); });
       murmurHash('', 4294967296).then(function(res) { t.strictEqual(res, seedZeroDefault); });
       murmurHash('', 4294967296, 'number').then(function(res) { t.strictEqual(res, seedZeroDefault); });
-      murmurHash(new Buffer(''), 4294967296).then(function(res) { t.strictEqual(res, seedZeroDefault); });
-      murmurHash(new Buffer(''), 4294967296, 'number').then(function(res) { t.strictEqual(res, seedZeroDefault); });
+      murmurHash(Buffer.from(''), 4294967296).then(function(res) { t.strictEqual(res, seedZeroDefault); });
+      murmurHash(Buffer.from(''), 4294967296, 'number').then(function(res) { t.strictEqual(res, seedZeroDefault); });
       murmurHash('', 1).then(function(res) { t.strictEqual(res, seedPlusOneDefault); });
       murmurHash('', 1, 'number').then(function(res) { t.strictEqual(res, seedPlusOneDefault); });
-      murmurHash(new Buffer(''), 1).then(function(res) { t.strictEqual(res, seedPlusOneDefault); });
-      murmurHash(new Buffer(''), 1, 'number').then(function(res) { t.strictEqual(res, seedPlusOneDefault); });
+      murmurHash(Buffer.from(''), 1).then(function(res) { t.strictEqual(res, seedPlusOneDefault); });
+      murmurHash(Buffer.from(''), 1, 'number').then(function(res) { t.strictEqual(res, seedPlusOneDefault); });
     });
 
     t.test('should create buffer hash from empty data', function(t) {
       t.plan(20);
       murmurHash('', 0, 'buffer').then(function(res) { t.deepEqual(res, seedZeroBuffer); });
       murmurHash('', 0, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedZeroHex); });
-      murmurHash(new Buffer(''), 'buffer').then(function(res) { t.deepEqual(res, seedZeroBuffer); });
-      murmurHash(new Buffer(''), 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedZeroHex); });
+      murmurHash(Buffer.from(''), 'buffer').then(function(res) { t.deepEqual(res, seedZeroBuffer); });
+      murmurHash(Buffer.from(''), 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedZeroHex); });
       murmurHash('', -1, 'buffer').then(function(res) { t.deepEqual(res, seedMinusOneBuffer); });
       murmurHash('', -1, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedMinusOneHex); });
-      murmurHash(new Buffer(''), -1, 'buffer').then(function(res) { t.deepEqual(res, seedMinusOneBuffer); });
-      murmurHash(new Buffer(''), -1, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedMinusOneHex); });
+      murmurHash(Buffer.from(''), -1, 'buffer').then(function(res) { t.deepEqual(res, seedMinusOneBuffer); });
+      murmurHash(Buffer.from(''), -1, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedMinusOneHex); });
       murmurHash('', 4294967295, 'buffer').then(function(res) { t.deepEqual(res, seedMinusOneBuffer); });
       murmurHash('', 4294967295, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedMinusOneHex); });
-      murmurHash(new Buffer(''), 4294967295, 'buffer').then(function(res) { t.deepEqual(res, seedMinusOneBuffer); });
-      murmurHash(new Buffer(''), 4294967295, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedMinusOneHex); });
+      murmurHash(Buffer.from(''), 4294967295, 'buffer').then(function(res) { t.deepEqual(res, seedMinusOneBuffer); });
+      murmurHash(Buffer.from(''), 4294967295, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedMinusOneHex); });
       murmurHash('', 4294967296, 'buffer').then(function(res) { t.deepEqual(res, seedZeroBuffer); });
       murmurHash('', 4294967296, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedZeroHex); });
-      murmurHash(new Buffer(''), 4294967296, 'buffer').then(function(res) { t.deepEqual(res, seedZeroBuffer); });
-      murmurHash(new Buffer(''), 4294967296, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedZeroHex); });
+      murmurHash(Buffer.from(''), 4294967296, 'buffer').then(function(res) { t.deepEqual(res, seedZeroBuffer); });
+      murmurHash(Buffer.from(''), 4294967296, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedZeroHex); });
       murmurHash('', 1, 'buffer').then(function(res) { t.deepEqual(res, seedPlusOneBuffer); });
       murmurHash('', 1, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedPlusOneHex); });
-      murmurHash(new Buffer(''), 1, 'buffer').then(function(res) { t.deepEqual(res, seedPlusOneBuffer); });
-      murmurHash(new Buffer(''), 1, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedPlusOneHex); });
+      murmurHash(Buffer.from(''), 1, 'buffer').then(function(res) { t.deepEqual(res, seedPlusOneBuffer); });
+      murmurHash(Buffer.from(''), 1, 'buffer').then(function(res) { t.strictEqual(res.toString('hex'), seedPlusOneHex); });
     });
 
     t.end();

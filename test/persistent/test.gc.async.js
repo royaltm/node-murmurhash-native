@@ -20,7 +20,7 @@ var test = require("tap").test
 ].forEach(function(murmurHash) {
 
   test(murmurHash.name + " should not crash while under gc stress (input)", function(t) {
-    var bigone = new Buffer(kMaxLength);
+    var bigone = Buffer.allocUnsafeSlow(kMaxLength);
     murmurHash(bigone, function(err) {
       t.error(err);
       gc(); gc(); gc(); gc();
@@ -39,8 +39,8 @@ var test = require("tap").test
   });
 
   test(murmurHash.name + " should not crash while under gc stress (input/output)", function(t) {
-    var bigone = new Buffer(kMaxLength);
-    var bigtwo = new Buffer(kMaxLength);
+    var bigone = Buffer.allocUnsafeSlow(kMaxLength);
+    var bigtwo = Buffer.allocUnsafeSlow(kMaxLength);
     murmurHash(bigone, bigtwo, 0, function(err) {
       t.error(err);
       gc(); gc(); gc(); gc();

@@ -154,9 +154,9 @@ function wrapStream(name) {
     , seedMinusOneHex     = args[11]
     , seedPlusOneHex      = args[12]
     , crashTestHex        = args[13]
-    , seedZeroBuffer      = new Buffer(seedZeroHex,  'hex')
-    , seedMinusOneBuffer  = new Buffer(seedMinusOneHex, 'hex')
-    , seedPlusOneBuffer   = new Buffer(seedPlusOneHex,  'hex')
+    , seedZeroBuffer      = Buffer.from(seedZeroHex,  'hex')
+    , seedMinusOneBuffer  = Buffer.from(seedMinusOneHex, 'hex')
+    , seedPlusOneBuffer   = Buffer.from(seedPlusOneHex,  'hex')
     , seedZeroBase64      = seedZeroBuffer.toString('base64')
     , seedMinusOneBase64  = seedMinusOneBuffer.toString('base64')
     , seedPlusOneBase64   = seedPlusOneBuffer.toString('base64')
@@ -348,56 +348,56 @@ function wrapStream(name) {
       t.strictEqual(new MurmurHash(void(0), endian).digest('buffer').toString('hex'), seedZeroHex);
       t.strictEqual(new MurmurHash(0, endian).update('').digest('buffer').toString('hex'), seedZeroHex);
       t.strictEqual(new MurmurHash(0, endian).digest('buffer').toString('hex'), seedZeroHex);
-      t.deepEqual(new MurmurHash(void(0), endian).update(new Buffer('')).digest('buffer'), seedZeroBuffer);
-      t.deepEqual(new MurmurHash(0, endian).update(new Buffer('')).digest('buffer'), seedZeroBuffer);
-      t.deepEqual(new MurmurHash(void(0), endian).update(new Buffer('')).digest(), seedZeroBuffer);
-      t.deepEqual(new MurmurHash(0, endian).update(new Buffer('')).digest(), seedZeroBuffer);
-      t.deepEqual(new MurmurHash(void(0), endian).update(new Buffer('')).digest('foobar'), seedZeroBuffer);
-      t.deepEqual(new MurmurHash(0, endian).update(new Buffer('')).digest('foobar'), seedZeroBuffer);
-      t.deepEqual(new MurmurHash(void(0), endian).update(new Buffer('')).digest('utf8'), seedZeroBuffer);
-      t.deepEqual(new MurmurHash(0, endian).update(new Buffer('')).digest('utf8'), seedZeroBuffer);
-      t.strictEqual(new MurmurHash(void(0), endian).update(new Buffer('')).digest('buffer').toString('hex'), seedZeroHex);
-      t.strictEqual(new MurmurHash(0, endian).update(new Buffer('')).digest('buffer').toString('hex'), seedZeroHex);
+      t.deepEqual(new MurmurHash(void(0), endian).update(Buffer.from('')).digest('buffer'), seedZeroBuffer);
+      t.deepEqual(new MurmurHash(0, endian).update(Buffer.from('')).digest('buffer'), seedZeroBuffer);
+      t.deepEqual(new MurmurHash(void(0), endian).update(Buffer.from('')).digest(), seedZeroBuffer);
+      t.deepEqual(new MurmurHash(0, endian).update(Buffer.from('')).digest(), seedZeroBuffer);
+      t.deepEqual(new MurmurHash(void(0), endian).update(Buffer.from('')).digest('foobar'), seedZeroBuffer);
+      t.deepEqual(new MurmurHash(0, endian).update(Buffer.from('')).digest('foobar'), seedZeroBuffer);
+      t.deepEqual(new MurmurHash(void(0), endian).update(Buffer.from('')).digest('utf8'), seedZeroBuffer);
+      t.deepEqual(new MurmurHash(0, endian).update(Buffer.from('')).digest('utf8'), seedZeroBuffer);
+      t.strictEqual(new MurmurHash(void(0), endian).update(Buffer.from('')).digest('buffer').toString('hex'), seedZeroHex);
+      t.strictEqual(new MurmurHash(0, endian).update(Buffer.from('')).digest('buffer').toString('hex'), seedZeroHex);
       t.deepEqual(new MurmurHash(-1, endian).update('').digest('buffer'), seedMinusOneBuffer);
       t.deepEqual(new MurmurHash(-1, endian).update('').digest(), seedMinusOneBuffer);
       t.deepEqual(new MurmurHash(-1, endian).update('').digest('foobar'), seedMinusOneBuffer);
       t.deepEqual(new MurmurHash(-1, endian).update('').digest('utf8'), seedMinusOneBuffer);
       t.strictEqual(new MurmurHash(-1, endian).update('').digest('buffer').toString('hex'), seedMinusOneHex);
-      t.deepEqual(new MurmurHash(-1, endian).update(new Buffer('')).digest('buffer'), seedMinusOneBuffer);
-      t.deepEqual(new MurmurHash(-1, endian).update(new Buffer('')).digest(), seedMinusOneBuffer);
-      t.deepEqual(new MurmurHash(-1, endian).update(new Buffer('')).digest('foobar'), seedMinusOneBuffer);
-      t.deepEqual(new MurmurHash(-1, endian).update(new Buffer('')).digest('utf8'), seedMinusOneBuffer);
-      t.strictEqual(new MurmurHash(-1, endian).update(new Buffer('')).digest('buffer').toString('hex'), seedMinusOneHex);
+      t.deepEqual(new MurmurHash(-1, endian).update(Buffer.from('')).digest('buffer'), seedMinusOneBuffer);
+      t.deepEqual(new MurmurHash(-1, endian).update(Buffer.from('')).digest(), seedMinusOneBuffer);
+      t.deepEqual(new MurmurHash(-1, endian).update(Buffer.from('')).digest('foobar'), seedMinusOneBuffer);
+      t.deepEqual(new MurmurHash(-1, endian).update(Buffer.from('')).digest('utf8'), seedMinusOneBuffer);
+      t.strictEqual(new MurmurHash(-1, endian).update(Buffer.from('')).digest('buffer').toString('hex'), seedMinusOneHex);
       t.deepEqual(new MurmurHash(4294967295, endian).update('').digest('buffer'), seedMinusOneBuffer);
       t.deepEqual(new MurmurHash(4294967295, endian).update('').digest(), seedMinusOneBuffer);
       t.deepEqual(new MurmurHash(4294967295, endian).update('').digest('foobar'), seedMinusOneBuffer);
       t.deepEqual(new MurmurHash(4294967295, endian).update('').digest('utf8'), seedMinusOneBuffer);
       t.strictEqual(new MurmurHash(4294967295, endian).update('').digest('buffer').toString('hex'), seedMinusOneHex);
-      t.deepEqual(new MurmurHash(4294967295, endian).update(new Buffer('')).digest('buffer'), seedMinusOneBuffer);
-      t.deepEqual(new MurmurHash(4294967295, endian).update(new Buffer('')).digest(), seedMinusOneBuffer);
-      t.deepEqual(new MurmurHash(4294967295, endian).update(new Buffer('')).digest('foobar'), seedMinusOneBuffer);
-      t.deepEqual(new MurmurHash(4294967295, endian).update(new Buffer('')).digest('utf8'), seedMinusOneBuffer);
-      t.strictEqual(new MurmurHash(4294967295, endian).update(new Buffer('')).digest('buffer').toString('hex'), seedMinusOneHex);
+      t.deepEqual(new MurmurHash(4294967295, endian).update(Buffer.from('')).digest('buffer'), seedMinusOneBuffer);
+      t.deepEqual(new MurmurHash(4294967295, endian).update(Buffer.from('')).digest(), seedMinusOneBuffer);
+      t.deepEqual(new MurmurHash(4294967295, endian).update(Buffer.from('')).digest('foobar'), seedMinusOneBuffer);
+      t.deepEqual(new MurmurHash(4294967295, endian).update(Buffer.from('')).digest('utf8'), seedMinusOneBuffer);
+      t.strictEqual(new MurmurHash(4294967295, endian).update(Buffer.from('')).digest('buffer').toString('hex'), seedMinusOneHex);
       t.deepEqual(new MurmurHash(4294967296, endian).update('').digest('buffer'), seedZeroBuffer);
       t.deepEqual(new MurmurHash(4294967296, endian).update('').digest(), seedZeroBuffer);
       t.deepEqual(new MurmurHash(4294967296, endian).update('').digest('foobar'), seedZeroBuffer);
       t.deepEqual(new MurmurHash(4294967296, endian).update('').digest('utf8'), seedZeroBuffer);
       t.strictEqual(new MurmurHash(4294967296, endian).update('').digest('buffer').toString('hex'), seedZeroHex);
-      t.deepEqual(new MurmurHash(4294967296, endian).update(new Buffer('')).digest('buffer'), seedZeroBuffer);
-      t.deepEqual(new MurmurHash(4294967296, endian).update(new Buffer('')).digest(), seedZeroBuffer);
-      t.deepEqual(new MurmurHash(4294967296, endian).update(new Buffer('')).digest('foobar'), seedZeroBuffer);
-      t.deepEqual(new MurmurHash(4294967296, endian).update(new Buffer('')).digest('utf8'), seedZeroBuffer);
-      t.strictEqual(new MurmurHash(4294967296, endian).update(new Buffer('')).digest('buffer').toString('hex'), seedZeroHex);
+      t.deepEqual(new MurmurHash(4294967296, endian).update(Buffer.from('')).digest('buffer'), seedZeroBuffer);
+      t.deepEqual(new MurmurHash(4294967296, endian).update(Buffer.from('')).digest(), seedZeroBuffer);
+      t.deepEqual(new MurmurHash(4294967296, endian).update(Buffer.from('')).digest('foobar'), seedZeroBuffer);
+      t.deepEqual(new MurmurHash(4294967296, endian).update(Buffer.from('')).digest('utf8'), seedZeroBuffer);
+      t.strictEqual(new MurmurHash(4294967296, endian).update(Buffer.from('')).digest('buffer').toString('hex'), seedZeroHex);
       t.deepEqual(new MurmurHash(1, endian).update('').digest('buffer'), seedPlusOneBuffer);
       t.deepEqual(new MurmurHash(1, endian).update('').digest(), seedPlusOneBuffer);
       t.deepEqual(new MurmurHash(1, endian).update('').digest('foobar'), seedPlusOneBuffer);
       t.deepEqual(new MurmurHash(1, endian).update('').digest('utf8'), seedPlusOneBuffer);
       t.strictEqual(new MurmurHash(1, endian).update('').digest('buffer').toString('hex'), seedPlusOneHex);
-      t.deepEqual(new MurmurHash(1, endian).update(new Buffer('')).digest('buffer'), seedPlusOneBuffer);
-      t.deepEqual(new MurmurHash(1, endian).update(new Buffer('')).digest(), seedPlusOneBuffer);
-      t.deepEqual(new MurmurHash(1, endian).update(new Buffer('')).digest('foobar'), seedPlusOneBuffer);
-      t.deepEqual(new MurmurHash(1, endian).update(new Buffer('')).digest('utf8'), seedPlusOneBuffer);
-      t.strictEqual(new MurmurHash(1, endian).update(new Buffer('')).digest('buffer').toString('hex'), seedPlusOneHex);
+      t.deepEqual(new MurmurHash(1, endian).update(Buffer.from('')).digest('buffer'), seedPlusOneBuffer);
+      t.deepEqual(new MurmurHash(1, endian).update(Buffer.from('')).digest(), seedPlusOneBuffer);
+      t.deepEqual(new MurmurHash(1, endian).update(Buffer.from('')).digest('foobar'), seedPlusOneBuffer);
+      t.deepEqual(new MurmurHash(1, endian).update(Buffer.from('')).digest('utf8'), seedPlusOneBuffer);
+      t.strictEqual(new MurmurHash(1, endian).update(Buffer.from('')).digest('buffer').toString('hex'), seedPlusOneHex);
 
       t.end();
     });
@@ -407,26 +407,26 @@ function wrapStream(name) {
       t.strictEqual(new MurmurHash(0, endian).update('').digest('number'), seedZeroNumber);
       t.strictEqual(new MurmurHash(void(0), endian).update('', 'foo').digest('number'), seedZeroNumber);
       t.strictEqual(new MurmurHash(0, endian).update('', 'foo').digest('number'), seedZeroNumber);
-      t.strictEqual(new MurmurHash(void(0), endian).update(new Buffer('')).digest('number'), seedZeroNumber);
-      t.strictEqual(new MurmurHash(0, endian).update(new Buffer('')).digest('number'), seedZeroNumber);
-      t.strictEqual(new MurmurHash(void(0), endian).update(new Buffer(''), 'foo').digest('number'), seedZeroNumber);
-      t.strictEqual(new MurmurHash(0, endian).update(new Buffer(''), 'foo').digest('number'), seedZeroNumber);
+      t.strictEqual(new MurmurHash(void(0), endian).update(Buffer.from('')).digest('number'), seedZeroNumber);
+      t.strictEqual(new MurmurHash(0, endian).update(Buffer.from('')).digest('number'), seedZeroNumber);
+      t.strictEqual(new MurmurHash(void(0), endian).update(Buffer.from(''), 'foo').digest('number'), seedZeroNumber);
+      t.strictEqual(new MurmurHash(0, endian).update(Buffer.from(''), 'foo').digest('number'), seedZeroNumber);
       t.strictEqual(new MurmurHash(-1, endian).update('').digest('number'), seedMinusOneNumber);
       t.strictEqual(new MurmurHash(-1, endian).update('', 'foo').digest('number'), seedMinusOneNumber);
-      t.strictEqual(new MurmurHash(-1, endian).update(new Buffer('')).digest('number'), seedMinusOneNumber);
-      t.strictEqual(new MurmurHash(-1, endian).update(new Buffer(''), 'foo').digest('number'), seedMinusOneNumber);
+      t.strictEqual(new MurmurHash(-1, endian).update(Buffer.from('')).digest('number'), seedMinusOneNumber);
+      t.strictEqual(new MurmurHash(-1, endian).update(Buffer.from(''), 'foo').digest('number'), seedMinusOneNumber);
       t.strictEqual(new MurmurHash(4294967295, endian).update('').digest('number'), seedMinusOneNumber);
       t.strictEqual(new MurmurHash(4294967295, endian).update('', 'foo').digest('number'), seedMinusOneNumber);
-      t.strictEqual(new MurmurHash(4294967295, endian).update(new Buffer('')).digest('number'), seedMinusOneNumber);
-      t.strictEqual(new MurmurHash(4294967295, endian).update(new Buffer(''), 'number').digest('number'), seedMinusOneNumber);
+      t.strictEqual(new MurmurHash(4294967295, endian).update(Buffer.from('')).digest('number'), seedMinusOneNumber);
+      t.strictEqual(new MurmurHash(4294967295, endian).update(Buffer.from(''), 'number').digest('number'), seedMinusOneNumber);
       t.strictEqual(new MurmurHash(4294967296, endian).update('').digest('number'), seedZeroNumber);
       t.strictEqual(new MurmurHash(4294967296, endian).update('', 'foo').digest('number'), seedZeroNumber);
-      t.strictEqual(new MurmurHash(4294967296, endian).update(new Buffer('')).digest('number'), seedZeroNumber);
-      t.strictEqual(new MurmurHash(4294967296, endian).update(new Buffer(''), 'number').digest('number'), seedZeroNumber);
+      t.strictEqual(new MurmurHash(4294967296, endian).update(Buffer.from('')).digest('number'), seedZeroNumber);
+      t.strictEqual(new MurmurHash(4294967296, endian).update(Buffer.from(''), 'number').digest('number'), seedZeroNumber);
       t.strictEqual(new MurmurHash(1, endian).update('').digest('number'), seedPlusOneNumber);
       t.strictEqual(new MurmurHash(1, endian).update('', 'foo').digest('number'), seedPlusOneNumber);
-      t.strictEqual(new MurmurHash(1, endian).update(new Buffer('')).digest('number'), seedPlusOneNumber);
-      t.strictEqual(new MurmurHash(1, endian).update(new Buffer(''), 'foo').digest('number'), seedPlusOneNumber);
+      t.strictEqual(new MurmurHash(1, endian).update(Buffer.from('')).digest('number'), seedPlusOneNumber);
+      t.strictEqual(new MurmurHash(1, endian).update(Buffer.from(''), 'foo').digest('number'), seedPlusOneNumber);
 
       t.end();
     });
@@ -434,40 +434,40 @@ function wrapStream(name) {
     t.test('should create string encoded hash from empty data', function(t) {
       t.strictEqual(new MurmurHash(void(0), endian).update('').digest('hex'), seedZeroHex);
       t.strictEqual(new MurmurHash(0, endian).update('').digest('hex'), seedZeroHex);
-      t.strictEqual(new MurmurHash(void(0), endian).update(new Buffer('')).digest('hex'), seedZeroHex);
-      t.strictEqual(new MurmurHash(0, endian).update(new Buffer('')).digest('hex'), seedZeroHex);
+      t.strictEqual(new MurmurHash(void(0), endian).update(Buffer.from('')).digest('hex'), seedZeroHex);
+      t.strictEqual(new MurmurHash(0, endian).update(Buffer.from('')).digest('hex'), seedZeroHex);
       t.strictEqual(new MurmurHash(-1, endian).update('').digest('hex'), seedMinusOneHex);
-      t.strictEqual(new MurmurHash(-1, endian).update(new Buffer('')).digest('hex'), seedMinusOneHex);
+      t.strictEqual(new MurmurHash(-1, endian).update(Buffer.from('')).digest('hex'), seedMinusOneHex);
       t.strictEqual(new MurmurHash(4294967295, endian).update('').digest('hex'), seedMinusOneHex);
-      t.strictEqual(new MurmurHash(4294967295, endian).update(new Buffer('')).digest('hex'), seedMinusOneHex);
+      t.strictEqual(new MurmurHash(4294967295, endian).update(Buffer.from('')).digest('hex'), seedMinusOneHex);
       t.strictEqual(new MurmurHash(4294967296, endian).update('').digest('hex'), seedZeroHex);
-      t.strictEqual(new MurmurHash(4294967296, endian).update(new Buffer('')).digest('hex'), seedZeroHex);
+      t.strictEqual(new MurmurHash(4294967296, endian).update(Buffer.from('')).digest('hex'), seedZeroHex);
       t.strictEqual(new MurmurHash(1, endian).update('').digest('hex'), seedPlusOneHex);
-      t.strictEqual(new MurmurHash(1, endian).update(new Buffer('')).digest('hex'), seedPlusOneHex);
+      t.strictEqual(new MurmurHash(1, endian).update(Buffer.from('')).digest('hex'), seedPlusOneHex);
       t.strictEqual(new MurmurHash(void(0), endian).update('').digest('base64'), seedZeroBase64);
       t.strictEqual(new MurmurHash(0, endian).update('').digest('base64'), seedZeroBase64);
-      t.strictEqual(new MurmurHash(void(0), endian).update(new Buffer('')).digest('base64'), seedZeroBase64);
-      t.strictEqual(new MurmurHash(0, endian).update(new Buffer('')).digest('base64'), seedZeroBase64);
+      t.strictEqual(new MurmurHash(void(0), endian).update(Buffer.from('')).digest('base64'), seedZeroBase64);
+      t.strictEqual(new MurmurHash(0, endian).update(Buffer.from('')).digest('base64'), seedZeroBase64);
       t.strictEqual(new MurmurHash(-1, endian).update('').digest('base64'), seedMinusOneBase64);
-      t.strictEqual(new MurmurHash(-1, endian).update(new Buffer('')).digest('base64'), seedMinusOneBase64);
+      t.strictEqual(new MurmurHash(-1, endian).update(Buffer.from('')).digest('base64'), seedMinusOneBase64);
       t.strictEqual(new MurmurHash(4294967295, endian).update('').digest('base64'), seedMinusOneBase64);
-      t.strictEqual(new MurmurHash(4294967295, endian).update(new Buffer('')).digest('base64'), seedMinusOneBase64);
+      t.strictEqual(new MurmurHash(4294967295, endian).update(Buffer.from('')).digest('base64'), seedMinusOneBase64);
       t.strictEqual(new MurmurHash(4294967296, endian).update('').digest('base64'), seedZeroBase64);
-      t.strictEqual(new MurmurHash(4294967296, endian).update(new Buffer('')).digest('base64'), seedZeroBase64);
+      t.strictEqual(new MurmurHash(4294967296, endian).update(Buffer.from('')).digest('base64'), seedZeroBase64);
       t.strictEqual(new MurmurHash(1, endian).update('').digest('base64'), seedPlusOneBase64);
-      t.strictEqual(new MurmurHash(1, endian).update(new Buffer('')).digest('base64'), seedPlusOneBase64);
+      t.strictEqual(new MurmurHash(1, endian).update(Buffer.from('')).digest('base64'), seedPlusOneBase64);
       t.strictEqual(new MurmurHash(void(0), endian).update('').digest('binary'), seedZeroBinary);
       t.strictEqual(new MurmurHash(0, endian).update('').digest('binary'), seedZeroBinary);
-      t.strictEqual(new MurmurHash(void(0), endian).update(new Buffer('')).digest('binary'), seedZeroBinary);
-      t.strictEqual(new MurmurHash(0, endian).update(new Buffer('')).digest('binary'), seedZeroBinary);
+      t.strictEqual(new MurmurHash(void(0), endian).update(Buffer.from('')).digest('binary'), seedZeroBinary);
+      t.strictEqual(new MurmurHash(0, endian).update(Buffer.from('')).digest('binary'), seedZeroBinary);
       t.strictEqual(new MurmurHash(-1, endian).update('').digest('binary'), seedMinusOneBinary);
-      t.strictEqual(new MurmurHash(-1, endian).update(new Buffer('')).digest('binary'), seedMinusOneBinary);
+      t.strictEqual(new MurmurHash(-1, endian).update(Buffer.from('')).digest('binary'), seedMinusOneBinary);
       t.strictEqual(new MurmurHash(4294967295, endian).update('').digest('binary'), seedMinusOneBinary);
-      t.strictEqual(new MurmurHash(4294967295, endian).update(new Buffer('')).digest('binary'), seedMinusOneBinary);
+      t.strictEqual(new MurmurHash(4294967295, endian).update(Buffer.from('')).digest('binary'), seedMinusOneBinary);
       t.strictEqual(new MurmurHash(4294967296, endian).update('').digest('binary'), seedZeroBinary);
-      t.strictEqual(new MurmurHash(4294967296, endian).update(new Buffer('')).digest('binary'), seedZeroBinary);
+      t.strictEqual(new MurmurHash(4294967296, endian).update(Buffer.from('')).digest('binary'), seedZeroBinary);
       t.strictEqual(new MurmurHash(1, endian).update('').digest('binary'), seedPlusOneBinary);
-      t.strictEqual(new MurmurHash(1, endian).update(new Buffer('')).digest('binary'), seedPlusOneBinary);
+      t.strictEqual(new MurmurHash(1, endian).update(Buffer.from('')).digest('binary'), seedPlusOneBinary);
 
       t.end();
     });
@@ -478,31 +478,31 @@ function wrapStream(name) {
         , hex = 'e188a0c582c3b3c5bc6b6f'
         , hash = murmurHash(string, 'utf8', 'buffer');
       t.deepEqual(new MurmurHash(void(0), endian).update(string).digest(), hash);
-      t.deepEqual(new MurmurHash(void(0), endian).update(new Buffer(string, 'utf8')).digest(), hash);
+      t.deepEqual(new MurmurHash(void(0), endian).update(Buffer.from(string, 'utf8')).digest(), hash);
       t.deepEqual(new MurmurHash(void(0), endian).update(string, 'ascii').digest(),
-         new MurmurHash(void(0), endian).update(new Buffer(string, 'ascii')).digest());
+         new MurmurHash(void(0), endian).update(Buffer.from(string, 'ascii')).digest());
       t.deepEqual(new MurmurHash(void(0), endian).update(string, 'binary').digest(),
-         new MurmurHash(void(0), endian).update(new Buffer(string, 'binary')).digest());
+         new MurmurHash(void(0), endian).update(Buffer.from(string, 'binary')).digest());
       t.deepEqual(new MurmurHash(void(0), endian).update(string, 'utf8').digest(),
-         new MurmurHash(void(0), endian).update(new Buffer(string, 'utf8')).digest());
+         new MurmurHash(void(0), endian).update(Buffer.from(string, 'utf8')).digest());
       t.deepEqual(new MurmurHash(void(0), endian).update(string, 'utf8').digest(), hash);
       t.deepEqual(new MurmurHash(void(0), endian).update(string, 'utf-8').digest(),
-         new MurmurHash(void(0), endian).update(new Buffer(string, 'utf-8')).digest());
+         new MurmurHash(void(0), endian).update(Buffer.from(string, 'utf-8')).digest());
       t.deepEqual(new MurmurHash(void(0), endian).update(string, 'utf-8').digest(), hash);
       t.deepEqual(new MurmurHash(void(0), endian).update(string, 'ucs2').digest(),
-         new MurmurHash(void(0), endian).update(new Buffer(string, 'ucs2')).digest());
+         new MurmurHash(void(0), endian).update(Buffer.from(string, 'ucs2')).digest());
       t.deepEqual(new MurmurHash(void(0), endian).update(string, 'ucs-2').digest(),
-         new MurmurHash(void(0), endian).update(new Buffer(string, 'ucs-2')).digest());
+         new MurmurHash(void(0), endian).update(Buffer.from(string, 'ucs-2')).digest());
       t.deepEqual(new MurmurHash(void(0), endian).update(string, 'utf16le').digest(),
-         new MurmurHash(void(0), endian).update(new Buffer(string, 'utf16le')).digest());
+         new MurmurHash(void(0), endian).update(Buffer.from(string, 'utf16le')).digest());
       t.deepEqual(new MurmurHash(void(0), endian).update(string, 'utf-16le').digest(),
-         new MurmurHash(void(0), endian).update(new Buffer(string, 'utf-16le')).digest());
+         new MurmurHash(void(0), endian).update(Buffer.from(string, 'utf-16le')).digest());
       t.deepEqual(new MurmurHash(void(0), endian).update(base64, 'base64').digest(), hash);
       t.deepEqual(new MurmurHash(void(0), endian).update(base64, 'base64').digest(),
-         new MurmurHash(void(0), endian).update(new Buffer(base64, 'base64')).digest());
+         new MurmurHash(void(0), endian).update(Buffer.from(base64, 'base64')).digest());
       t.deepEqual(new MurmurHash(void(0), endian).update(hex, 'hex').digest(), hash);
       t.deepEqual(new MurmurHash(void(0), endian).update(hex, 'hex').digest(),
-         new MurmurHash(void(0), endian).update(new Buffer(hex, 'hex')).digest());
+         new MurmurHash(void(0), endian).update(Buffer.from(hex, 'hex')).digest());
 
       t.end();
     });
@@ -511,7 +511,7 @@ function wrapStream(name) {
       var data = '';
       var strlen = 1000;
       for (var i = 0; i < strlen; ++i) data += String.fromCharCode((Math.random()*32768)|0);
-      var buffer = new Buffer(data, 'utf8');
+      var buffer = Buffer.from(data, 'utf8');
       t.equal(new MurmurHash(void(0), endian).update(data).digest().length, size);
       t.equal(new MurmurHash(void(0), endian).update(data).total, buffer.length);
       t.equal(new MurmurHash(void(0), endian).update(data).digest('buffer').length, size);
@@ -519,7 +519,7 @@ function wrapStream(name) {
       t.equal(new MurmurHash(void(0), endian).update(buffer).digest('buffer').length, size);
       t.equal(new MurmurHash(void(0), endian).update(buffer).total, buffer.length);
       t.strictEqual(new MurmurHash(void(0), endian).update(data, 'binary').digest('number'),
-                    new MurmurHash(void(0), endian).update(new Buffer(data, 'binary')).digest('number'));
+                    new MurmurHash(void(0), endian).update(Buffer.from(data, 'binary')).digest('number'));
       t.strictEqual(new MurmurHash(void(0), endian).update(data, 'binary').digest('number'), murmurHash(data, 'binary'));
       t.strictEqual(new MurmurHash(void(0), endian).update(data).digest('number'),
                     new MurmurHash(void(0), endian).update(buffer).digest('number'));
@@ -556,14 +556,14 @@ function wrapStream(name) {
       var hash = new MurmurHash(void(0), endian).update("łabądź").digest();
       t.deepEqual(hash, match);
       t.type(hash, Buffer, 'hash is buffer');
-      t.deepEqual(hash, new Buffer(crashTestHex, 'hex'));
+      t.deepEqual(hash, Buffer.from(crashTestHex, 'hex'));
 
       t.end();
     });
 
     t.test('should write digest in the provided buffer', function(t) {
-      var pad = new Buffer(2); pad.fill(42);
-      var output = new Buffer(0);
+      var pad = Buffer.alloc(2, 42);
+      var output = Buffer.allocUnsafe(0);
       t.strictEqual(new MurmurHash(void(0), endian).digest(output), output);
       t.strictEqual(new MurmurHash(void(0), endian).digest(output, 3), output);
       t.strictEqual(new MurmurHash(void(0), endian).digest(output, 3, 3), output);
@@ -572,7 +572,7 @@ function wrapStream(name) {
       t.strictEqual(new MurmurHash(void(0), endian).digest(output, -3, 3), output);
       t.strictEqual(new MurmurHash(void(0), endian).digest(output, -3, -3), output);
 
-      output = new Buffer(size);
+      output = Buffer.allocUnsafe(size);
       t.strictEqual(new MurmurHash(void(0), endian).digest(output), output);
       t.deepEqual(output, seedZeroBuffer);
       t.strictEqual(new MurmurHash(1, endian).digest(output), output);
@@ -592,7 +592,7 @@ function wrapStream(name) {
       t.strictEqual(new MurmurHash(1, endian).digest(output, -size, size - 2), output);
       t.deepEqual(output, Buffer.concat([seedPlusOneBuffer.slice(0, -2), pad]));
 
-      output = new Buffer(size + 2); output.fill(42);
+      output = Buffer.alloc(size + 2, 42);
       t.strictEqual(new MurmurHash(1, endian).digest(output), output);
       t.deepEqual(output, Buffer.concat([seedPlusOneBuffer, pad]));
       output.fill(42);
@@ -605,7 +605,7 @@ function wrapStream(name) {
       t.strictEqual(new MurmurHash(1, endian).digest(output, -size-2), output);
       t.deepEqual(output, Buffer.concat([seedPlusOneBuffer, pad]));
 
-      output = new Buffer(size - 2); output.fill(42);
+      output = Buffer.alloc(size - 2, 42);
       t.strictEqual(new MurmurHash(1, endian).digest(output, 0), output);
       t.deepEqual(output, seedPlusOneBuffer.slice(0, size - 2));
       output.fill(42);
@@ -618,7 +618,7 @@ function wrapStream(name) {
       t.strictEqual(new MurmurHash(1, endian).digest(output, -size + 2, -size + 2), output);
       t.deepEqual(output, seedPlusOneBuffer.slice(2));
 
-      output = new Buffer(3); output.fill(42);
+      output = Buffer.alloc(3, 42);
       t.strictEqual(new MurmurHash(1, endian).digest(output, 0, 1), output);
       t.deepEqual(output, Buffer.concat([seedPlusOneBuffer.slice(0, 1), pad]));
       output.fill(42);
@@ -645,7 +645,7 @@ function wrapStream(name) {
 
     t.test('should create hash from some random data incrementally', function(t) {
       var maxchunksize = 101;
-      var buffer = new Buffer(10007);
+      var buffer = Buffer.allocUnsafe(10007);
       var seed = (Math.random()*4294967296)|0;
       var hasher0 = new MurmurHash(0, endian);
       var hasher1 = new MurmurHash(1, endian);
@@ -751,20 +751,20 @@ function wrapStream(name) {
     t.test('should serialize internal state and create instance from serial', function(t) {
       var seed = (Math.random() * 0xFFFFFFFF >>>0) + 1;
       var hasher0 = new MurmurHash(seed, endian).update('foo');
-      t.throws(function() { hasher0.serialize(new Buffer(0)); }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
-      t.throws(function() { hasher0.serialize(new Buffer(1000), -1); }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
-      t.throws(function() { hasher0.serialize(new Buffer(1000), 998); }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
+      t.throws(function() { hasher0.serialize(Buffer.alloc(0)); }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
+      t.throws(function() { hasher0.serialize(Buffer.allocUnsafe(1000), -1); }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
+      t.throws(function() { hasher0.serialize(Buffer.allocUnsafe(1000), 998); }, new Error("Serialized state does not fit in the provided buffer at the given offset"));
       t.throws(function() { new MurmurHash('', endian); }, new TypeError("Incorrect size of the serialized string"));
       t.throws(function() { new MurmurHash('1234567890abcdef1', endian); }, new TypeError("Incorrect size of the serialized string"));
-      var buffer = new Buffer(50); buffer.fill(0);
+      var buffer = Buffer.alloc(50, 0);
       t.throws(function() { new MurmurHash(buffer, endian); }, new TypeError("Incorrect serialized data"));
-      t.throws(function() { new MurmurHash(new Buffer(11), endian); }, new TypeError("Incorrect size of the serialized data"));
+      t.throws(function() { new MurmurHash(Buffer.allocUnsafe(11), endian); }, new TypeError("Incorrect size of the serialized data"));
       var serial0 = hasher0.serialize();
       t.type(serial0, 'string');
-      buffer = new Buffer(serial0.length); buffer.fill(0);
+      buffer = Buffer.alloc(serial0.length, 0);
       t.throws(function() { new MurmurHash(buffer.toString('binary'), endian); }, new TypeError("Incorrect serialized string"));
       t.throws(function() { new MurmurHash(buffer, endian); }, new TypeError("Incorrect serialized data"));
-      var serial0bin = new Buffer(hasher0.SERIAL_BYTE_LENGTH);
+      var serial0bin = Buffer.allocUnsafe(hasher0.SERIAL_BYTE_LENGTH);
       t.strictEqual(hasher0.serialize(serial0bin), serial0bin);
       var hasher1 = new MurmurHash(serial0, endian);
       t.notStrictEqual(hasher1, hasher0);
@@ -776,7 +776,7 @@ function wrapStream(name) {
       var hasher2 = new MurmurHash(serial0bin, endian);
       t.strictEqual(hasher2.digest('hex'), new MurmurHash(seed, endian).update('foo').digest('hex'));
       t.strictEqual(hasher2.update('bar').digest('hex'), new MurmurHash(seed, endian).update('foobar').digest('hex'));
-      buffer = new Buffer(serial0bin.length);
+      buffer = Buffer.allocUnsafe(serial0bin.length);
       for(var i = 0; i < serial0bin.length; ++i) {
         for(var n = 1; n < 0x100; n <<= 1) {
           serial0bin.copy(buffer);

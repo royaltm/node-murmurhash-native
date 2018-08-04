@@ -51,9 +51,9 @@ test('should throw error for bad arguments', function(t) {
     , seedZeroHex         = args[ 3]
     , seedMinusOneHex     = args[ 4]
     , seedPlusOneHex      = args[ 5]
-    , seedZeroBuffer      = new Buffer(seedZeroHex,  'hex')
-    , seedMinusOneBuffer  = new Buffer(seedMinusOneHex, 'hex')
-    , seedPlusOneBuffer   = new Buffer(seedPlusOneHex,  'hex')
+    , seedZeroBuffer      = Buffer.from(seedZeroHex,  'hex')
+    , seedMinusOneBuffer  = Buffer.from(seedMinusOneHex, 'hex')
+    , seedPlusOneBuffer   = Buffer.from(seedPlusOneHex,  'hex')
     , seedZeroBase64      = seedZeroBuffer.toString('base64')
     , seedMinusOneBase64  = seedMinusOneBuffer.toString('base64')
     , seedPlusOneBase64   = seedPlusOneBuffer.toString('base64')
@@ -86,24 +86,24 @@ test('should throw error for bad arguments', function(t) {
       }
       testStream(strm.createHash(algorithm, {encoding:'hex'}), '', cbfactory(seedZeroHex));
       testStream(strm.createHash(algorithm, {encoding:'hex'}), '', 'binary', cbfactory(seedZeroHex));
-      testStream(strm.createHash(algorithm, {encoding:'hex'}), new Buffer(''), cbfactory(seedZeroHex));
-      testStream(strm.createHash(algorithm, {encoding:'hex'}), new Buffer(''), 'binary', cbfactory(seedZeroHex));
+      testStream(strm.createHash(algorithm, {encoding:'hex'}), Buffer.from(''), cbfactory(seedZeroHex));
+      testStream(strm.createHash(algorithm, {encoding:'hex'}), Buffer.from(''), 'binary', cbfactory(seedZeroHex));
       testStream(strm.createHash(algorithm, {seed:-1, encoding:'hex'}), '', cbfactory(seedMinusOneHex));
       testStream(strm.createHash(algorithm, {seed:-1, encoding:'hex'}), '', 'binary', cbfactory(seedMinusOneHex));
-      testStream(strm.createHash(algorithm, {seed:-1, encoding:'hex'}), new Buffer(''), cbfactory(seedMinusOneHex));
-      testStream(strm.createHash(algorithm, {seed:-1, encoding:'hex'}), new Buffer(''), 'binary', cbfactory(seedMinusOneHex));
+      testStream(strm.createHash(algorithm, {seed:-1, encoding:'hex'}), Buffer.from(''), cbfactory(seedMinusOneHex));
+      testStream(strm.createHash(algorithm, {seed:-1, encoding:'hex'}), Buffer.from(''), 'binary', cbfactory(seedMinusOneHex));
       testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'hex'}), '', cbfactory(seedMinusOneHex));
       testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'hex'}), '', 'binary', cbfactory(seedMinusOneHex));
-      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'hex'}), new Buffer(''), cbfactory(seedMinusOneHex));
-      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'hex'}), new Buffer(''), 'binary', cbfactory(seedMinusOneHex));
+      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'hex'}), Buffer.from(''), cbfactory(seedMinusOneHex));
+      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'hex'}), Buffer.from(''), 'binary', cbfactory(seedMinusOneHex));
       testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'hex'}), '', cbfactory(seedZeroHex));
       testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'hex'}), '', 'binary', cbfactory(seedZeroHex));
-      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'hex'}), new Buffer(''), cbfactory(seedZeroHex));
-      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'hex'}), new Buffer(''), 'binary', cbfactory(seedZeroHex));
+      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'hex'}), Buffer.from(''), cbfactory(seedZeroHex));
+      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'hex'}), Buffer.from(''), 'binary', cbfactory(seedZeroHex));
       testStream(strm.createHash(algorithm, {seed:1, encoding:'hex'}), '', cbfactory(seedPlusOneHex));
       testStream(strm.createHash(algorithm, {seed:1, encoding:'hex'}), '', 'binary', cbfactory(seedPlusOneHex));
-      testStream(strm.createHash(algorithm, {seed:1, encoding:'hex'}), new Buffer(''), cbfactory(seedPlusOneHex));
-      testStream(strm.createHash(algorithm, {seed:1, encoding:'hex'}), new Buffer(''), 'binary', cbfactory(seedPlusOneHex));
+      testStream(strm.createHash(algorithm, {seed:1, encoding:'hex'}), Buffer.from(''), cbfactory(seedPlusOneHex));
+      testStream(strm.createHash(algorithm, {seed:1, encoding:'hex'}), Buffer.from(''), 'binary', cbfactory(seedPlusOneHex));
     });
 
     t.test('should create buffer hash from empty data', function(t) {
@@ -115,24 +115,24 @@ test('should throw error for bad arguments', function(t) {
       }
       testStream(strm.createHash(algorithm), '', cbfactory(seedZeroBuffer));
       testStream(strm.createHash(algorithm), '', 'binary', cbfactory(seedZeroBuffer));
-      testStream(strm.createHash(algorithm), new Buffer(''), cbfactory(seedZeroBuffer));
-      testStream(strm.createHash(algorithm), new Buffer(''), 'binary', cbfactory(seedZeroBuffer));
+      testStream(strm.createHash(algorithm), Buffer.from(''), cbfactory(seedZeroBuffer));
+      testStream(strm.createHash(algorithm), Buffer.from(''), 'binary', cbfactory(seedZeroBuffer));
       testStream(strm.createHash(algorithm, {seed:-1}), '', cbfactory(seedMinusOneBuffer));
       testStream(strm.createHash(algorithm, {seed:-1}), '', 'binary', cbfactory(seedMinusOneBuffer));
-      testStream(strm.createHash(algorithm, {seed:-1}), new Buffer(''), cbfactory(seedMinusOneBuffer));
-      testStream(strm.createHash(algorithm, {seed:-1}), new Buffer(''), 'binary', cbfactory(seedMinusOneBuffer));
+      testStream(strm.createHash(algorithm, {seed:-1}), Buffer.from(''), cbfactory(seedMinusOneBuffer));
+      testStream(strm.createHash(algorithm, {seed:-1}), Buffer.from(''), 'binary', cbfactory(seedMinusOneBuffer));
       testStream(strm.createHash(algorithm, {seed:4294967295}), '', cbfactory(seedMinusOneBuffer));
       testStream(strm.createHash(algorithm, {seed:4294967295}), '', 'binary', cbfactory(seedMinusOneBuffer));
-      testStream(strm.createHash(algorithm, {seed:4294967295}), new Buffer(''), cbfactory(seedMinusOneBuffer));
-      testStream(strm.createHash(algorithm, {seed:4294967295}), new Buffer(''), 'binary', cbfactory(seedMinusOneBuffer));
+      testStream(strm.createHash(algorithm, {seed:4294967295}), Buffer.from(''), cbfactory(seedMinusOneBuffer));
+      testStream(strm.createHash(algorithm, {seed:4294967295}), Buffer.from(''), 'binary', cbfactory(seedMinusOneBuffer));
       testStream(strm.createHash(algorithm, {seed:4294967296}), '', cbfactory(seedZeroBuffer));
       testStream(strm.createHash(algorithm, {seed:4294967296}), '', 'binary', cbfactory(seedZeroBuffer));
-      testStream(strm.createHash(algorithm, {seed:4294967296}), new Buffer(''), cbfactory(seedZeroBuffer));
-      testStream(strm.createHash(algorithm, {seed:4294967296}), new Buffer(''), 'binary', cbfactory(seedZeroBuffer));
+      testStream(strm.createHash(algorithm, {seed:4294967296}), Buffer.from(''), cbfactory(seedZeroBuffer));
+      testStream(strm.createHash(algorithm, {seed:4294967296}), Buffer.from(''), 'binary', cbfactory(seedZeroBuffer));
       testStream(strm.createHash(algorithm, {seed:1}), '', cbfactory(seedPlusOneBuffer));
       testStream(strm.createHash(algorithm, {seed:1}), '', 'binary', cbfactory(seedPlusOneBuffer));
-      testStream(strm.createHash(algorithm, {seed:1}), new Buffer(''), cbfactory(seedPlusOneBuffer));
-      testStream(strm.createHash(algorithm, {seed:1}), new Buffer(''), 'binary', cbfactory(seedPlusOneBuffer));
+      testStream(strm.createHash(algorithm, {seed:1}), Buffer.from(''), cbfactory(seedPlusOneBuffer));
+      testStream(strm.createHash(algorithm, {seed:1}), Buffer.from(''), 'binary', cbfactory(seedPlusOneBuffer));
     });
 
     t.test('should create string encoded hash from empty data', function(t) {
@@ -146,42 +146,42 @@ test('should throw error for bad arguments', function(t) {
       testStream(strm.createHash(algorithm, {encoding:'binary'}), '', cbfactory(seedZeroBinary));
       testStream(strm.createHash(algorithm, {encoding:'base64'}), '', 'binary', cbfactory(seedZeroBase64));
       testStream(strm.createHash(algorithm, {encoding:'binary'}), '', 'binary', cbfactory(seedZeroBinary));
-      testStream(strm.createHash(algorithm, {encoding:'base64'}), new Buffer(''), cbfactory(seedZeroBase64));
-      testStream(strm.createHash(algorithm, {encoding:'binary'}), new Buffer(''), cbfactory(seedZeroBinary));
-      testStream(strm.createHash(algorithm, {encoding:'base64'}), new Buffer(''), 'binary', cbfactory(seedZeroBase64));
-      testStream(strm.createHash(algorithm, {encoding:'binary'}), new Buffer(''), 'binary', cbfactory(seedZeroBinary));
+      testStream(strm.createHash(algorithm, {encoding:'base64'}), Buffer.from(''), cbfactory(seedZeroBase64));
+      testStream(strm.createHash(algorithm, {encoding:'binary'}), Buffer.from(''), cbfactory(seedZeroBinary));
+      testStream(strm.createHash(algorithm, {encoding:'base64'}), Buffer.from(''), 'binary', cbfactory(seedZeroBase64));
+      testStream(strm.createHash(algorithm, {encoding:'binary'}), Buffer.from(''), 'binary', cbfactory(seedZeroBinary));
       testStream(strm.createHash(algorithm, {seed:-1, encoding:'base64'}), '', cbfactory(seedMinusOneBase64));
       testStream(strm.createHash(algorithm, {seed:-1, encoding:'binary'}), '', cbfactory(seedMinusOneBinary));
       testStream(strm.createHash(algorithm, {seed:-1, encoding:'base64'}), '', 'binary', cbfactory(seedMinusOneBase64));
       testStream(strm.createHash(algorithm, {seed:-1, encoding:'binary'}), '', 'binary', cbfactory(seedMinusOneBinary));
-      testStream(strm.createHash(algorithm, {seed:-1, encoding:'base64'}), new Buffer(''), cbfactory(seedMinusOneBase64));
-      testStream(strm.createHash(algorithm, {seed:-1, encoding:'binary'}), new Buffer(''), cbfactory(seedMinusOneBinary));
-      testStream(strm.createHash(algorithm, {seed:-1, encoding:'base64'}), new Buffer(''), 'binary', cbfactory(seedMinusOneBase64));
-      testStream(strm.createHash(algorithm, {seed:-1, encoding:'binary'}), new Buffer(''), 'binary', cbfactory(seedMinusOneBinary));
+      testStream(strm.createHash(algorithm, {seed:-1, encoding:'base64'}), Buffer.from(''), cbfactory(seedMinusOneBase64));
+      testStream(strm.createHash(algorithm, {seed:-1, encoding:'binary'}), Buffer.from(''), cbfactory(seedMinusOneBinary));
+      testStream(strm.createHash(algorithm, {seed:-1, encoding:'base64'}), Buffer.from(''), 'binary', cbfactory(seedMinusOneBase64));
+      testStream(strm.createHash(algorithm, {seed:-1, encoding:'binary'}), Buffer.from(''), 'binary', cbfactory(seedMinusOneBinary));
       testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'base64'}), '', cbfactory(seedMinusOneBase64));
       testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'binary'}), '', cbfactory(seedMinusOneBinary));
       testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'base64'}), '', 'binary', cbfactory(seedMinusOneBase64));
       testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'binary'}), '', 'binary', cbfactory(seedMinusOneBinary));
-      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'base64'}), new Buffer(''), cbfactory(seedMinusOneBase64));
-      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'binary'}), new Buffer(''), cbfactory(seedMinusOneBinary));
-      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'base64'}), new Buffer(''), 'binary', cbfactory(seedMinusOneBase64));
-      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'binary'}), new Buffer(''), 'binary', cbfactory(seedMinusOneBinary));
+      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'base64'}), Buffer.from(''), cbfactory(seedMinusOneBase64));
+      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'binary'}), Buffer.from(''), cbfactory(seedMinusOneBinary));
+      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'base64'}), Buffer.from(''), 'binary', cbfactory(seedMinusOneBase64));
+      testStream(strm.createHash(algorithm, {seed:4294967295, encoding:'binary'}), Buffer.from(''), 'binary', cbfactory(seedMinusOneBinary));
       testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'base64'}), '', cbfactory(seedZeroBase64));
       testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'binary'}), '', cbfactory(seedZeroBinary));
       testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'base64'}), '', 'binary', cbfactory(seedZeroBase64));
       testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'binary'}), '', 'binary', cbfactory(seedZeroBinary));
-      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'base64'}), new Buffer(''), cbfactory(seedZeroBase64));
-      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'binary'}), new Buffer(''), cbfactory(seedZeroBinary));
-      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'base64'}), new Buffer(''), 'binary', cbfactory(seedZeroBase64));
-      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'binary'}), new Buffer(''), 'binary', cbfactory(seedZeroBinary));
+      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'base64'}), Buffer.from(''), cbfactory(seedZeroBase64));
+      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'binary'}), Buffer.from(''), cbfactory(seedZeroBinary));
+      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'base64'}), Buffer.from(''), 'binary', cbfactory(seedZeroBase64));
+      testStream(strm.createHash(algorithm, {seed:4294967296, encoding:'binary'}), Buffer.from(''), 'binary', cbfactory(seedZeroBinary));
       testStream(strm.createHash(algorithm, {seed:1, encoding:'base64'}), '', cbfactory(seedPlusOneBase64));
       testStream(strm.createHash(algorithm, {seed:1, encoding:'binary'}), '', cbfactory(seedPlusOneBinary));
       testStream(strm.createHash(algorithm, {seed:1, encoding:'base64'}), '', 'binary', cbfactory(seedPlusOneBase64));
       testStream(strm.createHash(algorithm, {seed:1, encoding:'binary'}), '', 'binary', cbfactory(seedPlusOneBinary));
-      testStream(strm.createHash(algorithm, {seed:1, encoding:'base64'}), new Buffer(''), cbfactory(seedPlusOneBase64));
-      testStream(strm.createHash(algorithm, {seed:1, encoding:'binary'}), new Buffer(''), cbfactory(seedPlusOneBinary));
-      testStream(strm.createHash(algorithm, {seed:1, encoding:'base64'}), new Buffer(''), 'binary', cbfactory(seedPlusOneBase64));
-      testStream(strm.createHash(algorithm, {seed:1, encoding:'binary'}), new Buffer(''), 'binary', cbfactory(seedPlusOneBinary));
+      testStream(strm.createHash(algorithm, {seed:1, encoding:'base64'}), Buffer.from(''), cbfactory(seedPlusOneBase64));
+      testStream(strm.createHash(algorithm, {seed:1, encoding:'binary'}), Buffer.from(''), cbfactory(seedPlusOneBinary));
+      testStream(strm.createHash(algorithm, {seed:1, encoding:'base64'}), Buffer.from(''), 'binary', cbfactory(seedPlusOneBase64));
+      testStream(strm.createHash(algorithm, {seed:1, encoding:'binary'}), Buffer.from(''), 'binary', cbfactory(seedPlusOneBinary));
     });
 
     t.test('should utilize different string input encodings', function(t) {
@@ -201,23 +201,23 @@ test('should throw error for bad arguments', function(t) {
         , base64 = 'IELzfGtv'
         , hex = '2042f37c6b6f'
         , hash = murmurHash(string,'buffer');
-      testStream(strm.createHash(algorithm), new Buffer(string, 'binary'), cbfactory2(hash));
-      testStream(strm.createHash(algorithm), string,  cbfactory(new Buffer(string, 'binary')));
-      testStream(strm.createHash(algorithm), string,  cbfactory(new Buffer(string, 'binary')));
-      testStream(strm.createHash(algorithm), string, 'ascii', cbfactory(new Buffer(string, 'ascii')));
+      testStream(strm.createHash(algorithm), Buffer.from(string, 'binary'), cbfactory2(hash));
+      testStream(strm.createHash(algorithm), string,  cbfactory(Buffer.from(string, 'binary')));
+      testStream(strm.createHash(algorithm), string,  cbfactory(Buffer.from(string, 'binary')));
+      testStream(strm.createHash(algorithm), string, 'ascii', cbfactory(Buffer.from(string, 'ascii')));
       testStream(strm.createHash(algorithm), string, 'ascii', cbfactory2(hash));
-      testStream(strm.createHash(algorithm), string, 'binary', cbfactory(new Buffer(string, 'binary')));
+      testStream(strm.createHash(algorithm), string, 'binary', cbfactory(Buffer.from(string, 'binary')));
       testStream(strm.createHash(algorithm), string, 'binary', cbfactory2(hash));
-      testStream(strm.createHash(algorithm), string, 'utf8', cbfactory(new Buffer(string, 'utf8')));
-      testStream(strm.createHash(algorithm), string, 'utf-8', cbfactory(new Buffer(string, 'utf-8')));
-      testStream(strm.createHash(algorithm), string, 'ucs2', cbfactory(new Buffer(string, 'ucs2')));
-      testStream(strm.createHash(algorithm), string, 'ucs-2', cbfactory(new Buffer(string, 'ucs-2')));
-      testStream(strm.createHash(algorithm), string, 'utf16le', cbfactory(new Buffer(string, 'utf16le')));
-      testStream(strm.createHash(algorithm), string, 'utf-16le', cbfactory(new Buffer(string, 'utf-16le')));
+      testStream(strm.createHash(algorithm), string, 'utf8', cbfactory(Buffer.from(string, 'utf8')));
+      testStream(strm.createHash(algorithm), string, 'utf-8', cbfactory(Buffer.from(string, 'utf-8')));
+      testStream(strm.createHash(algorithm), string, 'ucs2', cbfactory(Buffer.from(string, 'ucs2')));
+      testStream(strm.createHash(algorithm), string, 'ucs-2', cbfactory(Buffer.from(string, 'ucs-2')));
+      testStream(strm.createHash(algorithm), string, 'utf16le', cbfactory(Buffer.from(string, 'utf16le')));
+      testStream(strm.createHash(algorithm), string, 'utf-16le', cbfactory(Buffer.from(string, 'utf-16le')));
       testStream(strm.createHash(algorithm), base64, 'base64', cbfactory2(hash));
-      testStream(strm.createHash(algorithm), base64, 'base64', cbfactory(new Buffer(base64, 'base64')));
+      testStream(strm.createHash(algorithm), base64, 'base64', cbfactory(Buffer.from(base64, 'base64')));
       testStream(strm.createHash(algorithm), hex, 'hex', cbfactory2(hash));
-      testStream(strm.createHash(algorithm), hex, 'hex', cbfactory(new Buffer(hex, 'hex')));
+      testStream(strm.createHash(algorithm), hex, 'hex', cbfactory(Buffer.from(hex, 'hex')));
     });
 
     t.test('should create hash from some random data', function(t) {
@@ -243,10 +243,10 @@ test('should throw error for bad arguments', function(t) {
       }
       var data = '';
       for (var i = 0; i < 1000; ++i) data += String.fromCharCode((Math.random()*32768)|0);
-      var buffer = new Buffer(data, 'binary');
+      var buffer = Buffer.from(data, 'binary');
       testStream(strm.createHash(algorithm, {seed:0}), data, cbfactoryLen());
       testStream(strm.createHash(algorithm), buffer, cbfactoryLen());
-      testStream(strm.createHash(algorithm, {encoding: 'hex'}), data, 'utf8', cbfactory(new Buffer(data, 'utf8')));
+      testStream(strm.createHash(algorithm, {encoding: 'hex'}), data, 'utf8', cbfactory(Buffer.from(data, 'utf8')));
       testStream(strm.createHash(algorithm, {encoding: 'hex'}), data, cbfactory(buffer));
       testStream(strm.createHash(algorithm, {seed: -1, encoding: 'hex'}), data, cbfactory(buffer, -1));
       testStream(strm.createHash(algorithm, {seed: -1, encoding: 'hex'}), data, cbfactory(buffer, 4294967295));

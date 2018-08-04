@@ -12,7 +12,7 @@ test("RandomChunkStream", function(t) {
   t.equal(s.cursor, 0);
   var p = new stream.PassThrough({encoding:'binary'});
   var counts = 0, countp = 0, sizes = 0, sizep = 0;
-  var destbuf = new Buffer(10000);
+  var destbuf = Buffer.allocUnsafeSlow(10000);
   var deststr = '';
   p.on('data', function(data) {
     t.type(data, 'string');

@@ -18,7 +18,7 @@ var test = require("tap").test
 ].forEach(function(MurmurHash) {
 
   test(MurmurHash.name + " should not crash while under gc stress", function(t) {
-    var bigone = new Buffer(kMaxLength);
+    var bigone = Buffer.allocUnsafeSlow(kMaxLength);
     MurmurHash().update(bigone, function(err) {
       t.error(err);
       gc(); gc(); gc(); gc();
