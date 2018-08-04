@@ -1,3 +1,9 @@
+v3.2.4
+
+* bump node-pre-gyp to 0.10.3, node-pre-gyp-github to 1.4.1, commander to 2.17
+* test and release binaries for nodejs v10
+* replaced deprecated Buffer factory api in tests and benches with the class methods
+
 v3.2.3
 
 * bump nan to 2.10, node-pre-gyp to 0.9.1, tap to 9, commander to 2.15
