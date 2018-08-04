@@ -7,7 +7,6 @@ This library provides Austin Appleby's non-cryptographic "MurmurHash" hashing al
 [![Node][Node img]][NPM Status]
 [![Travis][Travis img]][Travis Status]
 [![AppVeyor][AppVeyor img]][AppVeyor Status]
-[![bitHound][bitHound img]][bitHound Status]
 [![License][License img]][License Link]
 
 Key features:
@@ -304,7 +303,6 @@ Tested with nodejs: v4, v5, v6, v7, v8, v9 and v10.
 [License img]: https://img.shields.io/npm/l/murmurhash-native.svg?maxAge=2592000&style=flat-square
 [License Link]: https://opensource.org/licenses/MIT
 [bitHound img]: https://img.shields.io/bithound/dependencies/github/royaltm/node-murmurhash-native.svg?maxAge=86400&style=flat-square
-[bitHound Status]: https://www.bithound.io/github/royaltm/node-murmurhash-native
 [murmurhash3js]: https://www.npmjs.com/package/murmurhash3js
 [PMurHash]: https://github.com/aappleby/smhasher/blob/master/src/PMurHash.c
 [crypto.Hash]: https://nodejs.org/dist/latest-v6.x/docs/api/crypto.html#crypto_class_hash
