@@ -72,14 +72,14 @@ function fillrandom(buffer) {
 }
 
 function randomstring(length) {
-  var buffer = fillrandom(new Buffer(length));
+  var buffer = fillrandom(Buffer.allocUnsafe(length));
   return buffer.toString('binary');
 }
 
 function bench(size, inputStr, duration) {
   var input = inputStr
             ? randomstring(size)
-            : fillrandom(new Buffer(size));
+            : fillrandom(Buffer.allocUnsafe(size));
   funmatrix.forEach(function(args) {
     var fun = args[0], name = args[1];
     queue(measure, inputStr ? "string" : "buffer", fun, name, duration, parallel, size, input);

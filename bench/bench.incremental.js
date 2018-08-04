@@ -56,14 +56,14 @@ function fillrandom(buffer) {
 }
 
 function randomstring(length) {
-  var buffer = fillrandom(new Buffer(length));
+  var buffer = fillrandom(Buffer.allocUnsafe(length));
   return buffer.toString('binary');
 }
 
 function bench(size, inputStr, duration) {
   var input = inputStr
             ? randomstring(size)
-            : fillrandom(new Buffer(size));
+            : fillrandom(Buffer.allocUnsafe(size));
   funmatrix.forEach(function(args) {
     var Hash = args[0], name = args[1];
     [1, 3, 4, 8, 16, 17, 32, 64, 101, 128, 1009, 1024, size / 4>>>0, size / 2>>>0].forEach(function(chunksize) {
