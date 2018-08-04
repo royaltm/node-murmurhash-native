@@ -12,7 +12,10 @@ function testStream(hasher, data, encoding, cb) {
     cb = encoding; encoding = null;
   }
   hasher.end(data, encoding);
-  hasher.on('readable', function() { cb(hasher.read()); });
+  hasher.on('readable', function() {
+    var hash = hasher.read();
+    hash && cb(hash);
+  });
 }
 
 test("should have algorithms", function(t) {
