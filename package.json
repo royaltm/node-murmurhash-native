@@ -48,6 +48,6 @@
     "commander": "^2.17.0",
     "murmurhash3js": "^3.0.1",
     "node-pre-gyp-github": "^1.4.2",
-    "tap": "^12.0.1"
+    "tap": "^9.0.3"
   }
 }
