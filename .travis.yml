@@ -1,29 +1,47 @@
 sudo: false
 language: node_js
-node_js:
-  - "4"
-  - "5"
-  - "6"
-  - "7"
-  - "8"
-  - "9"
-  - "10"
-  - "11"
 
 os:
   - linux
-  addons:
-    apt:
-      sources:
-      - ubuntu-toolchain-r-test
-      packages:
-      - g++-4.9
-  env:
-  - CXX=g++-4.9
-#- osx
-#- windows
+  - osx
+  #- windows
+
+matrix:
+  include:
+  - os: osx
+    node_js:
+    - "4"
+    - "5"
+    - "6"
+    - "7"
+    - "8"
+    - "9"
+    - "10"
+    - "11"
+    osx_image: xcode8
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+  - os: linux
+    node_js:
+    - "4"
+    - "5"
+    - "6"
+    - "7"
+    - "8"
+    - "9"
+    - "10"
+    - "11"
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.9
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
 before_install:
+  - eval "${MATRIX_EVAL}"
   # print versions
   - node --version
   - npm --version
