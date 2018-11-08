@@ -2,6 +2,14 @@ sudo: false
 
 matrix:
   include:
+  - os: windows
+    language: node_js
+    node_js: "4"
+
+  - os: windows
+    language: node_js
+    node_js: "11"
+
   - os: osx
     osx_image: xcode8
     language: node_js
@@ -161,7 +169,7 @@ before_install:
   - npm --version
   # use g++-4.8 on Linux
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.9; fi
-  - "$CXX --version"
+  - if [[ $TRAVIS_OS_NAME != "windows" ]]; then `$CXX --version`; fi
   # figure out if we should publish
   - PUBLISH_BINARY=no
   # if we are building a tag then publish
