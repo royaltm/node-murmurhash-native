@@ -5,10 +5,15 @@ matrix:
   - os: windows
     language: node_js
     node_js: "8"
-
-#  - os: windows
-#    language: node_js
-#    node_js: "11"
+  - os: windows
+    language: node_js
+    node_js: "9"
+  - os: windows
+    language: node_js
+    node_js: "10"
+  - os: windows
+    language: node_js
+    node_js: "11"
 
   - os: osx
     osx_image: xcode8
@@ -16,55 +21,24 @@ matrix:
     node_js: "8"
     env:
     - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-#  - os: osx
-#    osx_image: xcode8
-#    language: node_js
-#    node_js: "5"
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: osx
-#    osx_image: xcode8
-#    language: node_js
-#    node_js: "6"
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: osx
-#    osx_image: xcode8
-#    language: node_js
-#    node_js: "7"
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: osx
-#    osx_image: xcode8
-#    language: node_js
-#    node_js: "8"
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: osx
-#    osx_image: xcode8
-#    language: node_js
-#    node_js: "9"
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: osx
-#    osx_image: xcode8
-#    language: node_js
-#    node_js: "10"
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: osx
-#    osx_image: xcode8
-#    language: node_js
-#    node_js: "11"
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+  - os: osx
+    osx_image: xcode8
+    language: node_js
+    node_js: "9"
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+  - os: osx
+    osx_image: xcode8
+    language: node_js
+    node_js: "10"
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+  - os: osx
+    osx_image: xcode8
+    language: node_js
+    node_js: "11"
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
   - os: linux
     language: node_js
@@ -77,99 +51,47 @@ matrix:
         - g++-4.9
     env:
     - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-#  - os: linux
-#    language: node_js
-#    node_js: "5"
-#    addons:
-#      apt:
-#        sources:
-#        - ubuntu-toolchain-r-test
-#        packages:
-#        - g++-4.9
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: linux
-#    language: node_js
-#    node_js: "6"
-#    addons:
-#      apt:
-#        sources:
-#        - ubuntu-toolchain-r-test
-#        packages:
-#        - g++-4.9
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: linux
-#    language: node_js
-#    node_js: "7"
-#    addons:
-#      apt:
-#        sources:
-#        - ubuntu-toolchain-r-test
-#        packages:
-#        - g++-4.9
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: linux
-#    language: node_js
-#    node_js: "8"
-#    addons:
-#      apt:
-#        sources:
-#        - ubuntu-toolchain-r-test
-#        packages:
-#        - g++-4.9
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: linux
-#    language: node_js
-#    node_js: "9"
-#    addons:
-#      apt:
-#        sources:
-#        - ubuntu-toolchain-r-test
-#        packages:
-#        - g++-4.9
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: linux
-#    language: node_js
-#    node_js: "10"
-#    addons:
-#      apt:
-#        sources:
-#        - ubuntu-toolchain-r-test
-#        packages:
-#        - g++-4.9
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-#
-#  - os: linux
-#    language: node_js
-#    node_js: "11"
-#    addons:
-#      apt:
-#        sources:
-#        - ubuntu-toolchain-r-test
-#        packages:
-#        - g++-4.9
-#    env:
-#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+  - os: linux
+    language: node_js
+    node_js: "9"
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.9
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+  - os: linux
+    language: node_js
+    node_js: "10"
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.9
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+  - os: linux
+    language: node_js
+    node_js: "11"
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.9
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
 before_install:
   - eval "${MATRIX_EVAL}"
   # print versions
   - node --version
   - npm --version
-  # use g++-4.8 on Linux
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.9; fi
   - if [[ $TRAVIS_OS_NAME != "windows" ]]; then $CXX --version; fi
+  # install windows-build-tools
   - if [[ $TRAVIS_OS_NAME == "windows" ]]; then npm install --global --production windows-build-tools; fi
   - if [[ $TRAVIS_OS_NAME == "windows" ]]; then setx PYTHON "%USERPROFILE%\.windows-build-tools\python27\python.exe"; fi
   # figure out if we should publish
