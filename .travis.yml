@@ -22,6 +22,56 @@ matrix:
     node_js: "4"
     env:
     - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
+  - os: osx
+    osx_image: xcode8
+    language: node_js
+    node_js: "5"
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
+  - os: osx
+    osx_image: xcode8
+    language: node_js
+    node_js: "6"
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
+  - os: osx
+    osx_image: xcode8
+    language: node_js
+    node_js: "7"
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
+  - os: osx
+    osx_image: xcode8
+    language: node_js
+    node_js: "8"
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
+  - os: osx
+    osx_image: xcode8
+    language: node_js
+    node_js: "9"
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
+  - os: osx
+    osx_image: xcode8
+    language: node_js
+    node_js: "10"
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
+  - os: osx
+    osx_image: xcode8
+    language: node_js
+    node_js: "11"
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
   - os: linux
     language: node_js
     node_js: "4"
