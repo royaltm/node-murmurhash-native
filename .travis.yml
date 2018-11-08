@@ -4,7 +4,7 @@ matrix:
   include:
   - os: windows
     language: node_js
-    node_js: "4"
+    node_js: "6"
 
 #  - os: windows
 #    language: node_js
@@ -13,7 +13,7 @@ matrix:
   - os: osx
     osx_image: xcode8
     language: node_js
-    node_js: "4"
+    node_js: "6"
     env:
     - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
@@ -68,7 +68,7 @@ matrix:
 
   - os: linux
     language: node_js
-    node_js: "4"
+    node_js: "6"
     addons:
       apt:
         sources:
