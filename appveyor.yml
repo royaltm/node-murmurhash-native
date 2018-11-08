@@ -4,70 +4,67 @@ environment:
     secure: zPYtraT93rgt16J0Egnm0+SD3u8ncUEjAbsquMN5zsY9qowJP/t362GfmtIgbJS4
 
   matrix:
-    - {"nodejs_version": "4", "npm_version": "3"}
-    - {"nodejs_version": "5", "npm_version": "3"}
-    - {"nodejs_version": "6", "npm_version": "3"}
-    - {"nodejs_version": "7", "npm_version": "4"}
-    - {"nodejs_version": "8", "npm_version": "4"}
-    - {"nodejs_version": "9", "npm_version": "5"}
-    - {"nodejs_version": "10", "npm_version": "6"}
-    - {"nodejs_version": "11", "npm_version": "6"}
+  - {"nodejs_version": "6", "npm_version": "3"}
+  - {"nodejs_version": "7", "npm_version": "4"}
+  - {"nodejs_version": "8", "npm_version": "4"}
+  - {"nodejs_version": "9", "npm_version": "5"}
+  - {"nodejs_version": "10", "npm_version": "6"}
+  - {"nodejs_version": "11", "npm_version": "6"}
 
 platform:
-  - x86
-  - x64
+- x86
 
 configuration:
-  - Release
+- Release
 
 matrix:
   fast_finish: true
 
 install:
-  - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform;
-  - npm -g install npm@%NPM_VERSION%
-  - ps: $env:Path += ";$(pwd)\node_modules\.bin;$env:AppData\npm";
-  - ps: >
-      @{
-        "nodejs_version" = $env:nodejs_version
-        "platform" = $env:platform
-        "node binary version" = $(node -v)
-        "npm version" = $(npm -v)
-        "APPVEYOR_REPO_COMMIT_MESSAGE" = $env:APPVEYOR_REPO_COMMIT_MESSAGE
-        "git latest tag" = "$(git describe --tags --always HEAD)"
-        "appveyor_repo_tag" = $env:appveyor_repo_tag
-      } | Out-String | Write-Host;
-  # work around an issue with node-gyp v3.3.1 and node 4x
-  # package.json has no certificates in it so we're cool
-  # https://github.com/nodejs/node-gyp/issues/921
-  - ps: npm config set -g cafile=package.json | Write-Host;
-  - ps: npm config set -g strict-ssl=false | Write-Host;
+- ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform;
+- npm -g install npm@%NPM_VERSION%
+- ps: $env:Path += ";$(pwd)\node_modules\.bin;$env:AppData\npm";
+- ps: >
+    @{
+      "nodejs_version" = $env:nodejs_version
+      "platform" = $env:platform
+      "node binary version" = $(node -v)
+      "npm version" = $(npm -v)
+      "APPVEYOR_REPO_COMMIT_MESSAGE" = $env:APPVEYOR_REPO_COMMIT_MESSAGE
+      "git latest tag" = "$(git describe --tags --always HEAD)"
+      "appveyor_repo_tag" = $env:appveyor_repo_tag
+    } | Out-String | Write-Host;
+# work around an issue with node-gyp v3.3.1 and node 4x
+# package.json has no certificates in it so we're cool
+# https://github.com/nodejs/node-gyp/issues/921
+- ps: npm config set -g cafile=package.json | Write-Host;
+- ps: npm config set -g strict-ssl=false | Write-Host;
 
-  # Check if we're building the latest tag, if so
-  # then we publish the binaries if tests pass.
-  - ps: >
-      if ($env:appveyor_repo_tag -match "true" -and ("$(git describe --tags --always HEAD)" -eq $env:appveyor_repo_tag_name)) {
-        $env:publish_binary = 1;
-      } else {
-        $env:publish_binary = 0;
-      }
-      true;
-  - ps: >
-      if ($env:publish_binary -eq 1) {
-        "We're going to publish a binary!" | Write-Host
-      } else {
-        "We're NOT going to publish a binary" | Write-Host
-      }
-      true;
+# Check if we're building the latest tag, if so
+# then we publish the binaries if tests pass.
+- ps: >
+    if ($env:appveyor_repo_tag -match "true" -and ("$(git describe --tags --always HEAD)" -eq $env:appveyor_repo_tag_name)) {
+      $env:publish_binary = 1;
+    } else {
+      $env:publish_binary = 0;
+    }
+    true;
+- ps: >
+    if ($env:publish_binary -eq 1) {
+      "We're going to publish a binary!" | Write-Host
+    } else {
+      "We're NOT going to publish a binary" | Write-Host
+    }
+    true;
 
 build_script:
-  - npm install --build-from-source
+- npm install --build-from-source
 
 test_script:
-  - npm test
-  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
-  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release 2>&1)
-  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean install)
+- npm test
+- IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
+- IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release 2>&1)
+- IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean install)
 
 # Set build version format here instead of in the admin panel.
 version: "{build}"
