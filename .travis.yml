@@ -6,9 +6,9 @@ matrix:
     language: node_js
     node_js: "4"
 
-  - os: windows
-    language: node_js
-    node_js: "11"
+#  - os: windows
+#    language: node_js
+#    node_js: "11"
 
   - os: osx
     osx_image: xcode8
@@ -17,54 +17,54 @@ matrix:
     env:
     - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "5"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "6"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "7"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "8"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "9"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "10"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "11"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#  - os: osx
+#    osx_image: xcode8
+#    language: node_js
+#    node_js: "5"
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: osx
+#    osx_image: xcode8
+#    language: node_js
+#    node_js: "6"
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: osx
+#    osx_image: xcode8
+#    language: node_js
+#    node_js: "7"
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: osx
+#    osx_image: xcode8
+#    language: node_js
+#    node_js: "8"
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: osx
+#    osx_image: xcode8
+#    language: node_js
+#    node_js: "9"
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: osx
+#    osx_image: xcode8
+#    language: node_js
+#    node_js: "10"
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: osx
+#    osx_image: xcode8
+#    language: node_js
+#    node_js: "11"
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
   - os: linux
     language: node_js
@@ -78,89 +78,89 @@ matrix:
     env:
     - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
-  - os: linux
-    language: node_js
-    node_js: "5"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: linux
-    language: node_js
-    node_js: "6"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: linux
-    language: node_js
-    node_js: "7"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: linux
-    language: node_js
-    node_js: "8"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: linux
-    language: node_js
-    node_js: "9"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: linux
-    language: node_js
-    node_js: "10"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: linux
-    language: node_js
-    node_js: "11"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#  - os: linux
+#    language: node_js
+#    node_js: "5"
+#    addons:
+#      apt:
+#        sources:
+#        - ubuntu-toolchain-r-test
+#        packages:
+#        - g++-4.9
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: linux
+#    language: node_js
+#    node_js: "6"
+#    addons:
+#      apt:
+#        sources:
+#        - ubuntu-toolchain-r-test
+#        packages:
+#        - g++-4.9
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: linux
+#    language: node_js
+#    node_js: "7"
+#    addons:
+#      apt:
+#        sources:
+#        - ubuntu-toolchain-r-test
+#        packages:
+#        - g++-4.9
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: linux
+#    language: node_js
+#    node_js: "8"
+#    addons:
+#      apt:
+#        sources:
+#        - ubuntu-toolchain-r-test
+#        packages:
+#        - g++-4.9
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: linux
+#    language: node_js
+#    node_js: "9"
+#    addons:
+#      apt:
+#        sources:
+#        - ubuntu-toolchain-r-test
+#        packages:
+#        - g++-4.9
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: linux
+#    language: node_js
+#    node_js: "10"
+#    addons:
+#      apt:
+#        sources:
+#        - ubuntu-toolchain-r-test
+#        packages:
+#        - g++-4.9
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+#
+#  - os: linux
+#    language: node_js
+#    node_js: "11"
+#    addons:
+#      apt:
+#        sources:
+#        - ubuntu-toolchain-r-test
+#        packages:
+#        - g++-4.9
+#    env:
+#    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
 before_install:
   - eval "${MATRIX_EVAL}"
@@ -169,7 +169,9 @@ before_install:
   - npm --version
   # use g++-4.8 on Linux
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.9; fi
-  - if [[ $TRAVIS_OS_NAME != "windows" ]]; then `$CXX --version`; fi
+  - if [[ $TRAVIS_OS_NAME != "windows" ]]; then "$CXX --version"; fi
+  - if [[ $TRAVIS_OS_NAME == "windows" ]]; then npm install --global --production windows-build-tools; fi
+  - if [[ $TRAVIS_OS_NAME == "windows" ]]; then setx PYTHON "%USERPROFILE%\.windows-build-tools\python27\python.exe"; fi
   # figure out if we should publish
   - PUBLISH_BINARY=no
   # if we are building a tag then publish
