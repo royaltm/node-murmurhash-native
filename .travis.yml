@@ -1,10 +1,11 @@
 sudo: false
 
+env:
+  global:
+    secure: "LKh0Cc14itGFicEVCD+whTswTmI0HzWqy1C3cLw2z16TgST2dtmMdmUFXU1jNATfi0l4qqwrlnIgJrtzFNrc5fwxMY7XYr71F9QjfWIY7hfrTh3iZBYZJdlUdx0zClwGsN06ldDiaxKKljf/OmXuu5tds5iyel5O8KKZUaIFzKc="
+
 matrix:
   include:
-  - os: windows
-    language: node_js
-    node_js: "7"
   - os: windows
     language: node_js
     node_js: "8"
