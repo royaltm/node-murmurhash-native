@@ -169,7 +169,7 @@ before_install:
   - npm --version
   # use g++-4.8 on Linux
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.9; fi
-  - if [[ $TRAVIS_OS_NAME != "windows" ]]; then "$CXX --version"; fi
+  - if [[ $TRAVIS_OS_NAME != "windows" ]]; then $CXX --version; fi
   - if [[ $TRAVIS_OS_NAME == "windows" ]]; then npm install --global --production windows-build-tools; fi
   - if [[ $TRAVIS_OS_NAME == "windows" ]]; then setx PYTHON "%USERPROFILE%\.windows-build-tools\python27\python.exe"; fi
   # figure out if we should publish
