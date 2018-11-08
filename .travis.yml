@@ -1,66 +1,53 @@
 sudo: false
-#language: cpp
 language: node_js
 node_js:
-- "4"
-- "5"
-- "6"
-- "7"
-- "8"
-- "9"
-- "10"
-- "11"
+  - "4"
+  - "5"
+  - "6"
+  - "7"
+  - "8"
+  - "9"
+  - "10"
+  - "11"
+env:
+  - CXX=g++-4.9
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.9
+
 os:
 - linux
 - osx
 - windows
-env:
-  - CXX=g++-4.9
-  global:
-    secure: "LKh0Cc14itGFicEVCD+whTswTmI0HzWqy1C3cLw2z16TgST2dtmMdmUFXU1jNATfi0l4qqwrlnIgJrtzFNrc5fwxMY7XYr71F9QjfWIY7hfrTh3iZBYZJdlUdx0zClwGsN06ldDiaxKKljf/OmXuu5tds5iyel5O8KKZUaIFzKc="
-#  matrix:
-#  - TRAVIS_NODE_VERSION="4"
-#  - TRAVIS_NODE_VERSION="5"
-#  - TRAVIS_NODE_VERSION="6"
-#  - TRAVIS_NODE_VERSION="7"
-#  - TRAVIS_NODE_VERSION="8"
-#  - TRAVIS_NODE_VERSION="9"
-#  - TRAVIS_NODE_VERSION="10"
-#  - TRAVIS_NODE_VERSION="11"
 
 before_install:
-#- rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
-- PATH=$PATH:`pwd`/node_modules/.bin
-# print versions
-- node --version
-- npm --version
-# use g++-4.8 on Linux
-- if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.9; fi
-- "$CXX --version"
-# figure out if we should publish
-- PUBLISH_BINARY=no
-# if we are building a tag then publish
-- echo $TRAVIS_BRANCH
-- echo `git describe --tags --always HEAD`
-- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=yes; fi;
-- echo "Are we going to publish a binary? ->" $PUBLISH_BINARY
+  # print versions
+  - node --version
+  - npm --version
+  # use g++-4.8 on Linux
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.9; fi
+  - "$CXX --version"
+  # figure out if we should publish
+  - PUBLISH_BINARY=no
+  # if we are building a tag then publish
+  - echo $TRAVIS_BRANCH
+  - echo `git describe --tags --always HEAD`
+  - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=yes; fi;
+  - echo "Are we going to publish a binary? ->" $PUBLISH_BINARY
 
 install:
-# ensure source install works
-- npm install --build-from-source
+  # ensure source install works
+  - npm install --build-from-source
 
 script:
-- npm test
-# publish on a tag
-- if [[ $PUBLISH_BINARY == yes ]]; then node-pre-gyp package; fi;
-- if [[ $PUBLISH_BINARY == yes ]]; then node-pre-gyp-github publish --release; fi;
-# cleanup
-- node-pre-gyp clean
-# test binary exists
-- if [[ $PUBLISH_BINARY == yes ]]; then npm install --fallback-to-build=false; fi;
+  - npm test
+  # publish on a tag
+  - if [[ $PUBLISH_BINARY == yes ]]; then node-pre-gyp package; fi;
+  - if [[ $PUBLISH_BINARY == yes ]]; then node-pre-gyp-github publish --release; fi;
+  # cleanup
+  - node-pre-gyp clean
+  # test binary exists
+  - if [[ $PUBLISH_BINARY == yes ]]; then npm install --fallback-to-build=false; fi;
