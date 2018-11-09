@@ -20,9 +20,7 @@ environment:
 
 for:
   -
-    platform:
-      only:
-        - x64
+    platform: x64
 
     environment:
       matrix:
