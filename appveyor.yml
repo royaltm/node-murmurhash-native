@@ -1,7 +1,4 @@
 # http://www.appveyor.com/docs/appveyor-yml
-platform:
-- x86
-
 configuration:
 - Release
 
@@ -9,18 +6,20 @@ environment:
   NODE_PRE_GYP_GITHUB_TOKEN:
     secure: zPYtraT93rgt16J0Egnm0+SD3u8ncUEjAbsquMN5zsY9qowJP/t362GfmtIgbJS4
 
-  matrix:
-    - {"nodejs_version": "6", "npm_version": "3"}
-    - {"nodejs_version": "7", "npm_version": "4"}
-    - {"nodejs_version": "8", "npm_version": "4"}
-    - {"nodejs_version": "9", "npm_version": "5"}
-    - {"nodejs_version": "10", "npm_version": "6"}
-    - {"nodejs_version": "11", "npm_version": "6"}
-
 for:
   -
-    platform: x64
+    platform: x86
+    environment:
+      matrix:
+        - {"nodejs_version": "6", "npm_version": "3"}
+        - {"nodejs_version": "7", "npm_version": "4"}
+        - {"nodejs_version": "8", "npm_version": "4"}
+        - {"nodejs_version": "9", "npm_version": "5"}
+        - {"nodejs_version": "10", "npm_version": "6"}
+        - {"nodejs_version": "11", "npm_version": "6"}
 
+  -
+    platform: x64
     environment:
       matrix:
         - {"nodejs_version": "6", "npm_version": "3"}
