@@ -1,6 +1,7 @@
 # http://www.appveyor.com/docs/appveyor-yml
 platform:
 - x86
+- x64
 
 configuration:
 - Release
@@ -19,7 +20,8 @@ environment:
 
 for:
   -
-    platform: x64
+    platform:
+      only: x64
 
     environment:
       matrix:
