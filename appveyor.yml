@@ -18,15 +18,18 @@ environment:
     - {"nodejs_version": "11", "npm_version": "6"}
 
 for:
-  -
-    matrix:
-      only:
-        - matrix:
-          - {"nodejs_version": "6", "npm_version": "3"}
-          - {"nodejs_version": "7", "npm_version": "4"}
-    platform:
-      - x64
-      - x86
+-
+  matrix:
+    only:
+    - {"nodejs_version": "6", "npm_version": "3"}
+    - {"nodejs_version": "7", "npm_version": "4"}
+  platform: x64
+-
+  matrix:
+    only:
+    - {"nodejs_version": "6", "npm_version": "3"}
+    - {"nodejs_version": "7", "npm_version": "4"}
+  platform: x86
 
 matrix:
   fast_finish: true
