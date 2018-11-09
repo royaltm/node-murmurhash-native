@@ -17,7 +17,9 @@ environment:
     - {"nodejs_version": "10", "npm_version": "6"}
     - {"nodejs_version": "11", "npm_version": "6"}
 
-  for:
+for:
+-
+  environment:
     matrix:
       only:
         - {"nodejs_version": "6", "npm_version": "3"}
