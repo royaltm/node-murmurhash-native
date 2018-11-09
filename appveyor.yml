@@ -18,12 +18,14 @@ environment:
     - {"nodejs_version": "10", "npm_version": "6"}
     - {"nodejs_version": "11", "npm_version": "6"}
 
-matrix:
-  exclude:
-    - {"platform": "x64", "nodejs_version": "8", "npm_version": "4"}
-    - {"platform": "x64", "nodejs_version": "9", "npm_version": "5"}
-    - {"platform": "x64", "nodejs_version": "10", "npm_version": "6"}
-    - {"platform": "x64", "nodejs_version": "11", "npm_version": "6"}
+for:
+  -
+    matrix:
+      exclude:
+        - {"platform": "x64", "nodejs_version": "8", "npm_version": "4"}
+        - {"platform": "x64", "nodejs_version": "9", "npm_version": "5"}
+        - {"platform": "x64", "nodejs_version": "10", "npm_version": "6"}
+        - {"platform": "x64", "nodejs_version": "11", "npm_version": "6"}
 
 matrix:
   fast_finish: true
