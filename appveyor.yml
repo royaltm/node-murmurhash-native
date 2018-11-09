@@ -21,7 +21,8 @@ environment:
 for:
   -
     platform:
-      only: x64
+      only:
+        - x64
 
     environment:
       matrix:
