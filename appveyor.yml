@@ -18,11 +18,12 @@ environment:
     - {"nodejs_version": "11", "npm_version": "6"}
 
 for:
-  -
+-
+  environment:
     matrix:
       only:
-        - {"nodejs_version": "6", "npm_version": "3"}
-        - {"nodejs_version": "7", "npm_version": "4"}
+      - {"nodejs_version": "6", "npm_version": "3"}
+      - {"nodejs_version": "7", "npm_version": "4"}
 
     platform:
     - x86
