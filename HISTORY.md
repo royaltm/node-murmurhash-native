@@ -1,3 +1,10 @@
+v3.2.5
+
+* bump node-pre-gyp to 0.11.0, nan to 2.11.1 and tap to 12.0.1
+* adapt async uncaughtException tests to tap 12
+* test and release binaries for node v11
+* suppress v8 deprecation warnings from nan
+
 v3.2.4
 
 * bump node-pre-gyp to 0.10.3, commander to 2.17
