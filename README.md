@@ -291,7 +291,7 @@ The hash functions optimized for x64 and x86 produce different results.
 
 Tested on Linux (x64), OS X (x64) and MS Windows (x64 and x86).
 
-Tested with nodejs: v4, v5, v6, v7, v8, v9 and v10.
+Tested with nodejs: v4, v5, v6, v7, v8, v9, v10 and v11.
 
 [Travis Status]: https://travis-ci.org/royaltm/node-murmurhash-native
 [Travis img]: https://img.shields.io/travis/royaltm/node-murmurhash-native.svg?maxAge=86400&style=flat-square&label=unix
