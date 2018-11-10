@@ -27,7 +27,7 @@ matrix:
     - os: windows
 
 before_install:
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.9; fi
+  - if [[ $TRAVIS_OS_NAME != "windows" ]]; then export CXX=g++-4.9; fi
   # print versions
   - node --version
   - npm --version
