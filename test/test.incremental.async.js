@@ -1,6 +1,6 @@
 "use strict";
 
-var test = require("tap").test
+var test = require('./uncaughtexceptionwrap_tap').test
   , incr = require('../incremental')
   , strm = require('../stream')
   , hash = require('..')
@@ -133,18 +133,8 @@ function wrapStream(name) {
     t.type(MurmurHash, 'function');
 
     t.test('should not bail on error throw in a callback', function(t) {
-      t.plan(4);
-      var threw = t.hasOwnProperty('threw') ? t.threw : undefined;
-      t.threw = function(error) {
-        t.pass('threw async exception');
-        if (threw === undefined)
-          delete t.threw;
-        else
-          t.threw = threw;
-        setImmediate(function() {
-          t.strictEqual(error.message, "mana mana");
-        });
-      };
+      t.plan(3);
+      t.throwsUncaughtException(new Error("mana mana"));
       t.strictEqual(undefined, MurmurHash(void(0), endian).update('', function(err) {
         t.error(err);
         throw new Error("mana mana");

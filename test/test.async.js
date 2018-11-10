@@ -1,6 +1,6 @@
 "use strict";
 
-var test = require("tap").test
+var test = require('./uncaughtexceptionwrap_tap').test
   , hash = require('..')
 ;
 
@@ -110,22 +110,11 @@ test("should have murmurHash functions", function(t) {
 ;
 
   test(label, function(t) {
-
     t.type(murmurHash, 'function');
 
     t.test('should not bail on error throw in a callback', function(t) {
-      t.plan(5);
-      var threw = t.hasOwnProperty('threw') ? t.threw : undefined;
-      t.threw = function(error) {
-        t.pass('threw async exception');
-        if (threw === undefined)
-          delete t.threw;
-        else
-          t.threw = threw;
-        setImmediate(function() {
-          t.strictEqual(error.message, "mana mana");
-        });
-      };
+      t.plan(4);
+      t.throwsUncaughtException(new Error("mana mana"));
       t.strictEqual(undefined, murmurHash('', function(err, foo) {
         t.error(err);
         t.strictEqual(foo, seedZeroDefault);
