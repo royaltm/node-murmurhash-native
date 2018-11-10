@@ -1,127 +1,36 @@
 sudo: false
-
+language: node_js
 env:
   global:
     secure: "LKh0Cc14itGFicEVCD+whTswTmI0HzWqy1C3cLw2z16TgST2dtmMdmUFXU1jNATfi0l4qqwrlnIgJrtzFNrc5fwxMY7XYr71F9QjfWIY7hfrTh3iZBYZJdlUdx0zClwGsN06ldDiaxKKljf/OmXuu5tds5iyel5O8KKZUaIFzKc="
 
+os:
+  - windows
+  - osx
+  - linux
+
+node_js: [4, 5, 6, 7, 8, 9, 10, 11]
+
 matrix:
+  exclude:
+    # until travis.ci resolves problem with "VM fails to come up if you have secrets"
+    # https://travis-ci.community/t/current-known-issues-please-read-this-before-posting-a-new-topic/264
+    - os: windows
+
   include:
-  - os: windows
-    language: node_js
-    node_js: "8"
-  - os: windows
-    language: node_js
-    node_js: "9"
-  - os: windows
-    language: node_js
-    node_js: "10"
-  - os: windows
-    language: node_js
-    node_js: "11"
-
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "6"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "7"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "8"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "9"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "10"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-  - os: osx
-    osx_image: xcode8
-    language: node_js
-    node_js: "11"
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-  - os: linux
-    language: node_js
-    node_js: "6"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-  - os: linux
-    language: node_js
-    node_js: "7"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-  - os: linux
-    language: node_js
-    node_js: "8"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-  - os: linux
-    language: node_js
-    node_js: "9"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-  - os: linux
-    language: node_js
-    node_js: "10"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-  - os: linux
-    language: node_js
-    node_js: "11"
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.9
-    env:
-    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      env:
+        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
 before_install:
   - eval "${MATRIX_EVAL}"
