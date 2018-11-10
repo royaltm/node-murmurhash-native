@@ -11,29 +11,23 @@ os:
 
 node_js: [4, 5, 6, 7, 8, 9, 10, 11]
 
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.9
+
+osx_image: xcode8
+
 matrix:
   exclude:
     # until travis.ci resolves problem with "VM fails to come up if you have secrets"
     # https://travis-ci.community/t/current-known-issues-please-read-this-before-posting-a-new-topic/264
     - os: windows
 
-  include:
-    - os: osx
-      osx_image: xcode8
-      env:
-        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-4.9
-      env:
-        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
 before_install:
-  - eval "${MATRIX_EVAL}"
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.9; fi
   # print versions
   - node --version
   - npm --version
