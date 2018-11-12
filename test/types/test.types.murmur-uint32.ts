@@ -1,7 +1,10 @@
 import { Encoding, OutputType, EncodingOrOutputType,
-         MurmurHashUint32, murmurHash, murmurHash32, BE, LE, platform } from "../..";
+         MurmurHashUint32, murmurHash, murmurHash32,
+         BE, LE, platform } from "../..";
 
-const { test } = require('tap');
+import * as os from "os";
+
+import { test } from "tap";
 
 interface Expected {
     readResult: string,
@@ -21,6 +24,15 @@ interface Expected {
     result24Seed: number,
     encInputResult24: number,
     encInputResult24Seed: number
+}
+
+const findExpected32 = (): Expected => {
+    switch(os.endianness()) {
+        case 'BE': return expected32BE;
+        case 'LE': return expected32LE;
+        default:
+            throw new Error("unsupported endianness");
+    }
 }
 
 const expected32BE: Expected = {
@@ -66,15 +78,19 @@ const expected32LE: Expected = {
 test("check arguments of murmurHash", (t) => testMurmurHash32(murmurHash, expected32BE, t));
 test("check arguments of BE.murmurHash", (t) => testMurmurHash32(BE.murmurHash, expected32BE, t));
 test("check arguments of LE.murmurHash", (t) => testMurmurHash32(LE.murmurHash, expected32LE, t));
+test("check arguments of platform murmurHash", (t) => testMurmurHash32(platform.murmurHash, findExpected32(), t));
 test("check arguments of murmurHash32", (t) => testMurmurHash32(murmurHash32, expected32BE, t));
 test("check arguments of BE.murmurHash32", (t) => testMurmurHash32(BE.murmurHash32, expected32BE, t));
 test("check arguments of LE.murmurHash32", (t) => testMurmurHash32(LE.murmurHash32, expected32LE, t));
+test("check arguments of platform murmurHash32", (t) => testMurmurHash32(platform.murmurHash32, findExpected32(), t));
 test("check arguments of murmurHash w/ callback", (t) => testMurmurHash32Callback(murmurHash, expected32BE, t));
 test("check arguments of BE.murmurHash w/ callback", (t) => testMurmurHash32Callback(BE.murmurHash, expected32BE, t));
 test("check arguments of LE.murmurHash w/ callback", (t) => testMurmurHash32Callback(LE.murmurHash, expected32LE, t));
+test("check arguments of platform murmurHash w/ callback", (t) => testMurmurHash32Callback(platform.murmurHash, findExpected32(), t));
 test("check arguments of murmurHash32 w/ callback", (t) => testMurmurHash32Callback(murmurHash32, expected32BE, t));
 test("check arguments of BE.murmurHash32 w/ callback", (t) => testMurmurHash32Callback(BE.murmurHash32, expected32BE, t));
 test("check arguments of LE.murmurHash32 w/ callback", (t) => testMurmurHash32Callback(LE.murmurHash32, expected32LE, t));
+test("check arguments of platform murmurHash32 w/ callback", (t) => testMurmurHash32Callback(platform.murmurHash32, findExpected32(), t));
 
 function testMurmurHash32(murmurHash: MurmurHashUint32, expected: Expected, t: any): void {
     // murmurHash(data)

@@ -1,9 +1,8 @@
-// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/audiosprite/index.d.ts
 /// <reference types="node" />
 
-export type OutputType = "buffer"|"number"|"base64"|"binary"|"hex";
-export type Encoding = "utf16le"|"utf-16le"|"ucs-2"|"ucs2"|"base64"|"binary"|"ascii"|"utf-8"|"utf8"|"hex";
-export type EncodingOrOutputType = "utf16le"|"utf-16le"|"ucs-2"|"ucs2"|"base64"|"binary"|"ascii"|"utf-8"|"utf8"|"hex"|"buffer"|"number";
+export type OutputType = "base64"|"binary"|"buffer"|"hex"|"number";
+export type Encoding = "ascii"|"base64"|"binary"|"hex"|"ucs-2"|"ucs2"|"utf-16le"|"utf-8"|"utf16le"|"utf8"
+export type EncodingOrOutputType = "ascii"|"base64"|"binary"|"buffer"|"hex"|"number"|"ucs-2"|"ucs2"|"utf-16le"|"utf-8"|"utf16le"|"utf8";
 
 export interface MurmurHashUint32 {
     (data: string|Buffer): number
@@ -81,44 +80,44 @@ export interface MurmurHashHexStr {
 
 export const murmurHash: MurmurHashUint32;
 export const murmurHash32: MurmurHashUint32;
+export const murmurHash64: MurmurHashHexStr;
 export const murmurHash64x64: MurmurHashHexStr;
 export const murmurHash64x86: MurmurHashHexStr;
+export const murmurHash128: MurmurHashHexStr;
 export const murmurHash128x64: MurmurHashHexStr;
 export const murmurHash128x86: MurmurHashHexStr;
-export const murmurHash64: MurmurHashHexStr;
-export const murmurHash128: MurmurHashHexStr;
 
 export namespace BE {
     const murmurHash: MurmurHashUint32;
     const murmurHash32: MurmurHashUint32;
+    const murmurHash64: MurmurHashHexStr;
     const murmurHash64x64: MurmurHashHexStr;
     const murmurHash64x86: MurmurHashHexStr;
+    const murmurHash128: MurmurHashHexStr;
     const murmurHash128x64: MurmurHashHexStr;
     const murmurHash128x86: MurmurHashHexStr;
-    const murmurHash64: MurmurHashHexStr;
-    const murmurHash128: MurmurHashHexStr;
 }
 
 export namespace LE {
     const murmurHash: MurmurHashUint32;
     const murmurHash32: MurmurHashUint32;
+    const murmurHash64: MurmurHashHexStr;
     const murmurHash64x64: MurmurHashHexStr;
     const murmurHash64x86: MurmurHashHexStr;
+    const murmurHash128: MurmurHashHexStr;
     const murmurHash128x64: MurmurHashHexStr;
     const murmurHash128x86: MurmurHashHexStr;
-    const murmurHash64: MurmurHashHexStr;
-    const murmurHash128: MurmurHashHexStr;
 }
 
 export namespace platform {
     const murmurHash: MurmurHashUint32;
     const murmurHash32: MurmurHashUint32;
+    const murmurHash64: MurmurHashHexStr;
     const murmurHash64x64: MurmurHashHexStr;
     const murmurHash64x86: MurmurHashHexStr;
+    const murmurHash128: MurmurHashHexStr;
     const murmurHash128x64: MurmurHashHexStr;
     const murmurHash128x86: MurmurHashHexStr;
-    const murmurHash64: MurmurHashHexStr;
-    const murmurHash128: MurmurHashHexStr;
 }
 
 // declare module "stream" {
