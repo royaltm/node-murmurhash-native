@@ -3,7 +3,16 @@ import { Encoding, OutputType, EncodingOrOutputType, MurmurHashHexStr,
          murmurHash128x86, murmurHash128x64,
          BE, LE, platform } from "../..";
 
-const { test } = require('tap');
+import * as os from "os";
+
+import { test } from "tap";
+
+interface ExpectedOs {
+    expected64x86: Expected,
+    expected64x64: Expected,
+    expected128x86: Expected,
+    expected128x64: Expected
+}
 
 interface Expected {
     hashSize: number,
@@ -212,33 +221,58 @@ const expected128x64LE: Expected = {
     encInputResult24Seed: 7136285
 }
 
+const expOs: ExpectedOs = ((): ExpectedOs => {
+    switch(os.endianness()) {
+        case 'BE': return {
+            expected64x86: expected64x86BE,
+            expected64x64: expected64x64BE,
+            expected128x86: expected128x86BE,
+            expected128x64: expected128x64BE };
+        case 'LE': return {
+            expected64x86: expected64x86LE,
+            expected64x64: expected64x64LE,
+            expected128x86: expected128x86LE,
+            expected128x64: expected128x64LE };
+        default:
+            throw new Error("unsupported endianness");
+    }
+})();
+
 test("check arguments of murmurHash64x86", (t) => testMurmurHashHexStr(murmurHash64x86, expected64x86BE, t));
 test("check arguments of BE.murmurHash64x86", (t) => testMurmurHashHexStr(BE.murmurHash64x86, expected64x86BE, t));
 test("check arguments of LE.murmurHash64x86", (t) => testMurmurHashHexStr(LE.murmurHash64x86, expected64x86LE, t));
+test("check arguments of platform murmurHash64x86", (t) => testMurmurHashHexStr(platform.murmurHash64x86, expOs.expected64x86, t));
 test("check arguments of murmurHash64x86 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash64x86, expected64x86BE, t));
 test("check arguments of BE.murmurHash64x86 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash64x86, expected64x86BE, t));
 test("check arguments of LE.murmurHash64x86 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash64x86, expected64x86LE, t));
+test("check arguments of platform murmurHash64x86 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash64x86, expOs.expected64x86, t));
 
 test("check arguments of murmurHash64x64", (t) => testMurmurHashHexStr(murmurHash64x64, expected64x64BE, t));
 test("check arguments of BE.murmurHash64x64", (t) => testMurmurHashHexStr(BE.murmurHash64x64, expected64x64BE, t));
 test("check arguments of LE.murmurHash64x64", (t) => testMurmurHashHexStr(LE.murmurHash64x64, expected64x64LE, t));
+test("check arguments of platform murmurHash64x64", (t) => testMurmurHashHexStr(platform.murmurHash64x64, expOs.expected64x64, t));
 test("check arguments of murmurHash64x64 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash64x64, expected64x64BE, t));
 test("check arguments of BE.murmurHash64x64 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash64x64, expected64x64BE, t));
 test("check arguments of LE.murmurHash64x64 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash64x64, expected64x64LE, t));
+test("check arguments of platform murmurHash64x64 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash64x64, expOs.expected64x64, t));
 
 test("check arguments of murmurHash128x86", (t) => testMurmurHashHexStr(murmurHash128x86, expected128x86BE, t));
 test("check arguments of BE.murmurHash128x86", (t) => testMurmurHashHexStr(BE.murmurHash128x86, expected128x86BE, t));
 test("check arguments of LE.murmurHash128x86", (t) => testMurmurHashHexStr(LE.murmurHash128x86, expected128x86LE, t));
+test("check arguments of platform murmurHash128x86", (t) => testMurmurHashHexStr(platform.murmurHash128x86, expOs.expected128x86, t));
 test("check arguments of murmurHash128x86 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash128x86, expected128x86BE, t));
 test("check arguments of BE.murmurHash128x86 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash128x86, expected128x86BE, t));
 test("check arguments of LE.murmurHash128x86 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash128x86, expected128x86LE, t));
+test("check arguments of platform murmurHash128x86 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash128x86, expOs.expected128x86, t));
 
 test("check arguments of murmurHash128x64", (t) => testMurmurHashHexStr(murmurHash128x64, expected128x64BE, t));
 test("check arguments of BE.murmurHash128x64", (t) => testMurmurHashHexStr(BE.murmurHash128x64, expected128x64BE, t));
 test("check arguments of LE.murmurHash128x64", (t) => testMurmurHashHexStr(LE.murmurHash128x64, expected128x64LE, t));
+test("check arguments of platform murmurHash128x64", (t) => testMurmurHashHexStr(platform.murmurHash128x64, expOs.expected128x64, t));
 test("check arguments of murmurHash128x64 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash128x64, expected128x64BE, t));
 test("check arguments of BE.murmurHash128x64 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash128x64, expected128x64BE, t));
 test("check arguments of LE.murmurHash128x64 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash128x64, expected128x64LE, t));
+test("check arguments of platform murmurHash128x64 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash128x64, expOs.expected128x64, t));
 
 function testMurmurHashHexStr(murmurHash: MurmurHashHexStr, expected: Expected, t: any): void {
     // murmurHash(data)
