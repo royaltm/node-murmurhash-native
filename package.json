@@ -24,10 +24,12 @@
   },
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
-    "test": "tap -C -Rclassic ./test/test*.js",
+    "test": "tap -C -Rclassic ./test/test*.js ./test/types/test*.js",
+    "test-ts": "tap -C -Rclassic ./test/types/test*.js",
     "test-gc": "tap -Rspec ./test/persistent/test.gc.*.js -gc",
     "bench": "sh bench/bench.all.sh",
-    "rebuild": "node-pre-gyp rebuild"
+    "rebuild": "node-pre-gyp rebuild",
+    "tsc": "tsc -p test/types"
   },
   "binary": {
     "module_name": "murmurhash",
@@ -36,6 +38,7 @@
     "remote_path": "v{version}"
   },
   "main": "index.js",
+  "types": "index.d.ts",
   "engines": {
     "node": ">=4"
   },
@@ -44,10 +47,12 @@
     "node-pre-gyp": "^0.11.0"
   },
   "devDependencies": {
+    "@types/node": "^10.12.5",
     "bluebird": "^3.5.1",
     "commander": "^2.17.0",
     "murmurhash3js": "^3.0.1",
     "node-pre-gyp-github": "1.3.1",
-    "tap": "^12.0.1"
+    "tap": "^12.0.1",
+    "typescript": "^3.1.6"
   }
 }
