@@ -71,6 +71,7 @@ install:
 
 build_script:
 - npm install --build-from-source
+- npm run tsc
 
 test_script:
 - npm test
