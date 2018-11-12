@@ -93,14 +93,16 @@ and they share the following signature:
 ```js
 murmurHash(data[, callback])
 murmurHash(data, output[, offset[, length]][, callback])
-murmurHash(data{String}, encoding|output_type[, callback])
-murmurHash(data, output_type[, seed][, callback])
-murmurHash(data, seed[, output[, offset[, length]]][, callback])
-murmurHash(data, seed[, output_type][, callback])
+murmurHash(data{string}, encoding|output_type[, seed][, callback])
+murmurHash(data{Buffer}, output_type[, seed][, callback])
+murmurHash(data, seed[, callback])
+murmurHash(data, seed, output[, offset[, length]][, callback])
+murmurHash(data, seed, output_type[, callback])
 murmurHash(data, encoding, output_type[, callback])
-murmurHash(data{String}, encoding, output[, offset[, length]][, callback])
-murmurHash(data{String}, encoding, seed[, output[, offset[, length]]][, callback])
-murmurHash(data{String}, encoding, seed[, output_type][, callback])
+murmurHash(data{string}, encoding, output[, offset[, length]][, callback])
+murmurHash(data{string}, encoding, seed[, callback])
+murmurHash(data{string}, encoding, seed, output[, offset[, length]][, callback])
+murmurHash(data{string}, encoding, seed, output_type[, callback])
 ```
 
 * `@param` `{string|Buffer}` `data` - a byte-string to calculate hash from
