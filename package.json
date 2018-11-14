@@ -39,6 +39,7 @@
   },
   "main": "index.js",
   "types": "index.d.ts",
+  "typeScriptVersion": "2.0",
   "engines": {
     "node": ">=4"
   },
