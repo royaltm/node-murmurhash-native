@@ -1,9 +1,9 @@
 import * as os from "os";
 
-import { IMurHasherConstructor, IMurHasherBase,
-    MurmurHash,
-    MurmurHash128, MurmurHash128x64, MurmurHash128x86
-} from "../../incremental";
+import { IMurHasherConstructor,
+         MurmurHash,
+         MurmurHash128, MurmurHash128x64, MurmurHash128x86
+       } from "../../incremental";
 
 import { Test, test } from "tap";
 
@@ -122,11 +122,13 @@ function testIMurHashArgs(murmurhasher: IMurHasherConstructor, expected: Expecte
     t.strictEqual(mmh.digest("hex"), expected.resultHexLE);
     t.strictEqual((mmh.digest("buffer") as Buffer).toString('hex'), expected.resultHexLE);
     let serial = mmh.serialize();
-    t.strictEqual(serial, (mmh as IMurHasherBase).toJSON());
+    t.strictEqual(serial, mmh.toJSON());
     // constructor(serial: string|Buffer, endianness?: Endianness);
     let mmhclone = new murmurhasher(serial, "LE");
+    t.strictEqual(mmhclone.total, 10);
     t.strictEqual(mmhclone.endianness, "LE");
     mmhclone = new murmurhasher(serial);
+    t.strictEqual(mmhclone.total, 10);
     t.strictEqual(mmhclone.endianness, "BE");
     t.strictEqual(mmhclone.digest("number"), expected.resultBE);
     let mmh2 = new murmurhasher();
