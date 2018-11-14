@@ -63,7 +63,7 @@ function MurmurHash(algorithm, options) {
       throw new Error("Algorithm not supported");
     }
   } else {
-    throw new TypeError("Must give algorithm string or MurmurHash instance");
+    throw new TypeError("Must give algorithm string, a serialized state or a MurmurHash instance");
   }
 
   LazyTransform.call(this, options);
