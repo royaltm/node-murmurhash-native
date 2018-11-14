@@ -1,11 +1,17 @@
-import { Encoding, OutputType, MurmurHashFnH,
+import * as os from "os";
+
+import * as Bluebird from "bluebird";
+
+import { MurmurHashFnH,
          murmurHash64, murmurHash64x86, murmurHash64x64,
          murmurHash128, murmurHash128x86, murmurHash128x64,
          BE, LE, platform } from "../..";
 
-import * as os from "os";
+import * as promisify from "../../promisify";
 
-import { test } from "tap";
+import { Test, test } from "tap";
+
+const asyncMMH = promisify(Bluebird);
 
 interface ExpectedOs {
     expected64: Expected,
@@ -223,7 +229,7 @@ const expected128x64LE: Expected = {
     encInputResult24Seed: 7136285
 }
 
-const expBE: ExpectedOs = {
+const archBE: ExpectedOs = {
     expected64: os.arch() === 'x64' ? expected64x64BE : expected64x86BE,
     expected128: os.arch() === 'x64' ? expected128x64BE : expected128x86BE,
     expected64x86: expected64x86BE,
@@ -232,7 +238,7 @@ const expBE: ExpectedOs = {
     expected128x64: expected128x64BE
 }
 
-const expLE: ExpectedOs = {
+const archLE: ExpectedOs = {
     expected64: os.arch() === 'x64' ? expected64x64LE : expected64x86LE,
     expected128: os.arch() === 'x64' ? expected128x64LE : expected128x86LE,
     expected64x86: expected64x86LE,
@@ -243,68 +249,92 @@ const expLE: ExpectedOs = {
 
 const expOs: ExpectedOs = ((): ExpectedOs => {
     switch(os.endianness()) {
-        case 'BE': return expBE;
-        case 'LE': return expLE;
+        case 'BE': return archBE;
+        case 'LE': return archLE;
         default:
             throw new Error("unsupported endianness");
     }
 })();
 
-test("check arguments of murmurHash64", (t) => testMurmurHashHexStr(murmurHash64, expBE.expected64, t));
-test("check arguments of BE.murmurHash64", (t) => testMurmurHashHexStr(BE.murmurHash64, expBE.expected64, t));
-test("check arguments of LE.murmurHash64", (t) => testMurmurHashHexStr(LE.murmurHash64, expLE.expected64, t));
-test("check arguments of platform murmurHash64", (t) => testMurmurHashHexStr(platform.murmurHash64, expOs.expected64, t));
-test("check arguments of murmurHash64 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash64, expBE.expected64, t));
-test("check arguments of BE.murmurHash64 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash64, expBE.expected64, t));
-test("check arguments of LE.murmurHash64 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash64, expLE.expected64, t));
-test("check arguments of platform murmurHash64 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash64, expOs.expected64, t));
+test("check arguments of murmurHash64", (t) => testMurmurHashHexStr(murmurHash64, archBE.expected64, t));
+test("check arguments of BE.murmurHash64", (t) => testMurmurHashHexStr(BE.murmurHash64, archBE.expected64, t));
+test("check arguments of LE.murmurHash64", (t) => testMurmurHashHexStr(LE.murmurHash64, archLE.expected64, t));
+test("check arguments of platform.murmurHash64", (t) => testMurmurHashHexStr(platform.murmurHash64, expOs.expected64, t));
+test("check arguments of murmurHash64 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash64, archBE.expected64, t));
+test("check arguments of BE.murmurHash64 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash64, archBE.expected64, t));
+test("check arguments of LE.murmurHash64 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash64, archLE.expected64, t));
+test("check arguments of platform.murmurHash64 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash64, expOs.expected64, t));
+test("check arguments of async murmurHash64", (t) => testMurmurHashHexStrAsync(asyncMMH.murmurHash64Async, archBE.expected64, t));
+test("check arguments of async BE.murmurHash64", (t) => testMurmurHashHexStrAsync(asyncMMH.BE.murmurHash64Async, archBE.expected64, t));
+test("check arguments of async LE.murmurHash64", (t) => testMurmurHashHexStrAsync(asyncMMH.LE.murmurHash64Async, archLE.expected64, t));
+test("check arguments of async platform.murmurHash64", (t) => testMurmurHashHexStrAsync(asyncMMH.platform.murmurHash64Async, expOs.expected64, t));
 
 test("check arguments of murmurHash64x86", (t) => testMurmurHashHexStr(murmurHash64x86, expected64x86BE, t));
 test("check arguments of BE.murmurHash64x86", (t) => testMurmurHashHexStr(BE.murmurHash64x86, expected64x86BE, t));
 test("check arguments of LE.murmurHash64x86", (t) => testMurmurHashHexStr(LE.murmurHash64x86, expected64x86LE, t));
-test("check arguments of platform murmurHash64x86", (t) => testMurmurHashHexStr(platform.murmurHash64x86, expOs.expected64x86, t));
+test("check arguments of platform.murmurHash64x86", (t) => testMurmurHashHexStr(platform.murmurHash64x86, expOs.expected64x86, t));
 test("check arguments of murmurHash64x86 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash64x86, expected64x86BE, t));
 test("check arguments of BE.murmurHash64x86 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash64x86, expected64x86BE, t));
 test("check arguments of LE.murmurHash64x86 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash64x86, expected64x86LE, t));
-test("check arguments of platform murmurHash64x86 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash64x86, expOs.expected64x86, t));
+test("check arguments of platform.murmurHash64x86 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash64x86, expOs.expected64x86, t));
+test("check arguments of async murmurHash64x86", (t) => testMurmurHashHexStrAsync(asyncMMH.murmurHash64x86Async, expected64x86BE, t));
+test("check arguments of async BE.murmurHash64x86", (t) => testMurmurHashHexStrAsync(asyncMMH.BE.murmurHash64x86Async, expected64x86BE, t));
+test("check arguments of async LE.murmurHash64x86", (t) => testMurmurHashHexStrAsync(asyncMMH.LE.murmurHash64x86Async, expected64x86LE, t));
+test("check arguments of async platform.murmurHash64x86", (t) => testMurmurHashHexStrAsync(asyncMMH.platform.murmurHash64x86Async, expOs.expected64x86, t));
 
 test("check arguments of murmurHash64x64", (t) => testMurmurHashHexStr(murmurHash64x64, expected64x64BE, t));
 test("check arguments of BE.murmurHash64x64", (t) => testMurmurHashHexStr(BE.murmurHash64x64, expected64x64BE, t));
 test("check arguments of LE.murmurHash64x64", (t) => testMurmurHashHexStr(LE.murmurHash64x64, expected64x64LE, t));
-test("check arguments of platform murmurHash64x64", (t) => testMurmurHashHexStr(platform.murmurHash64x64, expOs.expected64x64, t));
+test("check arguments of platform.murmurHash64x64", (t) => testMurmurHashHexStr(platform.murmurHash64x64, expOs.expected64x64, t));
 test("check arguments of murmurHash64x64 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash64x64, expected64x64BE, t));
 test("check arguments of BE.murmurHash64x64 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash64x64, expected64x64BE, t));
 test("check arguments of LE.murmurHash64x64 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash64x64, expected64x64LE, t));
-test("check arguments of platform murmurHash64x64 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash64x64, expOs.expected64x64, t));
+test("check arguments of platform.murmurHash64x64 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash64x64, expOs.expected64x64, t));
+test("check arguments of async murmurHash64x64", (t) => testMurmurHashHexStrAsync(asyncMMH.murmurHash64x64Async, expected64x64BE, t));
+test("check arguments of async BE.murmurHash64x64", (t) => testMurmurHashHexStrAsync(asyncMMH.BE.murmurHash64x64Async, expected64x64BE, t));
+test("check arguments of async LE.murmurHash64x64", (t) => testMurmurHashHexStrAsync(asyncMMH.LE.murmurHash64x64Async, expected64x64LE, t));
+test("check arguments of async platform.murmurHash64x64", (t) => testMurmurHashHexStrAsync(asyncMMH.platform.murmurHash64x64Async, expOs.expected64x64, t));
 
-test("check arguments of murmurHash128", (t) => testMurmurHashHexStr(murmurHash128, expBE.expected128, t));
-test("check arguments of BE.murmurHash128", (t) => testMurmurHashHexStr(BE.murmurHash128, expBE.expected128, t));
-test("check arguments of LE.murmurHash128", (t) => testMurmurHashHexStr(LE.murmurHash128, expLE.expected128, t));
-test("check arguments of platform murmurHash128", (t) => testMurmurHashHexStr(platform.murmurHash128, expOs.expected128, t));
-test("check arguments of murmurHash128 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash128, expBE.expected128, t));
-test("check arguments of BE.murmurHash128 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash128, expBE.expected128, t));
-test("check arguments of LE.murmurHash128 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash128, expLE.expected128, t));
-test("check arguments of platform murmurHash128 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash128, expOs.expected128, t));
+test("check arguments of murmurHash128", (t) => testMurmurHashHexStr(murmurHash128, archBE.expected128, t));
+test("check arguments of BE.murmurHash128", (t) => testMurmurHashHexStr(BE.murmurHash128, archBE.expected128, t));
+test("check arguments of LE.murmurHash128", (t) => testMurmurHashHexStr(LE.murmurHash128, archLE.expected128, t));
+test("check arguments of platform.murmurHash128", (t) => testMurmurHashHexStr(platform.murmurHash128, expOs.expected128, t));
+test("check arguments of murmurHash128 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash128, archBE.expected128, t));
+test("check arguments of BE.murmurHash128 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash128, archBE.expected128, t));
+test("check arguments of LE.murmurHash128 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash128, archLE.expected128, t));
+test("check arguments of platform.murmurHash128 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash128, expOs.expected128, t));
+test("check arguments of async murmurHash128", (t) => testMurmurHashHexStrAsync(asyncMMH.murmurHash128Async, archBE.expected128, t));
+test("check arguments of async BE.murmurHash128", (t) => testMurmurHashHexStrAsync(asyncMMH.BE.murmurHash128Async, archBE.expected128, t));
+test("check arguments of async LE.murmurHash128", (t) => testMurmurHashHexStrAsync(asyncMMH.LE.murmurHash128Async, archLE.expected128, t));
+test("check arguments of async platform.murmurHash128", (t) => testMurmurHashHexStrAsync(asyncMMH.platform.murmurHash128Async, expOs.expected128, t));
 
 test("check arguments of murmurHash128x86", (t) => testMurmurHashHexStr(murmurHash128x86, expected128x86BE, t));
 test("check arguments of BE.murmurHash128x86", (t) => testMurmurHashHexStr(BE.murmurHash128x86, expected128x86BE, t));
 test("check arguments of LE.murmurHash128x86", (t) => testMurmurHashHexStr(LE.murmurHash128x86, expected128x86LE, t));
-test("check arguments of platform murmurHash128x86", (t) => testMurmurHashHexStr(platform.murmurHash128x86, expOs.expected128x86, t));
+test("check arguments of platform.murmurHash128x86", (t) => testMurmurHashHexStr(platform.murmurHash128x86, expOs.expected128x86, t));
 test("check arguments of murmurHash128x86 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash128x86, expected128x86BE, t));
 test("check arguments of BE.murmurHash128x86 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash128x86, expected128x86BE, t));
 test("check arguments of LE.murmurHash128x86 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash128x86, expected128x86LE, t));
-test("check arguments of platform murmurHash128x86 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash128x86, expOs.expected128x86, t));
+test("check arguments of platform.murmurHash128x86 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash128x86, expOs.expected128x86, t));
+test("check arguments of async murmurHash128x86", (t) => testMurmurHashHexStrAsync(asyncMMH.murmurHash128x86Async, expected128x86BE, t));
+test("check arguments of async BE.murmurHash128x86", (t) => testMurmurHashHexStrAsync(asyncMMH.BE.murmurHash128x86Async, expected128x86BE, t));
+test("check arguments of async LE.murmurHash128x86", (t) => testMurmurHashHexStrAsync(asyncMMH.LE.murmurHash128x86Async, expected128x86LE, t));
+test("check arguments of async platform.murmurHash128x86", (t) => testMurmurHashHexStrAsync(asyncMMH.platform.murmurHash128x86Async, expOs.expected128x86, t));
 
 test("check arguments of murmurHash128x64", (t) => testMurmurHashHexStr(murmurHash128x64, expected128x64BE, t));
 test("check arguments of BE.murmurHash128x64", (t) => testMurmurHashHexStr(BE.murmurHash128x64, expected128x64BE, t));
 test("check arguments of LE.murmurHash128x64", (t) => testMurmurHashHexStr(LE.murmurHash128x64, expected128x64LE, t));
-test("check arguments of platform murmurHash128x64", (t) => testMurmurHashHexStr(platform.murmurHash128x64, expOs.expected128x64, t));
+test("check arguments of platform.murmurHash128x64", (t) => testMurmurHashHexStr(platform.murmurHash128x64, expOs.expected128x64, t));
 test("check arguments of murmurHash128x64 w/ callback", (t) => testMurmurHashHexStrCallback(murmurHash128x64, expected128x64BE, t));
 test("check arguments of BE.murmurHash128x64 w/ callback", (t) => testMurmurHashHexStrCallback(BE.murmurHash128x64, expected128x64BE, t));
 test("check arguments of LE.murmurHash128x64 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash128x64, expected128x64LE, t));
-test("check arguments of platform murmurHash128x64 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash128x64, expOs.expected128x64, t));
+test("check arguments of platform.murmurHash128x64 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash128x64, expOs.expected128x64, t));
+test("check arguments of async murmurHash128x64", (t) => testMurmurHashHexStrAsync(asyncMMH.murmurHash128x64Async, expected128x64BE, t));
+test("check arguments of async BE.murmurHash128x64", (t) => testMurmurHashHexStrAsync(asyncMMH.BE.murmurHash128x64Async, expected128x64BE, t));
+test("check arguments of async LE.murmurHash128x64", (t) => testMurmurHashHexStrAsync(asyncMMH.LE.murmurHash128x64Async, expected128x64LE, t));
+test("check arguments of async platform.murmurHash128x64", (t) => testMurmurHashHexStrAsync(asyncMMH.platform.murmurHash128x64Async, expOs.expected128x64, t));
 
-function testMurmurHashHexStr(murmurHash: MurmurHashFnH, expected: Expected, t: any): void {
+function testMurmurHashHexStr(murmurHash: MurmurHashFnH, expected: Expected, t: Test): void {
     // murmurHash(data)
     t.strictEqual(murmurHash("deadbacaca"), expected.result);
     t.strictEqual(murmurHash(Buffer.from("deadbacaca")), expected.result);
@@ -493,7 +523,7 @@ function testMurmurHashHexStr(murmurHash: MurmurHashFnH, expected: Expected, t: 
     t.end();
 }
 
-function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expected, t: any): void {
+function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expected, t: Test): void {
     t.plan(240);
     // murmurHash(data, callback)
     t.strictEqual(murmurHash("deadbacaca", (err: Error, res: string) => {
@@ -512,7 +542,7 @@ function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expec
             t.strictEqual(buf, res);
             t.strictEqual(res.toString('hex', 0, expected.hashSize), expected.result);
             t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
-        }));
+        }), undefined);
     }
     {
         let buf: Buffer = Buffer.alloc(2*expected.hashSize);
@@ -521,7 +551,7 @@ function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expec
             t.strictEqual(buf, res);
             t.strictEqual(res.toString('hex', 0, expected.hashSize), expected.result);
             t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
-        }));
+        }), undefined);
     }
     {
         let buf: Buffer = Buffer.alloc(2*expected.hashSize);
@@ -531,7 +561,7 @@ function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expec
             t.strictEqual(res.readUInt16BE(0), 0);
             t.strictEqual(res.toString('hex', 2, 2 + expected.hashSize), expected.result);
             t.strictEqual(res.toString('hex', 2 + expected.hashSize), expected.zeroHex2);
-        }));
+        }), undefined);
     }
     {
         let buf: Buffer = Buffer.alloc(2*expected.hashSize);
@@ -541,7 +571,7 @@ function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expec
             t.strictEqual(res.readUInt16BE(0), 0);
             t.strictEqual(res.toString('hex', 2, 2 + expected.hashSize), expected.result);
             t.strictEqual(res.toString('hex', 2 + expected.hashSize), expected.zeroHex2);
-        }));
+        }), undefined);
     }
     {
         let buf: Buffer = Buffer.alloc(2*expected.hashSize);
@@ -552,7 +582,7 @@ function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expec
             t.strictEqual(res.readUIntBE(2, 3), expected.result24);
             t.strictEqual(res.toString('hex', 2 + 3, 2 + expected.hashSize), expected.zeroHex3);
             t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
-        }));
+        }), undefined);
     }
     {
         let buf: Buffer = Buffer.alloc(2*expected.hashSize);
@@ -563,7 +593,7 @@ function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expec
             t.strictEqual(res.readUIntBE(2, 3), expected.result24);
             t.strictEqual(res.toString('hex', 2 + 3, 2 + expected.hashSize), expected.zeroHex3);
             t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
-        }));
+        }), undefined);
     }
     // murmurHash(data{String}, encoding|output_type[, seed], callback)
     t.strictEqual(murmurHash("deadbacaca", "ascii", (err: Error, res: string) => {
@@ -730,7 +760,7 @@ function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expec
         t.strictEqual(res.length, expected.hashSize);
         t.strictEqual(res.toString('hex'), expected.resultSeed);
     }), undefined);
-    // murmurHash(data, encoding, output_type)
+    // murmurHash(data, encoding, output_type, callback)
     t.strictEqual(murmurHash("deadbacaca", "hex", "number", (err: Error, res: string) => {
         t.error(err);
         t.strictEqual(res, expected.encInputResult);
@@ -767,7 +797,7 @@ function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expec
         t.strictEqual(res.length, expected.hashSize);
         t.strictEqual(res.toString('hex'), expected.result); // input encoding ignored
     }), undefined);
-    // murmurHash(data{string}, encoding, output[, offset[, length]])
+    // murmurHash(data{string}, encoding, output[, offset[, length]], callback)
     {
         let buf: Buffer = Buffer.alloc(2*expected.hashSize);
         t.strictEqual(murmurHash("deadbacaca", "hex", buf, (err: Error, res: Buffer) => {
@@ -857,4 +887,323 @@ function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expec
         t.strictEqual(res.length, expected.hashSize);
         t.strictEqual(res.toString('hex'), expected.encInputResultSeed);
     }), undefined);
+}
+
+function testMurmurHashHexStrAsync(murmurHash: promisify.MurmurHashFnAsyncH, expected: Expected, t: Test): PromiseLike<void[]> {
+    return Bluebird.resolve()
+    .then(()=>testMurmurHashHexStrAsyncInternal(murmurHash, expected, t))
+    .catch(t.threw);
+}
+
+function testMurmurHashHexStrAsyncInternal(murmurHash: promisify.MurmurHashFnAsyncH, expected: Expected, t: Test): PromiseLike<void[]> {
+    t.plan(128);
+    let promises: PromiseLike<void>[] = [];
+    // murmurHash(data, callback)
+    promises.push(murmurHash("deadbacaca").then((res: string) => {
+        t.strictEqual(res, expected.result);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca")).then((res: string) => {
+        t.strictEqual(res, expected.result);
+    }));
+    // murmurHash(data, output[, offset[, length]], callback)
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", buf).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.toString('hex', 0, expected.hashSize), expected.result);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash(Buffer.from("deadbacaca"), buf).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.toString('hex', 0, expected.hashSize), expected.result);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", buf, 2).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.toString('hex', 2, 2 + expected.hashSize), expected.result);
+            t.strictEqual(res.toString('hex', 2 + expected.hashSize), expected.zeroHex2);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash(Buffer.from("deadbacaca"), buf, 2).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.toString('hex', 2, 2 + expected.hashSize), expected.result);
+            t.strictEqual(res.toString('hex', 2 + expected.hashSize), expected.zeroHex2);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", buf, 2, 3).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.readUIntBE(2, 3), expected.result24);
+            t.strictEqual(res.toString('hex', 2 + 3, 2 + expected.hashSize), expected.zeroHex3);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash(Buffer.from("deadbacaca"), buf, 2, 3).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.readUIntBE(2, 3), expected.result24);
+            t.strictEqual(res.toString('hex', 2 + 3, 2 + expected.hashSize), expected.zeroHex3);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    // murmurHash(data{String}, encoding|output_type[, seed], callback)
+    promises.push(murmurHash("deadbacaca", "ascii").then((res: string) => {
+        t.strictEqual(res, expected.result);
+    }));
+    promises.push(murmurHash("deadbacaca", "ascii", 123456).then((res: string) => {
+        t.strictEqual(res, expected.resultSeed);
+    }));
+    promises.push(murmurHash("deadbacaca", "hex").then((res: string) => {
+        t.strictEqual(res, expected.encInputResult);
+    }));
+    promises.push(murmurHash("deadbacaca", "hex", 123456).then((res: string) => {
+        t.strictEqual(res, expected.encInputResultSeed);
+    }));
+    promises.push(murmurHash("deadbacaca", "number").then((res: string) => {
+        t.strictEqual(res, expected.result);
+    }));
+    promises.push(murmurHash("deadbacaca", "number", 123456).then((res: string) => {
+        t.strictEqual(res, expected.resultSeed);
+    }));
+    promises.push(murmurHash("deadbacaca", "buffer").then((res: Buffer) => {
+        t.type(res, Buffer);
+        t.strictEqual(res.length, expected.hashSize);
+        t.strictEqual(res.toString('hex'), expected.result);
+    }));
+    promises.push(murmurHash("deadbacaca", "buffer", 123456).then((res: Buffer) => {
+        t.type(res, Buffer);
+        t.strictEqual(res.length, expected.hashSize);
+        t.strictEqual(res.toString('hex'), expected.resultSeed);
+    }));
+    // murmurHash(data{Buffer}, output_type[, seed], callback)
+    promises.push(murmurHash(Buffer.from("deadbacaca"), "hex").then((res: string) => {
+        t.strictEqual(res, expected.resultHex);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), "hex", 123456).then((res: string) => {
+        t.strictEqual(res, expected.resultSeedHex);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), "buffer").then((res: Buffer) => {
+        t.type(res, Buffer);
+        t.strictEqual(res.length, expected.hashSize);
+        t.strictEqual(res.toString('hex'), expected.result);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), "buffer", 123456).then((res: Buffer) => {
+        t.type(res, Buffer);
+        t.strictEqual(res.length, expected.hashSize);
+        t.strictEqual(res.toString('hex'), expected.resultSeed);
+    }));
+    // murmurHash(data, seed, callback)
+    promises.push(murmurHash("deadbacaca", 123456).then((res: string) => {
+        t.strictEqual(res, expected.resultSeed);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), 123456).then((res: string) => {
+        t.strictEqual(res, expected.resultSeed);
+    }));
+    // murmurHash(data, seed, output[, offset[, length]], callback)
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", 123456, buf).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.toString('hex', 0, expected.hashSize), expected.resultSeed);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash(Buffer.from("deadbacaca"), 123456, buf).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.toString('hex', 0, expected.hashSize), expected.resultSeed);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", 123456, buf, 2).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.toString('hex', 2, 2 + expected.hashSize), expected.resultSeed);
+            t.strictEqual(res.toString('hex', 2 + expected.hashSize), expected.zeroHex2);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash(Buffer.from("deadbacaca"), 123456, buf, 2).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.toString('hex', 2, 2 + expected.hashSize), expected.resultSeed);
+            t.strictEqual(res.toString('hex', 2 + expected.hashSize), expected.zeroHex2);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", 123456, buf, 2, 3).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.readUIntBE(2, 3), expected.result24Seed);
+            t.strictEqual(res.toString('hex', 2 + 3, 2 + expected.hashSize), expected.zeroHex3);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash(Buffer.from("deadbacaca"), 123456, buf, 2, 3).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.readUIntBE(2, 3), expected.result24Seed);
+            t.strictEqual(res.toString('hex', 2 + 3, 2 + expected.hashSize), expected.zeroHex3);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    // murmurHash(data, seed, output_type, callback)
+    promises.push(murmurHash("deadbacaca", 123456, "number").then((res: string) => {
+        t.strictEqual(res, expected.resultSeed);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), 123456, "number").then((res: string) => {
+        t.strictEqual(res, expected.resultSeed);
+    }));
+    promises.push(murmurHash("deadbacaca", 123456, "hex").then((res: string) => {
+        t.strictEqual(res, expected.resultSeedHex);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), 123456, "hex").then((res: string) => {
+        t.strictEqual(res, expected.resultSeedHex);
+    }));
+    promises.push(murmurHash("deadbacaca", 123456, "base64").then((res: string) => {
+        t.strictEqual(res, expected.resultSeedBase64);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), 123456, "base64").then((res: string) => {
+        t.strictEqual(res, expected.resultSeedBase64);
+    }));
+    promises.push(murmurHash("deadbacaca", 123456, "buffer").then((res: Buffer) => {
+        t.type(res, Buffer);
+        t.strictEqual(res.length, expected.hashSize);
+        t.strictEqual(res.toString('hex'), expected.resultSeed);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), 123456, "buffer").then((res: Buffer) => {
+        t.type(res, Buffer);
+        t.strictEqual(res.length, expected.hashSize);
+        t.strictEqual(res.toString('hex'), expected.resultSeed);
+    }));
+    // murmurHash(data, encoding, output_type, callback)
+    promises.push(murmurHash("deadbacaca", "hex", "number").then((res: string) => {
+        t.strictEqual(res, expected.encInputResult);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), "hex", "number").then((res: string) => {
+        t.strictEqual(res, expected.result); // input encoding ignored
+    }));
+    promises.push(murmurHash("deadbacaca", "hex", "hex").then((res: string) => {
+        t.strictEqual(res, expected.encInputResultHex);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), "hex", "hex").then((res: string) => {
+        t.strictEqual(res, expected.resultHex); // input encoding ignored
+    }));
+    promises.push(murmurHash("deadbacaca", "hex", "base64").then((res: string) => {
+        t.strictEqual(res, expected.encInputResultBase64);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), "hex", "base64").then((res: string) => {
+        t.strictEqual(res, expected.resultBase64); // input encoding ignored
+    }));
+    promises.push(murmurHash("deadbacaca", "hex", "buffer").then((res: Buffer) => {
+        t.type(res, Buffer);
+        t.strictEqual(res.length, expected.hashSize);
+        t.strictEqual(res.toString('hex'), expected.encInputResult);
+    }));
+    promises.push(murmurHash(Buffer.from("deadbacaca"), "hex", "buffer").then((res: Buffer) => {
+        t.type(res, Buffer);
+        t.strictEqual(res.length, expected.hashSize);
+        t.strictEqual(res.toString('hex'), expected.result); // input encoding ignored
+    }));
+    // murmurHash(data{string}, encoding, output[, offset[, length]], callback)
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", "hex", buf).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.toString('hex', 0, expected.hashSize), expected.encInputResult);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", "hex", buf, 2).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.toString('hex', 2, 2 + expected.hashSize), expected.encInputResult);
+            t.strictEqual(res.toString('hex', 2 + expected.hashSize), expected.zeroHex2);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", "hex", buf, 2, 3).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.readUIntBE(2, 3), expected.encInputResult24);
+            t.strictEqual(res.toString('hex', 2 + 3, 2 + expected.hashSize), expected.zeroHex3);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    // murmurHash(data{string}, encoding, seed, callback)
+    promises.push(murmurHash("deadbacaca", "ascii", 123456).then((res: string) => {
+        t.strictEqual(res, expected.resultSeed);
+    }));
+    promises.push(murmurHash("deadbacaca", "hex", 123456).then((res: string) => {
+        t.strictEqual(res, expected.encInputResultSeed);
+    }));
+    // murmurHash(data{string}, encoding, seed, output[, offset[, length]], callback)
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", "hex", 123456, buf).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.toString('hex', 0, expected.hashSize), expected.encInputResultSeed);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", "hex", 123456, buf, 2).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.toString('hex', 2, 2 + expected.hashSize), expected.encInputResultSeed);
+            t.strictEqual(res.toString('hex', 2 + expected.hashSize), expected.zeroHex2);
+        }));
+    }
+    {
+        let buf: Buffer = Buffer.alloc(2*expected.hashSize);
+        promises.push(murmurHash("deadbacaca", "hex", 123456, buf, 2, 3).then((res: Buffer) => {
+            t.strictEqual(buf, res);
+            t.strictEqual(res.readUInt16BE(0), 0);
+            t.strictEqual(res.readUIntBE(2, 3), expected.encInputResult24Seed);
+            t.strictEqual(res.toString('hex', 2 + 3, 2 + expected.hashSize), expected.zeroHex3);
+            t.strictEqual(res.toString('hex', expected.hashSize), expected.zeroHex);
+        }));
+    }
+    // murmurHash(data{string}, encoding, seed, output_type, callback)
+    promises.push(murmurHash("deadbacaca", "hex", 123456, "number").then((res: string) => {
+        t.strictEqual(res, expected.encInputResultSeed);
+    }));
+    promises.push(murmurHash("deadbacaca", "hex", 123456, "hex").then((res: string) => {
+        t.strictEqual(res, expected.encInputResultSeedHex);
+    }));
+    promises.push(murmurHash("deadbacaca", "hex", 123456, "base64").then((res: string) => {
+        t.strictEqual(res, expected.encInputResultSeedBase64);
+    }));
+    promises.push(murmurHash("deadbacaca", "hex", 123456, "buffer").then((res: Buffer) => {
+        t.type(res, Buffer);
+        t.strictEqual(res.length, expected.hashSize);
+        t.strictEqual(res.toString('hex'), expected.encInputResultSeed);
+    }));
+
+    return Bluebird.all(promises);
 }

@@ -1,7 +1,16 @@
 {
     "compilerOptions": {
+        "alwaysStrict": true,
+        "target": "es5",
+        "listFiles": false,
+        "listEmittedFiles": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitAny": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "lib": [
+          "es2015"
+        ]
     },
-    "exclude": [
-        "node_modules"
-    ]
+    "exclude": []
 }
