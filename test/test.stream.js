@@ -27,7 +27,7 @@ test("should have algorithms", function(t) {
 });
 
 test('should throw error for bad arguments', function(t) {
-  t.throws(function() { strm.createHash(); }, new TypeError("Must give algorithm string or MurmurHash instance") );
+  t.throws(function() { strm.createHash(); }, new TypeError("Must give algorithm string, a serialized state or a MurmurHash instance") );
   t.throws(function() { strm.createHash("foo"); }, new Error("Algorithm not supported") );
   t.end();
 });
