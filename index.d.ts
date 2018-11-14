@@ -54,7 +54,7 @@ export interface MurmurHashFn {
 /**
  * An interface for murmurhash 32-bit functions.
  *
- * Those functions produce hashes as an unsigned 32-bit integers by default
+ * Functions of this type produce hashes as an unsigned 32-bit integers by default
  * and for the "number" output type.
  */
 export interface MurmurHashFnI extends MurmurHashFn {
@@ -69,7 +69,7 @@ export interface MurmurHashFnI extends MurmurHashFn {
 /**
  * An interface for murmurhash 64/128-bit functions.
  *
- * Those functions produce hashes as a hexadecimal string by default
+ * Functions of this type produce hashes as a hexadecimal string by default
  * and for the "number" output type.
  */
 export interface MurmurHashFnH extends MurmurHashFn {
