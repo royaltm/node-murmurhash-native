@@ -18,6 +18,7 @@ Key features:
 * BE or LE byte order variants of hashes
 * promise wrapper
 * prebuilt binaries for most standard system configurations
+* TypeScript declarations
 
 Install:
 --------
@@ -44,6 +45,11 @@ To reinstall prebuilt binary (e.g. after switching between major nodejs versions
 ```
 npm rebuild --update-binary
 ```
+
+TypeScript
+----------
+
+`murmurhash-native` is ready for the TypeScript without any external declarations. However this module is node-specific package, if you're going to use it in TypeScript, do not forget to include `@types/node` and enable `es2015` language features in your `tsconfig.json`.
 
 Make a hash:
 ------------
