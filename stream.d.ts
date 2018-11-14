@@ -44,7 +44,7 @@ export class MurmurHash extends Transform implements IMurHasher {
     constructor(algorithm: string, seed?: number);
     constructor(algorithm: string|MurmurHash|MurmurHashSerial, options?: MurmurHashOptions);
     copy(target: MurmurHash): MurmurHash;
-    digest(outputType?: OutputType): string|Buffer;
+    digest(outputType?: OutputType): number|string|Buffer;
     digest(output: Buffer, offset?: number, length?: number): Buffer;
     toJSON(): MurmurHashSerial;
     serialize(): string;
