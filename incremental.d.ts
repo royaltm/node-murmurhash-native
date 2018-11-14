@@ -10,9 +10,7 @@ export type Endianness = "BE"|"LE"|"platform";
 
 /** A common interface to all of the murmur hash incremental utilities */
 export interface IMurHasher {
-    /**
-     * Size in bytes of the serialized hasher.
-     */
+    /** Size in bytes of the serialized hasher. */
     readonly SERIAL_BYTE_LENGTH: number;
     /**
      * Copy the internal state onto the target utility instance.

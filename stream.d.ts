@@ -1,3 +1,4 @@
+import { TransformOptions, Transform } from "stream";
 /*
     This module hosts js wrapped hybrid like stram + incremental implementations of murmur hashes.
     If you don't need stream interface prefer to use utilities from the "incremental" module.
@@ -38,8 +39,10 @@ export interface MurmurHashSerial {
 
 /** An incremental murmur hash utility with additional node's stream.Transform api */
 export class MurmurHash extends Transform implements IMurHasher {
-    private _handle: IMurHasher;
+    protected _handle: IMurHasher;
+    /** Size in bytes of the serialized hasher. */
     static readonly SERIAL_BYTE_LENGTH: number;
+    /** Size in bytes of the serialized hasher. */
     readonly SERIAL_BYTE_LENGTH: number;
     constructor(algorithm: string, seed?: number);
     constructor(algorithm: string|MurmurHash|MurmurHashSerial, options?: MurmurHashOptions);

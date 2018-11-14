@@ -1,9 +1,9 @@
 import * as os from "os";
 
 import { IMurHasherConstructor, IMurHasherBase,
-         MurmurHash,
-         MurmurHash128, MurmurHash128x64, MurmurHash128x86
-       } from "../../incremental";
+    MurmurHash,
+    MurmurHash128, MurmurHash128x64, MurmurHash128x86
+} from "../../incremental";
 
 import { Test, test } from "tap";
 
@@ -87,100 +87,100 @@ test("MurmurHash128x64 should have arguments", (t) => testIMurHashArgs(MurmurHas
 test("MurmurHash128x64 should have arguments for callback update", (t) => testIMurUpdateCallback(MurmurHash128x64, expected128x64, t));
 
 function testIMurHashArgs(murmurhasher: IMurHasherConstructor, expected: Expected, t: Test) {
-  // constructor();
-  let mmh = new murmurhasher();
-  t.strictEqual(mmh.SERIAL_BYTE_LENGTH, murmurhasher.SERIAL_BYTE_LENGTH);
-  t.strictEqual(mmh.total, 0);
-  t.strictEqual(mmh.isBusy, false);
-  t.strictEqual(mmh.endianness, "BE");
-  let serial0 = Buffer.alloc(mmh.SERIAL_BYTE_LENGTH);
-  t.strictEqual(mmh.serialize(serial0), serial0);
-  t.type(mmh.digest(), Buffer);
-  t.strictEqual((mmh.digest() as Buffer).toString('hex'), expected.zeroHex);
-  t.strictEqual((mmh.digest("buffer") as Buffer).toString('hex'), expected.zeroHex);
-  t.strictEqual(mmh.digest("number"), expected.zero);
-  t.strictEqual(mmh.update('dead'), mmh);
-  t.strictEqual(mmh.total, 4);
-  t.strictEqual(mmh.update(Buffer.from('baca')), mmh);
-  t.strictEqual(mmh.total, 8);
-  t.strictEqual(mmh.update('ca'), mmh);
-  t.strictEqual(mmh.total, 10);
-  t.strictEqual((mmh.digest() as Buffer).toString('hex'), expected.resultHexBE);
-  t.strictEqual((mmh.digest("buffer") as Buffer).toString('hex'), expected.resultHexBE);
-  t.strictEqual(mmh.digest("hex"), expected.resultHexBE);
-  t.strictEqual(mmh.digest("number"), expected.resultBE);
-  let digest = Buffer.alloc(expected.hashSize*2);
-  t.strictEqual(mmh.digest(digest), digest);
-  t.strictEqual(digest.toString('hex'), expected.resultHexBuf1);
-  t.strictEqual(mmh.digest(digest, 1), digest);
-  t.strictEqual(digest.toString('hex'), expected.resultHexBuf2);
-  t.strictEqual(mmh.digest(digest, 5, 2), digest);
-  t.strictEqual(digest.toString('hex'), expected.resultHexBuf3);
-  mmh.endianness = "LE";
-  t.strictEqual(mmh.endianness, "LE");
-  t.strictEqual(mmh.digest("number"), expected.resultLE);
-  t.strictEqual(mmh.digest("hex"), expected.resultHexLE);
-  t.strictEqual((mmh.digest("buffer") as Buffer).toString('hex'), expected.resultHexLE);
-  let serial = mmh.serialize();
-  t.strictEqual(serial, (mmh as IMurHasherBase).toJSON());
-  // constructor(serial: string|Buffer, endianness?: Endianness);
-  let mmhclone = new murmurhasher(serial, "LE");
-  t.strictEqual(mmhclone.endianness, "LE");
-  mmhclone = new murmurhasher(serial);
-  t.strictEqual(mmhclone.endianness, "BE");
-  t.strictEqual(mmhclone.digest("number"), expected.resultBE);
-  let mmh2 = new murmurhasher();
-  t.strictEqual(mmh2.digest("number"), expected.zero);
-  t.strictEqual(mmh.copy(mmh2), mmh2);
-  t.strictEqual(mmh2.digest("number"), expected.resultBE);
-  // constructor(hash: IMurHasher, endianness?: Endianness);
-  let mmh3 = new murmurhasher(mmh2, "LE");
-  t.strictEqual(mmh3.endianness, "LE");
-  mmh3 = new murmurhasher(mmh2);
-  t.strictEqual(mmh3.endianness, "BE");
-  t.strictEqual(mmh3.digest("number"), expected.resultBE);
-  // constructor(seed: number, endianness?: Endianness);
-  let mmhseed = new murmurhasher(123456, "platform");
-  t.strictEqual(mmhseed.endianness, os.endianness());
-  mmhseed = new murmurhasher(123456);
-  t.strictEqual(mmhseed.endianness, "BE");
-  t.strictEqual(mmhseed.update('deadba'), mmhseed);
-  t.strictEqual(mmhseed.update('caca'), mmhseed);
-  t.strictEqual(mmhseed.digest("number"), expected.resultSeed);
-  // constructor(serial: string|Buffer, endianness?: Endianness);
-  let mmhser = new murmurhasher(serial0, "LE");
-  t.strictEqual(mmhser.endianness, "LE");
-  mmhser = new murmurhasher(serial0);
-  t.strictEqual(mmhser.endianness, "BE");
-  t.strictEqual(new murmurhasher(serial0).copy(mmh), mmh);
-  t.strictEqual(mmh.total, 0);
-  t.strictEqual(mmh.endianness, "LE");
-  t.strictEqual(mmh.update('deadba', 'hex'), mmh);
-  t.strictEqual(mmh.total, 3);
-  t.strictEqual(mmh.update('caca', 'hex'), mmh);
-  t.strictEqual(mmh.total, 5);
-  t.strictEqual(mmh.digest("number"), expected.encInputResult);
-  t.strictEqual(mmh.digest("hex"), expected.encInputResultHexLE);
-  mmh.endianness = "BE";
-  t.strictEqual(mmh.endianness, "BE");
-  t.strictEqual(mmh.digest("hex"), expected.encInputResultHexBE);
-  t.end();
+    // constructor();
+    let mmh = new murmurhasher();
+    t.strictEqual(mmh.SERIAL_BYTE_LENGTH, murmurhasher.SERIAL_BYTE_LENGTH);
+    t.strictEqual(mmh.total, 0);
+    t.strictEqual(mmh.isBusy, false);
+    t.strictEqual(mmh.endianness, "BE");
+    let serial0 = Buffer.alloc(mmh.SERIAL_BYTE_LENGTH);
+    t.strictEqual(mmh.serialize(serial0), serial0);
+    t.type(mmh.digest(), Buffer);
+    t.strictEqual((mmh.digest() as Buffer).toString('hex'), expected.zeroHex);
+    t.strictEqual((mmh.digest("buffer") as Buffer).toString('hex'), expected.zeroHex);
+    t.strictEqual(mmh.digest("number"), expected.zero);
+    t.strictEqual(mmh.update('dead'), mmh);
+    t.strictEqual(mmh.total, 4);
+    t.strictEqual(mmh.update(Buffer.from('baca')), mmh);
+    t.strictEqual(mmh.total, 8);
+    t.strictEqual(mmh.update('ca'), mmh);
+    t.strictEqual(mmh.total, 10);
+    t.strictEqual((mmh.digest() as Buffer).toString('hex'), expected.resultHexBE);
+    t.strictEqual((mmh.digest("buffer") as Buffer).toString('hex'), expected.resultHexBE);
+    t.strictEqual(mmh.digest("hex"), expected.resultHexBE);
+    t.strictEqual(mmh.digest("number"), expected.resultBE);
+    let digest = Buffer.alloc(expected.hashSize*2);
+    t.strictEqual(mmh.digest(digest), digest);
+    t.strictEqual(digest.toString('hex'), expected.resultHexBuf1);
+    t.strictEqual(mmh.digest(digest, 1), digest);
+    t.strictEqual(digest.toString('hex'), expected.resultHexBuf2);
+    t.strictEqual(mmh.digest(digest, 5, 2), digest);
+    t.strictEqual(digest.toString('hex'), expected.resultHexBuf3);
+    mmh.endianness = "LE";
+    t.strictEqual(mmh.endianness, "LE");
+    t.strictEqual(mmh.digest("number"), expected.resultLE);
+    t.strictEqual(mmh.digest("hex"), expected.resultHexLE);
+    t.strictEqual((mmh.digest("buffer") as Buffer).toString('hex'), expected.resultHexLE);
+    let serial = mmh.serialize();
+    t.strictEqual(serial, (mmh as IMurHasherBase).toJSON());
+    // constructor(serial: string|Buffer, endianness?: Endianness);
+    let mmhclone = new murmurhasher(serial, "LE");
+    t.strictEqual(mmhclone.endianness, "LE");
+    mmhclone = new murmurhasher(serial);
+    t.strictEqual(mmhclone.endianness, "BE");
+    t.strictEqual(mmhclone.digest("number"), expected.resultBE);
+    let mmh2 = new murmurhasher();
+    t.strictEqual(mmh2.digest("number"), expected.zero);
+    t.strictEqual(mmh.copy(mmh2), mmh2);
+    t.strictEqual(mmh2.digest("number"), expected.resultBE);
+    // constructor(hash: IMurHasher, endianness?: Endianness);
+    let mmh3 = new murmurhasher(mmh2, "LE");
+    t.strictEqual(mmh3.endianness, "LE");
+    mmh3 = new murmurhasher(mmh2);
+    t.strictEqual(mmh3.endianness, "BE");
+    t.strictEqual(mmh3.digest("number"), expected.resultBE);
+    // constructor(seed: number, endianness?: Endianness);
+    let mmhseed = new murmurhasher(123456, "platform");
+    t.strictEqual(mmhseed.endianness, os.endianness());
+    mmhseed = new murmurhasher(123456);
+    t.strictEqual(mmhseed.endianness, "BE");
+    t.strictEqual(mmhseed.update('deadba'), mmhseed);
+    t.strictEqual(mmhseed.update('caca'), mmhseed);
+    t.strictEqual(mmhseed.digest("number"), expected.resultSeed);
+    // constructor(serial: string|Buffer, endianness?: Endianness);
+    let mmhser = new murmurhasher(serial0, "LE");
+    t.strictEqual(mmhser.endianness, "LE");
+    mmhser = new murmurhasher(serial0);
+    t.strictEqual(mmhser.endianness, "BE");
+    t.strictEqual(new murmurhasher(serial0).copy(mmh), mmh);
+    t.strictEqual(mmh.total, 0);
+    t.strictEqual(mmh.endianness, "LE");
+    t.strictEqual(mmh.update('deadba', 'hex'), mmh);
+    t.strictEqual(mmh.total, 3);
+    t.strictEqual(mmh.update('caca', 'hex'), mmh);
+    t.strictEqual(mmh.total, 5);
+    t.strictEqual(mmh.digest("number"), expected.encInputResult);
+    t.strictEqual(mmh.digest("hex"), expected.encInputResultHexLE);
+    mmh.endianness = "BE";
+    t.strictEqual(mmh.endianness, "BE");
+    t.strictEqual(mmh.digest("hex"), expected.encInputResultHexBE);
+    t.end();
 }
 
 function testIMurUpdateCallback(murmurhasher: IMurHasherConstructor, expected: Expected, t: Test) {
-  t.plan(11);
-  let mmh = new murmurhasher()
-  t.strictEqual(mmh.total, 0);
-  t.strictEqual(mmh.isBusy, false);
-  t.strictEqual(mmh.update(Buffer.from("dead"), (err: Error) => {
-    t.error(err);
+    t.plan(11);
+    let mmh = new murmurhasher()
+    t.strictEqual(mmh.total, 0);
     t.strictEqual(mmh.isBusy, false);
-    t.strictEqual(mmh.update("bacaca", "ascii", (err: Error) => {
-      t.error(err);
-      t.strictEqual(mmh.isBusy, false);
-      t.strictEqual(mmh.digest("hex"), expected.resultHexBE);
+    t.strictEqual(mmh.update(Buffer.from("dead"), (err: Error) => {
+        t.error(err);
+        t.strictEqual(mmh.isBusy, false);
+        t.strictEqual(mmh.update("bacaca", "ascii", (err: Error) => {
+            t.error(err);
+            t.strictEqual(mmh.isBusy, false);
+            t.strictEqual(mmh.digest("hex"), expected.resultHexBE);
+        }), undefined);
+        t.strictEqual(mmh.isBusy, true);
     }), undefined);
     t.strictEqual(mmh.isBusy, true);
-  }), undefined);
-  t.strictEqual(mmh.isBusy, true);
 }
