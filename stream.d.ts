@@ -1,37 +1,47 @@
-import { TransformOptions, Transform } from "stream";
 /*
-    This module hosts js wrapped hybrid like stram + incremental implementations of murmur hashes.
+    This module hosts js wrapped hybrid stram + incremental implementations of murmur hashes.
     If you don't need stream interface prefer to use utilities from the "incremental" module.
 */
+import { TransformOptions, Transform } from "stream";
 import { Encoding, OutputType,
          Endianness, IMurHasher } from "./incremental";
 
 export { Encoding, OutputType, Endianness, IMurHasher };
 
 /**
- * Lists available algorithm names for createHash.
+ * Lists available algorithm names for [createHash].
  */
 export function getHashes(): string[];
 /**
- * Constructs a new MurmurHash object that can be used to generate murmurhash digests.
+ * Constructs a new MurmurHash object that can be used to generate murmurhash digests
+ * from the data stream.
  *
- * If `algorithm` is an instance of a MurmurHash or murmurhash serialized object,
+ * If algorithm is an instance of a MurmurHash or a serialized object,
  * the seed option is being ignored.
  * 
- * @param algorithm one of available algorithms or a murmur hasher instance or a murmurhash serialized object
- * @param seed initial hash seed
- * @param options hasher options
+ * @param algorithm one of the available murmurhash algorithms,
+ *        a murmur hasher instance or a serialized object.
+ * @param options hasher or stream options.
+ */
+export function createHash(algorithm: string|MurmurHash|MurmurHashSerial, options?: MurmurHashOptions): MurmurHash;
+/**
+ * Constructs a new MurmurHash object that can be used to generate murmurhash digests
+ * from the data stream.
+ *
+ * @param algorithm one of the available murmurhash algorithms.
+ * @param seed initial hash seed as an unsigned 32-bit integer.
  */
 export function createHash(algorithm: string, seed?: number): MurmurHash;
-export function createHash(algorithm: string|MurmurHash|MurmurHashSerial, options?: MurmurHashOptions): MurmurHash;
 
 /** Options for createHash */
 export interface MurmurHashOptions extends TransformOptions {
+    /** Initial hash seed as an unsigned 32-bit integer. */
     seed?: number;
+    /** Digest byte order. */
     endianness?: Endianness;
 }
 
-/** A serialized MurmurHash object representation created by MurmurHash#toJSON function */
+/** A serialized MurmurHash object representation created by MurmurHash.prototype.toJSON function */
 export interface MurmurHashSerial {
     type: string;
     seed: string;
@@ -39,13 +49,11 @@ export interface MurmurHashSerial {
 
 /** An incremental murmur hash utility with additional node's stream.Transform api */
 export class MurmurHash extends Transform implements IMurHasher {
-    protected _handle: IMurHasher;
     /** Size in bytes of the serialized hasher. */
     static readonly SERIAL_BYTE_LENGTH: number;
-    /** Size in bytes of the serialized hasher. */
     readonly SERIAL_BYTE_LENGTH: number;
-    constructor(algorithm: string, seed?: number);
     constructor(algorithm: string|MurmurHash|MurmurHashSerial, options?: MurmurHashOptions);
+    constructor(algorithm: string, seed?: number);
     copy(target: MurmurHash): MurmurHash;
     digest(outputType?: OutputType): number|string|Buffer;
     digest(output: Buffer, offset?: number, length?: number): Buffer;
@@ -58,4 +66,5 @@ export class MurmurHash extends Transform implements IMurHasher {
     endianness: Endianness;
     readonly isBusy: boolean;
     readonly total: number;
+    protected _handle: IMurHasher;
 }

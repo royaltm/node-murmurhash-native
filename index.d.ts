@@ -1,12 +1,11 @@
 /**
  * Indicates the form and encoding of the resulting hash and can be one of:
  *
- * - 'base64' - base64 string
- * - 'binary' - binary string
- * - 'buffer' - a new Buffer object
- * - 'hex'    - hexadecimal string
- * - 'number' - for 32-bit murmur hash an unsigned 32-bit integer,
- *              other hashes - hexadecimal string
+ * - "base64" - base64 string
+ * - "binary" - binary string
+ * - "buffer" - a new Buffer object
+ * - "hex"    - hexadecimal string
+ * - "number" - for 32-bit murmur hash an unsigned 32-bit integer, other hashes - hexadecimal string
  */
 export type OutputType = "base64"|"binary"|"buffer"|"hex"|"number";
 /**
@@ -14,7 +13,7 @@ export type OutputType = "base64"|"binary"|"buffer"|"hex"|"number";
  */
 export type Encoding = "ascii"|"base64"|"binary"|"hex"|"ucs-2"|"ucs2"|"utf-16le"|"utf-8"|"utf16le"|"utf8";
 
-/** An interface for murmurhash functions */
+/** An interface for murmurhash functions. */
 export interface MurmurHashFn {
     (data: string|Buffer): number|string;
     (data: string|Buffer, callback: (err: Error, res: number|string) => void): void;
@@ -52,7 +51,12 @@ export interface MurmurHashFn {
     (data: string, encoding: Encoding, seed: number, outputType: OutputType, callback: (err: Error, res: number|string|Buffer) => void): void;
 }
 
-/** An interface for murmurhash 32-bit functions */
+/**
+ * An interface for murmurhash 32-bit functions.
+ *
+ * Those functions produce hashes as an unsigned 32-bit integers by default
+ * and for the "number" output type.
+ */
 export interface MurmurHashFnI extends MurmurHashFn {
     (data: string|Buffer): number;
     (data: string|Buffer, callback: (err: Error, res: number) => void): void;
@@ -62,7 +66,12 @@ export interface MurmurHashFnI extends MurmurHashFn {
     (data: string, encoding: Encoding, seed: number, callback: (err: Error, res: number) => void): void;
 }
 
-/** An interface for murmurhash 64/128-bit functions */
+/**
+ * An interface for murmurhash 64/128-bit functions.
+ *
+ * Those functions produce hashes as a hexadecimal string by default
+ * and for the "number" output type.
+ */
 export interface MurmurHashFnH extends MurmurHashFn {
     (data: string|Buffer): string;
     (data: string|Buffer, callback: (err: Error, res: string) => void): void;
