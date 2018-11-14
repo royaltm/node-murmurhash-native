@@ -15,24 +15,23 @@ export type OutputType = "base64"|"binary"|"buffer"|"hex"|"number";
  * The expected encoding of the provided data as a string.
  */
 export type Encoding = "ascii"|"base64"|"binary"|"hex"|"ucs-2"|"ucs2"|"utf-16le"|"utf-8"|"utf16le"|"utf8";
-export type EncodingOrOutputType = "ascii"|"base64"|"binary"|"buffer"|"hex"|"number"|"ucs-2"|"ucs2"|"utf-16le"|"utf-8"|"utf16le"|"utf8";
 
-/** An interface for a murmurhash 32-bit function */
-export interface MurmurHashUint32 {
-    (data: string|Buffer): number;
-    (data: string|Buffer, callback: (err: Error, res: number) => void): void;
+/** An interface for murmurhash functions */
+export interface MurmurHashFn {
+    (data: string|Buffer): number|string;
+    (data: string|Buffer, callback: (err: Error, res: number|string) => void): void;
     (data: string|Buffer, output: Buffer, offset?: number, length?: number): Buffer;
     (data: string|Buffer, output: Buffer, callback: (err: Error, res: Buffer) => void): void;
     (data: string|Buffer, output: Buffer, offset: number, callback: (err: Error, res: Buffer) => void): void;
     (data: string|Buffer, output: Buffer, offset: number, length: number, callback: (err: Error, res: Buffer) => void): void;
-    (data: string, encOrOutType: EncodingOrOutputType, seed?: number): number|string|Buffer;
-    (data: string, encOrOutType: EncodingOrOutputType, callback: (err: Error, res: number|string|Buffer) => void): void;
-    (data: string, encOrOutType: EncodingOrOutputType, seed: number, callback: (err: Error, res: number|string|Buffer) => void): void;
+    (data: string, encOrOutType: Encoding|OutputType, seed?: number): number|string|Buffer;
+    (data: string, encOrOutType: Encoding|OutputType, callback: (err: Error, res: number|string|Buffer) => void): void;
+    (data: string, encOrOutType: Encoding|OutputType, seed: number, callback: (err: Error, res: number|string|Buffer) => void): void;
     (data: Buffer, outputType: OutputType, seed?: number): number|string|Buffer;
     (data: Buffer, outputType: OutputType, callback: (err: Error, res: number|string|Buffer) => void): void;
     (data: Buffer, outputType: OutputType, seed: number, callback: (err: Error, res: number|string|Buffer) => void): void;
-    (data: string|Buffer, seed: number): number;
-    (data: string|Buffer, seed: number, callback: (err: Error, res: number) => void): void;
+    (data: string|Buffer, seed: number): number|string;
+    (data: string|Buffer, seed: number, callback: (err: Error, res: number|string) => void): void;
     (data: string|Buffer, seed: number, output: Buffer, offset?: number, length?: number): Buffer;
     (data: string|Buffer, seed: number, output: Buffer, callback: (err: Error, res: Buffer) => void): void;
     (data: string|Buffer, seed: number, output: Buffer, offset: number, callback: (err: Error, res: Buffer) => void): void;
@@ -45,8 +44,8 @@ export interface MurmurHashUint32 {
     (data: string, encoding: Encoding, output: Buffer, callback: (err: Error, res: Buffer) => void): void;
     (data: string, encoding: Encoding, output: Buffer, offset: number, callback: (err: Error, res: Buffer) => void): void;
     (data: string, encoding: Encoding, output: Buffer, offset: number, length: number, callback: (err: Error, res: Buffer) => void): void;
-    (data: string, encoding: Encoding, seed: number): number;
-    (data: string, encoding: Encoding, seed: number, callback: (err: Error, res: number) => void): void;
+    (data: string, encoding: Encoding, seed: number): number|string;
+    (data: string, encoding: Encoding, seed: number, callback: (err: Error, res: number|string) => void): void;
     (data: string, encoding: Encoding, seed: number, output: Buffer, offset?: number, length?: number): Buffer;
     (data: string, encoding: Encoding, seed: number, output: Buffer, callback: (err: Error, res: Buffer) => void): void;
     (data: string, encoding: Encoding, seed: number, output: Buffer, offset: number, callback: (err: Error, res: Buffer) => void): void;
@@ -55,133 +54,127 @@ export interface MurmurHashUint32 {
     (data: string, encoding: Encoding, seed: number, outputType: OutputType, callback: (err: Error, res: number|string|Buffer) => void): void;
 }
 
+/** An interface for murmurhash 32-bit functions */
+export interface MurmurHashFnI extends MurmurHashFn {
+    (data: string|Buffer): number;
+    (data: string|Buffer, callback: (err: Error, res: number) => void): void;
+    (data: string|Buffer, seed: number): number;
+    (data: string|Buffer, seed: number, callback: (err: Error, res: number) => void): void;
+    (data: string, encoding: Encoding, seed: number): number;
+    (data: string, encoding: Encoding, seed: number, callback: (err: Error, res: number) => void): void;
+}
+
 /** An interface for murmurhash 64/128-bit functions */
-export interface MurmurHashHexStr {
+export interface MurmurHashFnH extends MurmurHashFn {
     (data: string|Buffer): string;
     (data: string|Buffer, callback: (err: Error, res: string) => void): void;
-    (data: string|Buffer, output: Buffer, offset?: number, length?: number): Buffer;
-    (data: string|Buffer, output: Buffer, callback: (err: Error, res: Buffer) => void): void;
-    (data: string|Buffer, output: Buffer, offset: number, callback: (err: Error, res: Buffer) => void): void;
-    (data: string|Buffer, output: Buffer, offset: number, length: number, callback: (err: Error, res: Buffer) => void): void;
-    (data: string, encOrOutType: EncodingOrOutputType, seed?: number): string|Buffer;
-    (data: string, encOrOutType: EncodingOrOutputType, callback: (err: Error, res: string|Buffer) => void): void;
-    (data: string, encOrOutType: EncodingOrOutputType, seed: number, callback: (err: Error, res: string|Buffer) => void): void;
+    (data: string, encOrOutType: Encoding|OutputType, seed?: number): string|Buffer;
+    (data: string, encOrOutType: Encoding|OutputType, callback: (err: Error, res: string|Buffer) => void): void;
+    (data: string, encOrOutType: Encoding|OutputType, seed: number, callback: (err: Error, res: string|Buffer) => void): void;
     (data: Buffer, outputType: OutputType, seed?: number): string|Buffer;
     (data: Buffer, outputType: OutputType, callback: (err: Error, res: string|Buffer) => void): void;
     (data: Buffer, outputType: OutputType, seed: number, callback: (err: Error, res: string|Buffer) => void): void;
     (data: string|Buffer, seed: number): string;
     (data: string|Buffer, seed: number, callback: (err: Error, res: string) => void): void;
-    (data: string|Buffer, seed: number, output: Buffer, offset?: number, length?: number): Buffer;
-    (data: string|Buffer, seed: number, output: Buffer, callback: (err: Error, res: Buffer) => void): void;
-    (data: string|Buffer, seed: number, output: Buffer, offset: number, callback: (err: Error, res: Buffer) => void): void;
-    (data: string|Buffer, seed: number, output: Buffer, offset: number, length: number, callback: (err: Error, res: Buffer) => void): void;
     (data: string|Buffer, seed: number, outputType: OutputType): string|Buffer;
     (data: string|Buffer, seed: number, outputType: OutputType, callback: (err: Error, res: string|Buffer) => void): void;
     (data: string|Buffer, encoding: Encoding, outputType: OutputType): string|Buffer;
     (data: string|Buffer, encoding: Encoding, outputType: OutputType, callback: (err: Error, res: string|Buffer) => void): void;
-    (data: string, encoding: Encoding, output: Buffer, offset?: number, length?: number): Buffer;
-    (data: string, encoding: Encoding, output: Buffer, callback: (err: Error, res: Buffer) => void): void;
-    (data: string, encoding: Encoding, output: Buffer, offset: number, callback: (err: Error, res: Buffer) => void): void;
-    (data: string, encoding: Encoding, output: Buffer, offset: number, length: number, callback: (err: Error, res: Buffer) => void): void;
     (data: string, encoding: Encoding, seed: number): string;
     (data: string, encoding: Encoding, seed: number, callback: (err: Error, res: string) => void): void;
-    (data: string, encoding: Encoding, seed: number, output: Buffer, offset?: number, length?: number): Buffer;
-    (data: string, encoding: Encoding, seed: number, output: Buffer, callback: (err: Error, res: Buffer) => void): void;
-    (data: string, encoding: Encoding, seed: number, output: Buffer, offset: number, callback: (err: Error, res: Buffer) => void): void;
-    (data: string, encoding: Encoding, seed: number, output: Buffer, offset: number, length: number, callback: (err: Error, res: Buffer) => void): void;
     (data: string, encoding: Encoding, seed: number, outputType: OutputType): string|Buffer;
     (data: string, encoding: Encoding, seed: number, outputType: OutputType, callback: (err: Error, res: string|Buffer) => void): void;
 }
 
-export const murmurHash: MurmurHashUint32;
-export const murmurHash32: MurmurHashUint32;
-export const murmurHash64: MurmurHashHexStr;
-export const murmurHash64x64: MurmurHashHexStr;
-export const murmurHash64x86: MurmurHashHexStr;
-export const murmurHash128: MurmurHashHexStr;
-export const murmurHash128x64: MurmurHashHexStr;
-export const murmurHash128x86: MurmurHashHexStr;
+export const murmurHash: MurmurHashFnI;
+export const murmurHash32: MurmurHashFnI;
+export const murmurHash64: MurmurHashFnH;
+export const murmurHash64x64: MurmurHashFnH;
+export const murmurHash64x86: MurmurHashFnH;
+export const murmurHash128: MurmurHashFnH;
+export const murmurHash128x64: MurmurHashFnH;
+export const murmurHash128x86: MurmurHashFnH;
 
 export namespace BE {
-    const murmurHash: MurmurHashUint32;
-    const murmurHash32: MurmurHashUint32;
-    const murmurHash64: MurmurHashHexStr;
-    const murmurHash64x64: MurmurHashHexStr;
-    const murmurHash64x86: MurmurHashHexStr;
-    const murmurHash128: MurmurHashHexStr;
-    const murmurHash128x64: MurmurHashHexStr;
-    const murmurHash128x86: MurmurHashHexStr;
+    const murmurHash: MurmurHashFnI;
+    const murmurHash32: MurmurHashFnI;
+    const murmurHash64: MurmurHashFnH;
+    const murmurHash64x64: MurmurHashFnH;
+    const murmurHash64x86: MurmurHashFnH;
+    const murmurHash128: MurmurHashFnH;
+    const murmurHash128x64: MurmurHashFnH;
+    const murmurHash128x86: MurmurHashFnH;
 }
 
 export namespace LE {
-    const murmurHash: MurmurHashUint32;
-    const murmurHash32: MurmurHashUint32;
-    const murmurHash64: MurmurHashHexStr;
-    const murmurHash64x64: MurmurHashHexStr;
-    const murmurHash64x86: MurmurHashHexStr;
-    const murmurHash128: MurmurHashHexStr;
-    const murmurHash128x64: MurmurHashHexStr;
-    const murmurHash128x86: MurmurHashHexStr;
+    const murmurHash: MurmurHashFnI;
+    const murmurHash32: MurmurHashFnI;
+    const murmurHash64: MurmurHashFnH;
+    const murmurHash64x64: MurmurHashFnH;
+    const murmurHash64x86: MurmurHashFnH;
+    const murmurHash128: MurmurHashFnH;
+    const murmurHash128x64: MurmurHashFnH;
+    const murmurHash128x86: MurmurHashFnH;
 }
 
 export namespace platform {
-    const murmurHash: MurmurHashUint32;
-    const murmurHash32: MurmurHashUint32;
-    const murmurHash64: MurmurHashHexStr;
-    const murmurHash64x64: MurmurHashHexStr;
-    const murmurHash64x86: MurmurHashHexStr;
-    const murmurHash128: MurmurHashHexStr;
-    const murmurHash128x64: MurmurHashHexStr;
-    const murmurHash128x86: MurmurHashHexStr;
+    const murmurHash: MurmurHashFnI;
+    const murmurHash32: MurmurHashFnI;
+    const murmurHash64: MurmurHashFnH;
+    const murmurHash64x64: MurmurHashFnH;
+    const murmurHash64x86: MurmurHashFnH;
+    const murmurHash128: MurmurHashFnH;
+    const murmurHash128x64: MurmurHashFnH;
+    const murmurHash128x86: MurmurHashFnH;
 }
 
 declare module "promisify" {
-    /** An interface for a promisified murmurhash 32-bit function */
-    export interface MurmurHashAsyncUint32 {
-        (data: string|Buffer): Promise<number>;
+    /** An interface for promisified murmurhash functions */
+    export interface MurmurHashFnAsync {
+        (data: string|Buffer): Promise<number|string>;
         (data: string|Buffer, output: Buffer, offset?: number, length?: number): Promise<Buffer>;
-        (data: string, encOrOutType: EncodingOrOutputType, seed?: number): Promise<number|string|Buffer>;
+        (data: string, encOrOutType: Encoding|OutputType, seed?: number): Promise<number|string|Buffer>;
         (data: Buffer, outputType: OutputType, seed?: number): Promise<number|string|Buffer>;
-        (data: string|Buffer, seed: number): Promise<number>;
+        (data: string|Buffer, seed: number): Promise<number|string>;
         (data: string|Buffer, seed: number, output: Buffer, offset?: number, length?: number): Promise<Buffer>;
         (data: string|Buffer, seed: number, outputType: OutputType): Promise<number|string|Buffer>;
         (data: string|Buffer, encoding: Encoding, outputType: OutputType): Promise<number|string|Buffer>;
         (data: string, encoding: Encoding, output: Buffer, offset?: number, length?: number): Promise<Buffer>;
-        (data: string, encoding: Encoding, seed: number): Promise<number>;
+        (data: string, encoding: Encoding, seed: number): Promise<number|string>;
         (data: string, encoding: Encoding, seed: number, output: Buffer, offset?: number, length?: number): Promise<Buffer>;
         (data: string, encoding: Encoding, seed: number, outputType: OutputType): Promise<number|string|Buffer>;
     }
-
+    /** An interface for promisified murmurhash 32-bit functions */
+    export interface MurmurHashFnAsyncI extends MurmurHashFnAsync {
+        (data: string|Buffer): Promise<number>;
+        (data: string|Buffer, seed: number): Promise<number>;
+        (data: string, encoding: Encoding, seed: number): Promise<number>;
+    }
     /** An interface for promisified murmurhash 64/128-bit functions */
-    export interface MurmurHashAsyncHexStr {
+    export interface MurmurHashFnAsyncH extends MurmurHashFnAsync {
         (data: string|Buffer): Promise<string>;
-        (data: string|Buffer, output: Buffer, offset?: number, length?: number): Promise<Buffer>;
-        (data: string, encOrOutType: EncodingOrOutputType, seed?: number): Promise<string|Buffer>;
+        (data: string, encOrOutType: Encoding|OutputType, seed?: number): Promise<string|Buffer>;
         (data: Buffer, outputType: OutputType, seed?: number): Promise<string|Buffer>;
         (data: string|Buffer, seed: number): Promise<string>;
-        (data: string|Buffer, seed: number, output: Buffer, offset?: number, length?: number): Promise<Buffer>;
         (data: string|Buffer, seed: number, outputType: OutputType): Promise<string|Buffer>;
         (data: string|Buffer, encoding: Encoding, outputType: OutputType): Promise<string|Buffer>;
-        (data: string, encoding: Encoding, output: Buffer, offset?: number, length?: number): Promise<Buffer>;
         (data: string, encoding: Encoding, seed: number): Promise<string>;
-        (data: string, encoding: Encoding, seed: number, output: Buffer, offset?: number, length?: number): Promise<Buffer>;
         (data: string, encoding: Encoding, seed: number, outputType: OutputType): Promise<string|Buffer>;
     }
 
     export interface MurmurHashAsyncNs {
-        readonly murmurHashAsync: MurmurHashAsyncUint32;
-        readonly murmurHash32Async: MurmurHashAsyncUint32;
-        readonly murmurHash64x64Async: MurmurHashAsyncHexStr;
-        readonly murmurHash64x86Async: MurmurHashAsyncHexStr;
-        readonly murmurHash128x64Async: MurmurHashAsyncHexStr;
-        readonly murmurHash128x86Async: MurmurHashAsyncHexStr;
-        readonly murmurHash64Async: MurmurHashAsyncHexStr;
-        readonly murmurHash128Async: MurmurHashAsyncHexStr;
+        readonly murmurHashAsync: MurmurHashFnAsyncI;
+        readonly murmurHash32Async: MurmurHashFnAsyncI;
+        readonly murmurHash64x64Async: MurmurHashFnAsyncH;
+        readonly murmurHash64x86Async: MurmurHashFnAsyncH;
+        readonly murmurHash128x64Async: MurmurHashFnAsyncH;
+        readonly murmurHash128x86Async: MurmurHashFnAsyncH;
+        readonly murmurHash64Async: MurmurHashFnAsyncH;
+        readonly murmurHash128Async: MurmurHashFnAsyncH;
         readonly BE: MurmurHashAsyncNs;
         readonly LE: MurmurHashAsyncNs;
         readonly platform: MurmurHashAsyncNs;
     }
-
     /**
      * Returns all promisified murmur hash functions in their corresponding namespaces.
      *
@@ -193,8 +186,8 @@ declare module "promisify" {
 /** An endianness type for the murmur hash incremental utilities */
 export type Endianness = "BE"|"LE"|"platform";
 
-/** A commont interface to all of the murmur hash incremental utilities */
-export interface MurmurHashIncremental {
+/** A common interface to all of the murmur hash incremental utilities */
+export interface IMurHasher {
     /**
      * Size in bytes of the serialized hasher.
      */
@@ -207,7 +200,7 @@ export interface MurmurHashIncremental {
      * @param target - a different instance of MurmurHash utility of the same type.
      * @return target.
      */
-    copy(target: ThisType<MurmurHashIncremental>): ThisType<MurmurHashIncremental>;
+    copy(target: ThisType<IMurHasher>): ThisType<IMurHasher>;
     /**
      * Generate the murmur hash of all of the data provided so far.
      * 
@@ -328,8 +321,8 @@ declare module "stream" {
     }
 
     /** An incremental murmur hash utility with additional node's stream.Transform api */
-    export class MurmurHash extends Transform implements MurmurHashIncremental {
-        private _handle: MurmurHashIncremental;
+    export class MurmurHash extends Transform implements IMurHasher {
+        private _handle: IMurHasher;
         static readonly SERIAL_BYTE_LENGTH: number;
         readonly SERIAL_BYTE_LENGTH: number;
         constructor(algorithm: string, seed?: number);
@@ -354,7 +347,7 @@ declare module "stream" {
 */
 declare module "incremental" {
     /** A murmurhash32 implementation of the murmur hash incremental utility */
-    export class MurmurHash implements MurmurHashIncremental {
+    export class MurmurHash implements IMurHasher {
         static readonly SERIAL_BYTE_LENGTH: number;
         readonly SERIAL_BYTE_LENGTH: number;
         /**
@@ -399,7 +392,7 @@ declare module "incremental" {
     }
 
     /** A murmurhash128 (native arch) implementation of the murmur hash incremental utility */
-    export class MurmurHash128 implements MurmurHashIncremental {
+    export class MurmurHash128 implements IMurHasher {
         static readonly SERIAL_BYTE_LENGTH: number;
         readonly SERIAL_BYTE_LENGTH: number;
         constructor();
@@ -421,7 +414,7 @@ declare module "incremental" {
     }
 
     /** A murmurhash128x64 implementation of the murmur hash incremental utility */
-    export class MurmurHash128x64 implements MurmurHashIncremental {
+    export class MurmurHash128x64 implements IMurHasher {
         static readonly SERIAL_BYTE_LENGTH: number;
         readonly SERIAL_BYTE_LENGTH: number;
         constructor();
@@ -443,7 +436,7 @@ declare module "incremental" {
     }
 
     /** A murmurhash128x86 implementation of the murmur hash incremental utility */
-    export class MurmurHash128x86 implements MurmurHashIncremental {
+    export class MurmurHash128x86 implements IMurHasher {
         static readonly SERIAL_BYTE_LENGTH: number;
         readonly SERIAL_BYTE_LENGTH: number;
         constructor();

@@ -1,4 +1,4 @@
-import { Encoding, OutputType, EncodingOrOutputType, MurmurHashHexStr,
+import { Encoding, OutputType, MurmurHashFnH,
          murmurHash64, murmurHash64x86, murmurHash64x64,
          murmurHash128, murmurHash128x86, murmurHash128x64,
          BE, LE, platform } from "../..";
@@ -304,7 +304,7 @@ test("check arguments of BE.murmurHash128x64 w/ callback", (t) => testMurmurHash
 test("check arguments of LE.murmurHash128x64 w/ callback", (t) => testMurmurHashHexStrCallback(LE.murmurHash128x64, expected128x64LE, t));
 test("check arguments of platform murmurHash128x64 w/ callback", (t) => testMurmurHashHexStrCallback(platform.murmurHash128x64, expOs.expected128x64, t));
 
-function testMurmurHashHexStr(murmurHash: MurmurHashHexStr, expected: Expected, t: any): void {
+function testMurmurHashHexStr(murmurHash: MurmurHashFnH, expected: Expected, t: any): void {
     // murmurHash(data)
     t.strictEqual(murmurHash("deadbacaca"), expected.result);
     t.strictEqual(murmurHash(Buffer.from("deadbacaca")), expected.result);
@@ -493,7 +493,7 @@ function testMurmurHashHexStr(murmurHash: MurmurHashHexStr, expected: Expected, 
     t.end();
 }
 
-function testMurmurHashHexStrCallback(murmurHash: MurmurHashHexStr, expected: Expected, t: any): void {
+function testMurmurHashHexStrCallback(murmurHash: MurmurHashFnH, expected: Expected, t: any): void {
     t.plan(240);
     // murmurHash(data, callback)
     t.strictEqual(murmurHash("deadbacaca", (err: Error, res: string) => {

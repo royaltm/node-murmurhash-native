@@ -1,5 +1,5 @@
-import { Encoding, OutputType, EncodingOrOutputType,
-         MurmurHashUint32, murmurHash, murmurHash32,
+import { Encoding, OutputType,
+         MurmurHashFnI, murmurHash, murmurHash32,
          BE, LE, platform } from "../..";
 
 import * as os from "os";
@@ -92,7 +92,7 @@ test("check arguments of BE.murmurHash32 w/ callback", (t) => testMurmurHash32Ca
 test("check arguments of LE.murmurHash32 w/ callback", (t) => testMurmurHash32Callback(LE.murmurHash32, expected32LE, t));
 test("check arguments of platform murmurHash32 w/ callback", (t) => testMurmurHash32Callback(platform.murmurHash32, findExpected32(), t));
 
-function testMurmurHash32(murmurHash: MurmurHashUint32, expected: Expected, t: any): void {
+function testMurmurHash32(murmurHash: MurmurHashFnI, expected: Expected, t: any): void {
     // murmurHash(data)
     t.strictEqual(murmurHash("deadbacaca"), expected.result);
     t.strictEqual(murmurHash(Buffer.from("deadbacaca")), expected.result);
@@ -275,7 +275,7 @@ function testMurmurHash32(murmurHash: MurmurHashUint32, expected: Expected, t: a
     t.end();
 }
 
-function testMurmurHash32Callback(murmurHash: MurmurHashUint32, expected: Expected, t: any): void {
+function testMurmurHash32Callback(murmurHash: MurmurHashFnI, expected: Expected, t: any): void {
     t.plan(234);
     // murmurHash(data, callback)
     t.strictEqual(murmurHash("deadbacaca", (err: Error, res: number) => {
