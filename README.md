@@ -18,7 +18,7 @@ Key features:
 * BE or LE byte order variants of hashes
 * promise wrapper
 * prebuilt binaries for most standard system configurations
-* TypeScript declarations
+* TypeScript declarations ([docs][typescript-docs])
 
 Install:
 --------
@@ -49,7 +49,7 @@ npm rebuild --update-binary
 TypeScript
 ----------
 
-`murmurhash-native` is ready for the TypeScript without any external declarations. However this module is node-specific package, if you're going to use it in TypeScript, do not forget to include `@types/node` and enable `es2015` language features in your `tsconfig.json`.
+`murmurhash-native` is [ready][typescript-docs] for the TypeScript without any external declarations. However this module is node-specific package, if you're going to use it in TypeScript, do not forget to include `@types/node` and enable `es2015` language features in your `tsconfig.json`.
 
 Make a hash:
 ------------
@@ -318,3 +318,4 @@ Tested with nodejs: v4, v5, v6, v7, v8, v9, v10 and v11.
 [node-pre-gyp-github]: https://github.com/bchr02/node-pre-gyp-github
 [releases]: https://github.com/royaltm/node-murmurhash-native/releases
 [node-gyp-install]: https://github.com/nodejs/node-gyp#installation
+[typescript-docs]: http://royaltm.github.io/node-murmurhash-native/globals.html
