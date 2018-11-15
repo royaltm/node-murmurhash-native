@@ -1,7 +1,22 @@
-/*
-    This module hosts js wrapped hybrid stram + incremental implementations of murmur hashes.
-    If you don't need stream interface prefer to use utilities from the "incremental" module.
-*/
+/**
+ * `murmurhash-native/stream` module.
+ *
+ * Example:
+ *
+ * ```ts
+ * import { createHash } from "murmurhash-native/stream"
+ * import * as fs from "fs"
+ *
+ * fs.createReadStream("hash_me.txt")
+ * .pipe(createHash("murmurhash128x64", {seed: 42, encoding: "hex"}))
+ * .pipe(fs.createWriteStream("hash_me.txt.hash"))
+ * ```
+ *
+ * If you don't need stream interface prefer to use utilities from the [[incremental]] module.
+ * @module stream
+ */
+
+/***/
 import { TransformOptions, Transform } from "stream";
 import { Encoding, OutputType,
          Endianness, IMurHasher } from "./incremental";
@@ -41,7 +56,7 @@ export interface MurmurHashOptions extends TransformOptions {
     endianness?: Endianness;
 }
 
-/** A serialized MurmurHash object representation created by MurmurHash.prototype.toJSON function */
+/** A serialized MurmurHash object representation created by [[MurmurHash.toJSON]] function */
 export interface MurmurHashSerial {
     type: string;
     seed: string;

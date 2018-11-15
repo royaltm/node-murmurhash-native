@@ -1,3 +1,19 @@
+/**
+ * `murmurhash-native/promisify` module.
+ *
+ * Example:
+ *
+ * ```ts
+ * import * as promisify from "murmurhash-native/promisify"
+ *
+ * const { murmurHash128x64Async } = promisify()
+ * murmurHash128x64Async("hash me!", 42).then(hash => console.log(hash))
+ * ```
+ *
+ * @module promisify
+ */
+
+/***/
 import { Encoding, OutputType } from "./index"
 
 declare module promisify {
