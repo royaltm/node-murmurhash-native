@@ -1,6 +1,8 @@
 v3.2.6
 
-* TypeScript declarations and tests
+* TypeScript declarations, documentation and tests
+* bump bluebird to 3.5.3, commander to 2.19.0 and tap to 12.1.0
+* added development dependencies: typescript, @types, typedoc and typedoc plugins
 
 v3.2.5
 
