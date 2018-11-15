@@ -28,14 +28,17 @@ matrix:
 before_install:
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then CXX=g++-4.9; fi
   - if [[ $TRAVIS_OS_NAME == "osx" ]]; then CXX=g++; fi # g++ is an alias of clang, so let's use it
-  # print versions
-  - echo "TRAVIS_NODE_VERSION=$TRAVIS_NODE_VERSION"
+  # update npm
   - |
-    if [[ $TRAVIS_NODE_VERSION -le 6 ]]; then NPM_VERSION=3;
-    elif [[ $TRAVIS_NODE_VERSION -le 8 ]]; then NPM_VERSION=4;
-    elif [[ $TRAVIS_NODE_VERSION -le 9 ]]; then NPM_VERSION=5;
-    else NPM_VERSION=6; fi
+    echo "TRAVIS_NODE_VERSION=$TRAVIS_NODE_VERSION"
+    if [[ $TRAVIS_NODE_VERSION -le 6 ]]; then NPM_VERSION=3
+    elif [[ $TRAVIS_NODE_VERSION -le 8 ]]; then NPM_VERSION=4
+    elif [[ $TRAVIS_NODE_VERSION -le 9 ]]; then NPM_VERSION=5
+    else NPM_VERSION=6
+    fi
+    echo "NPM_VERSION=$NPM_VERSION"
   - npm -g install npm@${NPM_VERSION}
+  # print versions
   - node --version
   - npm --version
   - if [[ $TRAVIS_OS_NAME != "windows" ]]; then $CXX --version; fi
