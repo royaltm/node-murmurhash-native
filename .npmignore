@@ -23,4 +23,5 @@ sftp-config.json
 *.so
 .nyc_output
 *.tgz
+/lib
 /doc
