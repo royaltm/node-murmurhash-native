@@ -1,3 +1,7 @@
+v3.2.6
+
+* TypeScript declarations and tests
+
 v3.2.5
 
 * bump node-pre-gyp to 0.11.0, nan to 2.11.1 and tap to 12.0.1
