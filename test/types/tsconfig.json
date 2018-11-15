@@ -1,16 +1,33 @@
 {
     "compilerOptions": {
         "alwaysStrict": true,
-        "target": "es5",
-        "listFiles": false,
-        "listEmittedFiles": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitAny": true,
-        "suppressImplicitAnyIndexErrors": true,
+        "inlineSourceMap": true,
         "lib": [
           "es2015"
-        ]
+        ],
+        "listEmittedFiles": true,
+        "listFiles": false,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "target": "es5"
     },
-    "exclude": []
+    "exclude": [],
+    "typedocOptions": {
+        "excludeExternals": true,
+        "excludeNotExported": false,
+        "externalPattern": "**/*node*",
+        "exclude": ["src", "test"],
+        "ignoreCompilerErrors": true,
+        "includeDeclarations": true,
+        "mode": "modules",
+        "module": "commonjs",
+        "name": "murmurhash-native",
+        "out": "doc",
+        "readme": "README.me",
+        "target": "ES5",
+        "theme": "default",
+        "sourcefile-url-prefix": "https://github.com/royaltm/node-murmurhash-native/blob/master/"
+    }
 }
