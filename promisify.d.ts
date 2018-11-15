@@ -16,7 +16,7 @@
 /***/
 import { Encoding, OutputType } from "./index"
 
-declare module promisify {
+declare namespace promisify {
     /** An interface for promisified murmurhash functions */
     export interface MurmurHashFnAsync {
         (data: string|Buffer): PromiseLike<number|string>;
@@ -59,6 +59,9 @@ declare module promisify {
         readonly murmurHash128x86Async: MurmurHashFnAsyncH;
         readonly murmurHash64Async: MurmurHashFnAsyncH;
         readonly murmurHash128Async: MurmurHashFnAsyncH;
+    }
+
+    export interface MurmurHashAsyncNsRoot extends MurmurHashAsyncNs {
         readonly BE: MurmurHashAsyncNs;
         readonly LE: MurmurHashAsyncNs;
         readonly platform: MurmurHashAsyncNs;
@@ -69,6 +72,6 @@ declare module promisify {
  *
  * @param promise optional Promise constructor
  */
-declare function promisify(promise?: PromiseConstructorLike): promisify.MurmurHashAsyncNs;
+declare function promisify(promise?: PromiseConstructorLike): promisify.MurmurHashAsyncNsRoot;
 
 export = promisify;
