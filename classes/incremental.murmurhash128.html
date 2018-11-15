@@ -1,0 +1,725 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>MurmurHash128 | murmurhash-native</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">murmurhash-native</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="../modules/incremental.html">incremental</a>
+				</li>
+				<li>
+					<a href="incremental.murmurhash128.html">MurmurHash128</a>
+				</li>
+			</ul>
+			<h1>Class MurmurHash128</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>A murmurhash128 (os arch) implementation of the murmur hash incremental utility</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="tsd-signature-type">IMurHasherBase</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">MurmurHash128</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/incremental.imurhasher.html" class="tsd-signature-type">IMurHasher</a></li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section tsd-is-inherited">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="incremental.murmurhash128.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-inherited">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="incremental.murmurhash128.html#serial_byte_length" class="tsd-kind-icon">SERIAL_<wbr>BYTE_<wbr>LENGTH</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="incremental.murmurhash128.html#endianness" class="tsd-kind-icon">endianness</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="incremental.murmurhash128.html#isbusy" class="tsd-kind-icon">is<wbr>Busy</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="incremental.murmurhash128.html#total" class="tsd-kind-icon">total</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="incremental.murmurhash128.html#serial_byte_length-1" class="tsd-kind-icon">SERIAL_<wbr>BYTE_<wbr>LENGTH</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="incremental.murmurhash128.html#copy" class="tsd-kind-icon">copy</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="incremental.murmurhash128.html#digest" class="tsd-kind-icon">digest</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="incremental.murmurhash128.html#serialize" class="tsd-kind-icon">serialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="incremental.murmurhash128.html#tojson" class="tsd-kind-icon">toJSON</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="incremental.murmurhash128.html#update" class="tsd-kind-icon">update</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Murmur<wbr>Hash128<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="incremental.murmurhash128.html" class="tsd-signature-type">MurmurHash128</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Murmur<wbr>Hash128<span class="tsd-signature-symbol">(</span>seed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, endianness<span class="tsd-signature-symbol">?: </span><a href="../modules/incremental.html#endianness" class="tsd-signature-type">Endianness</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="incremental.murmurhash128.html" class="tsd-signature-type">MurmurHash128</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Murmur<wbr>Hash128<span class="tsd-signature-symbol">(</span>serial<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span>, endianness<span class="tsd-signature-symbol">?: </span><a href="../modules/incremental.html#endianness" class="tsd-signature-type">Endianness</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="incremental.murmurhash128.html" class="tsd-signature-type">MurmurHash128</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Murmur<wbr>Hash128<span class="tsd-signature-symbol">(</span>hash<span class="tsd-signature-symbol">: </span><a href="../interfaces/incremental.imurhasher.html" class="tsd-signature-type">IMurHasher</a>, endianness<span class="tsd-signature-symbol">?: </span><a href="../modules/incremental.html#endianness" class="tsd-signature-type">Endianness</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="incremental.murmurhash128.html" class="tsd-signature-type">MurmurHash128</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from IMurHasherBase.__constructor</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L183">incremental.d.ts:183</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates MurmurHash utility.</p>
+								</div>
+								<p>The default seed is 0 and the endianness is set to &quot;BE&quot;.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="incremental.murmurhash128.html" class="tsd-signature-type">MurmurHash128</a></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from IMurHasherBase.__constructor</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L189">incremental.d.ts:189</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates MurmurHash utility.</p>
+								</div>
+								<p>If not provided, the endianness is set to &quot;BE&quot;.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>seed: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>initial murmur hash seed as an unsigned 32-bit integer.</p>
+										</div>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> endianness: <a href="../modules/incremental.html#endianness" class="tsd-signature-type">Endianness</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>digest byte order: &quot;BE&quot;, &quot;LE&quot; or &quot;platform&quot;, optional. Default is &quot;BE&quot;.</p>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="incremental.murmurhash128.html" class="tsd-signature-type">MurmurHash128</a></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from IMurHasherBase.__constructor</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L198">incremental.d.ts:198</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates MurmurHash utility.</p>
+								</div>
+								<p>The initial state is taken from the serialized state. Throws an error if serial is incorrect.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>serial: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>serialized state of the same MurmurHash type.</p>
+										</div>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> endianness: <a href="../modules/incremental.html#endianness" class="tsd-signature-type">Endianness</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>digest byte order: &quot;BE&quot;, &quot;LE&quot; or &quot;platform&quot;, optional. Default is &quot;BE&quot;.</p>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="incremental.murmurhash128.html" class="tsd-signature-type">MurmurHash128</a></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from IMurHasherBase.__constructor</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L207">incremental.d.ts:207</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates MurmurHash utility.</p>
+								</div>
+								<p>The initial state is taken from another instance of murmur hash utility.
+								Throws an error if incompatible hash is provided.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>hash: <a href="../interfaces/incremental.imurhasher.html" class="tsd-signature-type">IMurHasher</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>an instance of another MurmurHash.</p>
+										</div>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> endianness: <a href="../modules/incremental.html#endianness" class="tsd-signature-type">Endianness</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>digest byte order: &quot;BE&quot;, &quot;LE&quot; or &quot;platform&quot;, optional. Default is &quot;BE&quot;.</p>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="incremental.murmurhash128.html" class="tsd-signature-type">MurmurHash128</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a name="serial_byte_length" class="tsd-anchor"></a>
+					<h3>SERIAL_<wbr>BYTE_<wbr>LENGTH</h3>
+					<div class="tsd-signature tsd-kind-icon">SERIAL_<wbr>BYTE_<wbr>LENGTH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/incremental.imurhasher.html">IMurHasher</a>.<a href="../interfaces/incremental.imurhasher.html#serial_byte_length">SERIAL_BYTE_LENGTH</a></p>
+						<p>Inherited from IMurHasherBase.SERIAL_BYTE_LENGTH</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L183">incremental.d.ts:183</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a name="endianness" class="tsd-anchor"></a>
+					<h3>endianness</h3>
+					<div class="tsd-signature tsd-kind-icon">endianness<span class="tsd-signature-symbol">:</span> <a href="../modules/incremental.html#endianness" class="tsd-signature-type">Endianness</a></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/incremental.imurhasher.html">IMurHasher</a>.<a href="../interfaces/incremental.imurhasher.html#endianness">endianness</a></p>
+						<p>Inherited from IMurHasherBase.endianness</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L227">incremental.d.ts:227</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a name="isbusy" class="tsd-anchor"></a>
+					<h3>is<wbr>Busy</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Busy<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/incremental.imurhasher.html">IMurHasher</a>.<a href="../interfaces/incremental.imurhasher.html#isbusy">isBusy</a></p>
+						<p>Inherited from IMurHasherBase.isBusy</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L228">incremental.d.ts:228</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a name="total" class="tsd-anchor"></a>
+					<h3>total</h3>
+					<div class="tsd-signature tsd-kind-icon">total<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/incremental.imurhasher.html">IMurHasher</a>.<a href="../interfaces/incremental.imurhasher.html#total">total</a></p>
+						<p>Inherited from IMurHasherBase.total</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L229">incremental.d.ts:229</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a name="serial_byte_length-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> SERIAL_<wbr>BYTE_<wbr>LENGTH</h3>
+					<div class="tsd-signature tsd-kind-icon">SERIAL_<wbr>BYTE_<wbr>LENGTH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from IMurHasherBase.SERIAL_BYTE_LENGTH</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L182">incremental.d.ts:182</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Size in bytes of the serialized hasher.</p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="copy" class="tsd-anchor"></a>
+					<h3>copy</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><a href="../interfaces/incremental.imurhasher.html" class="tsd-signature-type">IMurHasher</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/incremental.imurhasher.html" class="tsd-signature-type">IMurHasher</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/incremental.imurhasher.html">IMurHasher</a>.<a href="../interfaces/incremental.imurhasher.html#copy">copy</a></p>
+								<p>Inherited from IMurHasherBase.copy</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L218">incremental.d.ts:218</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <a href="../interfaces/incremental.imurhasher.html" class="tsd-signature-type">IMurHasher</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/incremental.imurhasher.html" class="tsd-signature-type">IMurHasher</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+					<a name="digest" class="tsd-anchor"></a>
+					<h3>digest</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">digest<span class="tsd-signature-symbol">(</span>output<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, offset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, length<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
+						<li class="tsd-signature tsd-kind-icon">digest<span class="tsd-signature-symbol">(</span>outputType<span class="tsd-signature-symbol">?: </span><a href="../modules/murmurhash_native.html#outputtype" class="tsd-signature-type">OutputType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/incremental.imurhasher.html">IMurHasher</a>.<a href="../interfaces/incremental.imurhasher.html#digest">digest</a></p>
+								<p>Overrides IMurHasherBase.digest</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L237">incremental.d.ts:237</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>output: <span class="tsd-signature-type">Buffer</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> offset: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> length: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Buffer</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/incremental.imurhasher.html">IMurHasher</a>.<a href="../interfaces/incremental.imurhasher.html#digest">digest</a></p>
+								<p>Overrides IMurHasherBase.digest</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L238">incremental.d.ts:238</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> outputType: <a href="../modules/murmurhash_native.html#outputtype" class="tsd-signature-type">OutputType</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span>
+								<span class="tsd-signature-symbol"> | </span>
+								<span class="tsd-signature-type">Buffer</span>
+							</h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="serialize" class="tsd-anchor"></a>
+					<h3>serialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">serialize<span class="tsd-signature-symbol">(</span>output<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, offset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
+						<li class="tsd-signature tsd-kind-icon">serialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/incremental.imurhasher.html">IMurHasher</a>.<a href="../interfaces/incremental.imurhasher.html#serialize">serialize</a></p>
+								<p>Inherited from IMurHasherBase.serialize</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L222">incremental.d.ts:222</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>output: <span class="tsd-signature-type">Buffer</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> offset: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Buffer</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/incremental.imurhasher.html">IMurHasher</a>.<a href="../interfaces/incremental.imurhasher.html#serialize">serialize</a></p>
+								<p>Inherited from IMurHasherBase.serialize</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L223">incremental.d.ts:223</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="tojson" class="tsd-anchor"></a>
+					<h3>toJSON</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">toJSON<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/incremental.imurhasher.html">IMurHasher</a>.<a href="../interfaces/incremental.imurhasher.html#tojson">toJSON</a></p>
+								<p>Inherited from IMurHasherBase.toJSON</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L221">incremental.d.ts:221</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="update" class="tsd-anchor"></a>
+					<h3>update</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span>, encoding<span class="tsd-signature-symbol">: </span><a href="../modules/murmurhash_native.html#encoding" class="tsd-signature-type">Encoding</a>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span>, encoding<span class="tsd-signature-symbol">?: </span><a href="../modules/murmurhash_native.html#encoding" class="tsd-signature-type">Encoding</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from IMurHasherBase.update</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L224">incremental.d.ts:224</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>data: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span></h5>
+								</li>
+								<li>
+									<h5>encoding: <a href="../modules/murmurhash_native.html#encoding" class="tsd-signature-type">Encoding</a></h5>
+								</li>
+								<li>
+									<h5>callback: <span class="tsd-signature-type">function</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>err: <span class="tsd-signature-type">Error</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from IMurHasherBase.update</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L225">incremental.d.ts:225</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>data: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span></h5>
+								</li>
+								<li>
+									<h5>callback: <span class="tsd-signature-type">function</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>err: <span class="tsd-signature-type">Error</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/incremental.imurhasher.html">IMurHasher</a>.<a href="../interfaces/incremental.imurhasher.html#update">update</a></p>
+								<p>Inherited from IMurHasherBase.update</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/royaltm/node-murmurhash-native/blob/master/incremental.d.ts#L226">incremental.d.ts:226</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>data: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> encoding: <a href="../modules/murmurhash_native.html#encoding" class="tsd-signature-type">Encoding</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class="current tsd-kind-external-module">
+						<a href="../modules/incremental.html">incremental</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/murmurhash_native.html">murmurhash-<wbr>native</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/promisify.html">promisify</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/stream.html">stream</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="incremental.murmurhash.html" class="tsd-kind-icon">Murmur<wbr>Hash</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class tsd-parent-kind-external-module">
+						<a href="incremental.murmurhash128.html" class="tsd-kind-icon">Murmur<wbr>Hash128</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+								<a href="incremental.murmurhash128.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="incremental.murmurhash128.html#serial_byte_length" class="tsd-kind-icon">SERIAL_<wbr>BYTE_<wbr>LENGTH</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="incremental.murmurhash128.html#endianness" class="tsd-kind-icon">endianness</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="incremental.murmurhash128.html#isbusy" class="tsd-kind-icon">is<wbr>Busy</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="incremental.murmurhash128.html#total" class="tsd-kind-icon">total</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+								<a href="incremental.murmurhash128.html#serial_byte_length-1" class="tsd-kind-icon">SERIAL_<wbr>BYTE_<wbr>LENGTH</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="incremental.murmurhash128.html#copy" class="tsd-kind-icon">copy</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+								<a href="incremental.murmurhash128.html#digest" class="tsd-kind-icon">digest</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="incremental.murmurhash128.html#serialize" class="tsd-kind-icon">serialize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="incremental.murmurhash128.html#tojson" class="tsd-kind-icon">toJSON</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="incremental.murmurhash128.html#update" class="tsd-kind-icon">update</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="incremental.murmurhash128x64.html" class="tsd-kind-icon">Murmur<wbr>Hash128x64</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="incremental.murmurhash128x86.html" class="tsd-kind-icon">Murmur<wbr>Hash128x86</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="../interfaces/incremental.imurhasher.html" class="tsd-kind-icon">IMur<wbr>Hasher</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="../interfaces/incremental.imurhasherconstructor.html" class="tsd-kind-icon">IMur<wbr>Hasher<wbr>Constructor</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/incremental.html#endianness" class="tsd-kind-icon">Endianness</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>murmurhash-native</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">murmurhash-native</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> murmurhash-native</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="murmurhash-bindings-for-node">MurmurHash bindings for node</h1>
+				<p>This library provides Austin Appleby&#39;s non-cryptographic &quot;MurmurHash&quot; hashing algorithm functions in a few different flavours.</p>
+				<p><a href="https://www.npmjs.com/package/murmurhash-native"><img src="https://img.shields.io/npm/v/murmurhash-native.svg?maxAge=86400&style=flat-square" alt="NPM"></a>
+					<a href="https://www.npmjs.com/package/murmurhash-native"><img src="https://img.shields.io/node/v/murmurhash-native.svg?maxAge=2592000&style=flat-square" alt="Node"></a>
+					<a href="https://travis-ci.org/royaltm/node-murmurhash-native"><img src="https://img.shields.io/travis/royaltm/node-murmurhash-native.svg?maxAge=86400&style=flat-square&label=unix" alt="Travis"></a>
+					<a href="https://ci.appveyor.com/project/royaltm/node-murmurhash-native"><img src="https://img.shields.io/appveyor/ci/royaltm/node-murmurhash-native.svg?maxAge=86400&style=flat-square&label=windows" alt="AppVeyor"></a>
+				<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/npm/l/murmurhash-native.svg?maxAge=2592000&style=flat-square" alt="License"></a></p>
+				<p>Key features:</p>
+				<ul>
+					<li>blocking and asynchronous api interfaces</li>
+					<li>additional MurmurHash3 32 and 128 bit progressive implementations based on <a href="https://github.com/aappleby/smhasher/blob/master/src/PMurHash.c">PMurHash</a></li>
+					<li>stream wrapper for progressive hasher with <a href="https://nodejs.org/dist/latest-v6.x/docs/api/crypto.html#crypto_class_hash">crypto.Hash-like</a> bi-api interface</li>
+					<li>serializable state of the progressive hasher</li>
+					<li>BE or LE byte order variants of hashes</li>
+					<li>promise wrapper</li>
+					<li>prebuilt binaries for most standard system configurations</li>
+					<li>TypeScript declarations</li>
+				</ul>
+				<h2 id="install-">Install:</h2>
+				<p>There are prebuilt <a href="https://github.com/royaltm/node-murmurhash-native/releases">binaries</a> available for painless installation on
+				some Linuxes (x64), OS-X (x64) and Windows (x64 and x86) thanks to <a href="https://github.com/mapbox/node-pre-gyp">node-pre-gyp</a> and <a href="https://github.com/bchr02/node-pre-gyp-github">node-pre-gyp-github</a>.</p>
+				<pre><code><span class="hljs-built_in">npm</span> install murmurhash-<span class="hljs-keyword">native</span></code></pre><p>If the prebuilt release is not available for your system or nodejs version,
+					the compilation from source will kick-in. For more information on building from
+				source please consult <a href="https://github.com/nodejs/node-gyp#installation">this page</a>.</p>
+				<p>If for some reason (e.g. an incompatible GLIBC) you might want to force building from source, type:</p>
+				<pre><code>npm i murmurhash-<span class="hljs-keyword">native</span> --build-<span class="hljs-keyword">from</span>-<span class="hljs-keyword">source</span></code></pre><p>To reinstall prebuilt binary (e.g. after switching between major nodejs versions):</p>
+				<pre><code>npm rebuild --<span class="hljs-keyword">update</span>-<span class="hljs-keyword">binary</span></code></pre><h2 id="typescript">TypeScript</h2>
+				<p><code>murmurhash-native</code> is ready for the TypeScript without any external declarations. However this module is node-specific package, if you&#39;re going to use it in TypeScript, do not forget to include <code>@types/node</code> and enable <code>es2015</code> language features in your <code>tsconfig.json</code>.</p>
+				<h2 id="make-a-hash-">Make a hash:</h2>
+				<pre><code class="language-js"><span class="hljs-keyword">var</span> murmurHash = <span class="hljs-built_in">require</span>(<span class="hljs-string">'murmurhash-native'</span>).murmurHash
+
+murmurHash( <span class="hljs-string">'hash me!'</span> ) <span class="hljs-comment">// 2061152078</span>
+murmurHash( <span class="hljs-keyword">new</span> Buffer(<span class="hljs-string">'hash me!'</span>) ) <span class="hljs-comment">// 2061152078</span>
+murmurHash( <span class="hljs-string">'hash me!'</span>, <span class="hljs-number">0x12345789</span> ) <span class="hljs-comment">// 1908692277</span>
+murmurHash( <span class="hljs-string">'hash me!'</span>, <span class="hljs-number">0x12345789</span>, <span class="hljs-string">'buffer'</span> ) <span class="hljs-comment">// &lt;Buffer 71 c4 55 35&gt;</span>
+murmurHash( <span class="hljs-string">'hash me!'</span>, <span class="hljs-number">0x12345789</span>, <span class="hljs-string">'hex'</span> ) <span class="hljs-comment">// '71c45535'</span>
+<span class="hljs-keyword">var</span> buf = <span class="hljs-keyword">new</span> Buffer(<span class="hljs-string">'hash me!____'</span>)
+murmurHash( buf.slice(<span class="hljs-number">0</span>,<span class="hljs-number">8</span>), <span class="hljs-number">0x12345789</span>, buf, <span class="hljs-number">8</span> )
+<span class="hljs-comment">// &lt;Buffer 68 61 73 68 20 6d 65 21 71 c4 55 35&gt;</span>
+
+<span class="hljs-keyword">var</span> murmurHash128x64 = <span class="hljs-built_in">require</span>(<span class="hljs-string">'murmurhash-native'</span>).murmurHash128x64
+murmurHash128x64( <span class="hljs-string">'hash me!'</span> ) <span class="hljs-comment">// 'c43668294e89db0ba5772846e5804467'</span>
+
+<span class="hljs-keyword">var</span> murmurHash128x86 = <span class="hljs-built_in">require</span>(<span class="hljs-string">'murmurhash-native'</span>).murmurHash128x86
+murmurHash128x86( <span class="hljs-string">'hash me!'</span> ) <span class="hljs-comment">// 'c7009299985a5627a9280372a9280372'</span>
+
+<span class="hljs-comment">// asynchronous</span>
+
+murmurHash( <span class="hljs-string">'hash me!'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, hash</span>) </span>{ assert.equal(hash, <span class="hljs-number">2061152078</span>) });
+
+<span class="hljs-comment">// output byte order (default is BE)</span>
+
+<span class="hljs-keyword">var</span> murmurHashLE = <span class="hljs-built_in">require</span>(<span class="hljs-string">'murmurhash-native'</span>).LE.murmurHash;
+murmurHashLE( <span class="hljs-string">'hash me!'</span>, <span class="hljs-number">0x12345789</span>, <span class="hljs-string">'buffer'</span> ) <span class="hljs-comment">// &lt;Buffer 35 55 c4 71&gt;</span>
+murmurHashLE( <span class="hljs-string">'hash me!'</span>, <span class="hljs-number">0x12345789</span>, <span class="hljs-string">'hex'</span> ) <span class="hljs-comment">// '3555c471'</span></code></pre>
+				<p>These functions are awaiting your command:</p>
+				<ul>
+					<li><code>murmurHash</code>       - MurmurHash v3 32bit</li>
+					<li><code>murmurHash32</code>     - (an alias of murmurHash)</li>
+					<li><code>murmurHash128</code>    - MurmurHash v3 128bit platform (x64 or x86) optimized </li>
+					<li><code>murmurHash128x64</code> - MurmurHash v3 128bit x64 optimized</li>
+					<li><code>murmurHash128x86</code> - MurmurHash v3 128bit x86 optimized</li>
+					<li><code>murmurHash64</code>     - MurmurHash v2 64bit platform (x64 or x86) optimized</li>
+					<li><code>murmurHash64x64</code>  - MurmurHash v2 64bit x64 optimized</li>
+					<li><code>murmurHash64x86</code>  - MurmurHash v2 64bit x86 optimized</li>
+				</ul>
+				<p>and they share the following signature:</p>
+				<pre><code class="language-js">murmurHash(data[, callback])
+murmurHash(data, output[, offset[, length]][, callback])
+murmurHash(data{string}, encoding|output_type[, seed][, callback])
+murmurHash(data{Buffer}, output_type[, seed][, callback])
+murmurHash(data, seed[, callback])
+murmurHash(data, seed, output[, offset[, length]][, callback])
+murmurHash(data, seed, output_type[, callback])
+murmurHash(data, encoding, output_type[, callback])
+murmurHash(data{string}, encoding, output[, offset[, length]][, callback])
+murmurHash(data{string}, encoding, seed[, callback])
+murmurHash(data{string}, encoding, seed, output[, offset[, length]][, callback])
+murmurHash(data{string}, encoding, seed, output_type[, callback])</code></pre>
+				<ul>
+					<li><code>@param</code> <code>{string|Buffer}</code> <code>data</code> - a byte-string to calculate hash from</li>
+					<li><code>@param</code> <code>{string}</code> <code>encoding</code> - data string encoding, should be:
+						&quot;utf8&quot;, &quot;ucs2&quot;, &quot;ascii&quot;, &quot;hex&quot;, &quot;base64&quot; or &quot;binary&quot;;
+					&quot;binary&quot; by default</li>
+					<li><code>@param</code> <code>{Uint32}</code> <code>seed</code> - murmur hash seed, 0 by default</li>
+					<li><code>@param</code> <code>{Buffer}</code> <code>output</code> - a Buffer object to write hash bytes to;
+					the same object will be returned</li>
+					<li><code>@param</code> <code>{number}</code> <code>offset</code> - start writing into output at offset byte;
+					negative offset starts from the end of the output buffer</li>
+					<li><code>@param</code> <code>{number}</code> <code>length</code> - a number of bytes to write from calculated hash;
+						negative length starts from the end of the hash;
+						if absolute value of length is larger than the size of calculated
+					hash, bytes are written only up to the hash size</li>
+					<li><code>@param</code> <code>{string}</code> <code>output_type</code> - a string indicating return type:<ul>
+							<li>&quot;number&quot; - (default) for murmurHash32 an unsigned 32-bit integer,<pre><code>     <span class="hljs-literal">other</span> hashes - hexadecimal <span class="hljs-built_in">string</span></code></pre></li>
+							<li>&quot;hex&quot;    - hexadecimal string</li>
+							<li>&quot;base64&quot; - base64 string</li>
+							<li>&quot;binary&quot; - binary string</li>
+							<li>&quot;buffer&quot; - a new Buffer object;</li>
+						</ul>
+					</li>
+					<li><p><code>@param</code> <code>{Function}</code> <code>callback</code> - optional callback(err, result)
+							if provided the hash will be calculated asynchronously using libuv
+							worker queue, the return value in this instance will be <code>undefined</code>
+							and the result will be provided to the callback function;
+							Be carefull as reading and writing by multiple threads to the same
+						memory may render undetermined results</p>
+					</li>
+					<li><p><code>@return</code> <code>{number|Buffer|String|undefined}</code></p>
+					</li>
+				</ul>
+				<p>The order of bytes written to a Buffer or encoded string depends on
+				function&#39;s endianness.</p>
+				<p><code>data</code> and <code>output</code> arguments might reference the same Buffer object
+				or buffers referencing the same memory (views).</p>
+				<p>There are additional namespaces, each for different variant of function endianness:</p>
+				<ul>
+					<li><code>BE</code> - big-endian (most significant byte first or network byte order)</li>
+					<li><code>LE</code> - little-endian (least significant byte first)</li>
+					<li><code>platform</code> - compatible with <code>os.endianness()</code></li>
+				</ul>
+				<p>Functions in the root namespace are big-endian.</p>
+				<h2 id="streaming-and-incremental-api">Streaming and incremental api</h2>
+				<p>The dual-api interface for progressive MurmurHash3 is available as a submodule:</p>
+				<pre><code class="language-js"><span class="hljs-keyword">var</span> murmur = <span class="hljs-built_in">require</span>(<span class="hljs-string">'murmurhash-native/stream'</span>);
+<span class="hljs-string">`</span></code></pre>
+				<p>Incremental (a.k.a. progressive) api</p>
+				<pre><code class="language-js"><span class="hljs-keyword">var</span> hash = murmur.createHash(<span class="hljs-string">'murmurhash128x86'</span>);
+hash.update(<span class="hljs-string">'hash'</span>).digest(<span class="hljs-string">'hex'</span>); <span class="hljs-comment">// '0d872bbf2cd001722cd001722cd00172'</span>
+hash.update(<span class="hljs-string">' me!'</span>).digest(<span class="hljs-string">'hex'</span>); <span class="hljs-comment">// 'c7009299985a5627a9280372a9280372'</span>
+
+<span class="hljs-keyword">var</span> hash = murmur.createHash(<span class="hljs-string">'murmurhash128x86'</span>, {<span class="hljs-attr">endianness</span>: <span class="hljs-string">'LE'</span>});
+hash.update(<span class="hljs-string">'hash'</span>).digest(<span class="hljs-string">'hex'</span>); <span class="hljs-comment">// 'bf2b870d7201d02c7201d02c7201d02c'</span>
+hash.update(<span class="hljs-string">' me!'</span>).digest(<span class="hljs-string">'hex'</span>); <span class="hljs-comment">// '999200c727565a98720328a9720328a9'</span></code></pre>
+				<p>Streaming api</p>
+				<pre><code class="language-js"><span class="hljs-keyword">var</span> hash = murmur.createHash(<span class="hljs-string">'murmurhash32'</span>, {<span class="hljs-attr">seed</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">encoding</span>: <span class="hljs-string">'hex'</span>, <span class="hljs-attr">endianness</span>: <span class="hljs-string">'platform'</span>});
+fs.createReadStream(<span class="hljs-string">'README.md'</span>).pipe(hash).pipe(process.stdout);</code></pre>
+				<h3 id="serializable-state">Serializable state</h3>
+				<p>The incremental MurmurHash utilities may be serialized and later deserialized.
+					One may also copy a hasher&#39;s internal state onto another.
+					This way the hasher utility can be re-used to calculate a hash of some data
+				with already known prefix.</p>
+				<pre><code class="language-js"><span class="hljs-keyword">var</span> hash = murmur.createHash(<span class="hljs-string">'murmurhash128x64'</span>).update(<span class="hljs-string">'hash'</span>);
+hash.digest(<span class="hljs-string">'hex'</span>);                   <span class="hljs-comment">// '4ab2e1e022f63e2e9add75dfcea2dede'</span>
+
+<span class="hljs-keyword">var</span> backup = murmur.createHash(hash); <span class="hljs-comment">// create a copy of a hash with the same internal state</span>
+backup.update(<span class="hljs-string">' me!'</span>).digest(<span class="hljs-string">'hex'</span>);  <span class="hljs-comment">// 'c43668294e89db0ba5772846e5804467'</span>
+
+hash.copy(backup)                     <span class="hljs-comment">// copy hash's state onto the backup</span>
+    .update(<span class="hljs-string">' me!'</span>).digest(<span class="hljs-string">'hex'</span>);    <span class="hljs-comment">// 'c43668294e89db0ba5772846e5804467'</span>
+
+<span class="hljs-keyword">var</span> serial = hash.serialize();        <span class="hljs-comment">// serialize hash's state</span>
+serial == <span class="hljs-string">'AAAAAAAAAAAAAAAAAAAAAGhzYWgAAAAAAAAAAAAAAFQAAAAEtd3X'</span>;
+                                      <span class="hljs-comment">// restore backup from serialized state</span>
+<span class="hljs-keyword">var</span> backup = murmur.createHash(<span class="hljs-string">'murmurhash128x64'</span>, {<span class="hljs-attr">seed</span>: serial});
+backup.update(<span class="hljs-string">' me!'</span>).digest(<span class="hljs-string">'hex'</span>);  <span class="hljs-comment">// 'c43668294e89db0ba5772846e5804467'</span>
+                                      <span class="hljs-comment">// finally</span>
+hash.update(<span class="hljs-string">' me!'</span>).digest(<span class="hljs-string">'hex'</span>);    <span class="hljs-comment">// 'c43668294e89db0ba5772846e5804467'</span></code></pre>
+				<p>The dual-api with streaming is a javascript wrapper over the native module.
+				The native incremental module is directly available at <code>murmurhash-native/incremental</code>.</p>
+				<p>See <a href="src/incremental/hasher.cc">hasher.cc</a> for full api description
+				(and there&#39;s some crazy templating going on there...).</p>
+				<h2 id="promises">Promises</h2>
+				<p>The native murmurHash functions run asynchronously if the last argument is a callback.
+				There is however a promisify wrapper:</p>
+				<pre><code class="language-js"><span class="hljs-keyword">var</span> mm = <span class="hljs-built_in">require</span>(<span class="hljs-string">'murmurhash-native/promisify'</span>)();
+mm.murmurHash32Async( <span class="hljs-string">'hash me!'</span>, <span class="hljs-number">0x12345789</span> )
+      .then(<span class="hljs-function"><span class="hljs-params">hash</span> =&gt;</span> { assert.equal(hash, <span class="hljs-number">1908692277</span>) });
+<span class="hljs-comment">// Promise { &lt;pending&gt; }</span></code></pre>
+				<p>You may provide your own promise constructor:</p>
+				<pre><code class="language-js"><span class="hljs-keyword">var</span> bluebird = <span class="hljs-built_in">require</span>(<span class="hljs-string">'bluebird'</span>);
+<span class="hljs-keyword">var</span> mm = <span class="hljs-built_in">require</span>(<span class="hljs-string">'murmurhash-native/promisify'</span>)(bluebird);
+mm.murmurHash32Async( <span class="hljs-string">'hash me!'</span>, <span class="hljs-number">0x12345789</span> )
+      .then(<span class="hljs-function"><span class="hljs-params">hash</span> =&gt;</span> { assert.equal(hash, <span class="hljs-number">1908692277</span>) });
+<span class="hljs-comment">// Promise {</span>
+<span class="hljs-comment">//   _bitField: 0,</span>
+<span class="hljs-comment">//   _fulfillmentHandler0: undefined,</span>
+<span class="hljs-comment">//   _rejectionHandler0: undefined,</span>
+<span class="hljs-comment">//   _promise0: undefined,</span>
+<span class="hljs-comment">//   _receiver0: undefined }</span></code></pre>
+				<h2 id="significant-changes-in-3-x">Significant changes in 3.x</h2>
+				<p>The most important change is full platform indifference of rendered output.
+					In 2.x output hash as binary data provided via buffer was endian sensitive.
+				Starting with 3.x the data written to output buffer is always MSB (byte) first.</p>
+				<p>The &quot;hex&quot;, &quot;base64&quot; and &quot;binary&quot; output types has been (re)added, but this time
+				with a sane definition.</p>
+				<p>So in this version the following is true on all platforms:</p>
+				<pre><code class="language-js">assert.strictEqual(murmurHash(<span class="hljs-string">'foo'</span>, <span class="hljs-string">'buffer'</span>).toString(<span class="hljs-string">'hex'</span>), murmurHash(<span class="hljs-string">'foo'</span>, <span class="hljs-number">0</span>, <span class="hljs-string">'hex'</span>));
+assert.strictEqual(murmurHash(<span class="hljs-string">'foo'</span>, <span class="hljs-string">'buffer'</span>).toString(<span class="hljs-string">'base64'</span>), murmurHash(<span class="hljs-string">'foo'</span>, <span class="hljs-number">0</span>, <span class="hljs-string">'base64'</span>));</code></pre>
+				<h2 id="significant-changes-in-2-x">Significant changes in 2.x</h2>
+				<p>The 1.x output types were very confusing. E.g. &quot;hex&quot; was just an equivalent of
+					<code>murmurHash(data, &quot;buffer&quot;).toString(&quot;hex&quot;)</code> which rendered incorrect hexadecimal
+					number. So all the string output type encodings: &quot;utf8&quot;, &quot;ucs2&quot;, &quot;ascii&quot;, &quot;hex&quot;,
+				&quot;base64&quot; and &quot;binary&quot; were completely removed in 2.0 as being simply useless.</p>
+				<p>The &quot;number&quot; output type has been adapted to all variants in a way more compatible
+					with other murmurhash <a href="https://www.npmjs.com/package/murmurhash3js">implementations</a>. For 32bit hash the return
+					value is an unsigned 32-bit integer (it was signed integer in 1.x) and for other
+				hashes it&#39;s a hexadecimal number.</p>
+				<p>The &quot;buffer&quot; output type wasn&#39;t modified except that the default output is now
+				&quot;number&quot; for all of the hashes.</p>
+				<p>Additionally when passing unsupported value to <code>encoding</code> or <code>output_type</code>
+				argument the function throws <code>TypeError</code>.</p>
+				<p>Another breaking change is for the BE platforms. Starting with 2.0 endian-ness
+				is recognized, so hashes should be consistent regardless of the cpu type.</p>
+				<p>Since v2.1 the callback argument was introduced.</p>
+				<h2 id="bugs-limitations-caveats">Bugs, limitations, caveats</h2>
+				<p>When working with Buffers, input data is not being copied, however for strings
+					this is unavoidable. For strings with byte-length &lt; 1kB the static buffer is
+				provided to avoid mem-allocs.</p>
+				<p>The hash functions optimized for x64 and x86 produce different results.</p>
+				<p>Tested on Linux (x64), OS X (x64) and MS Windows (x64 and x86).</p>
+				<p>Tested with nodejs: v4, v5, v6, v7, v8, v9, v10 and v11.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/incremental.html">incremental</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/murmurhash_native.html">murmurhash-<wbr>native</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/promisify.html">promisify</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/stream.html">stream</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
