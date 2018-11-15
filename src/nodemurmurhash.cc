@@ -153,7 +153,7 @@ namespace MurmurHash {
                 outputType = DefaultOutputType;
               } else {
                 validEncoding = true;
-              if ( info[2]->IsNumber() ) seed = Nan::To<uint32_t>(info[2]).FromMaybe(0U);
+                if ( info[2]->IsNumber() ) seed = Nan::To<uint32_t>(info[2]).FromMaybe(0U);
               }
             }
             outputTypeIndex = 2; // continue from 2
