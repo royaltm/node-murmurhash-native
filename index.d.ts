@@ -1,4 +1,18 @@
 /**
+ * `murmurhash-native` module.
+ *
+ * Example:
+ *
+ * ```ts
+ * import { murmurHash128x64 } from "murmurhash-native"
+ *
+ * console.log(murmurHash128x64("hash me!", 42))
+ * ```
+ *
+ * @module murmurhash-native
+ */
+
+/**
  * Indicates the form and encoding of the resulting hash and can be one of:
  *
  * - "base64" - base64 string

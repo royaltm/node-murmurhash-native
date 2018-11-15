@@ -1,6 +1,23 @@
-/*
-    This module hosts native incremental implementations of murmur hashes.
-*/
+/**
+ * `murmurhash-native/incremental` module.
+ *
+ * Example:
+ *
+ * ```ts
+ * import { MurmurHash128x64 } from "murmurhash-native/incremental"
+ *
+ * let hasher = new MurmurHash128x64(42)
+ * hasher.update("hash ")
+ * hasher.update("me!")
+ * console.log(hasher.digest("hex"))
+ * ```
+ *
+ * This module hosts native implementations of incremental murmur hashes.
+ *
+ * @module incremental
+ */
+
+/***/
 import { Encoding, OutputType } from "./index";
 
 export { Encoding, OutputType };
@@ -18,7 +35,7 @@ export interface IMurHasher {
      * This method does not alter target endianness.
      * 
      * @param target a different instance of a MurmurHash utility of the same type.
-     * @return target.
+     * @returns target.
      */
     copy(target: IMurHasher): IMurHasher;
     /**
@@ -34,7 +51,7 @@ export interface IMurHasher {
      *        negative length starts from the end of the hash;
      *        if absolute value of length is larger than the size of a calculated
      *        hash, bytes are written only up to the hash size.
-     * @return murmur hash.
+     * @returns murmur hash.
      */
     digest(output: Buffer, offset?: number, length?: number): Buffer;
     /**
@@ -46,7 +63,7 @@ export interface IMurHasher {
      * endianness property.
      *
      * @param outputType indicates the form and encoding of the returned hash.
-     * @return murmur hash.
+     * @returns murmur hash.
      */
     digest(outputType?: OutputType): number|string|Buffer;
     /**
@@ -132,6 +149,8 @@ export interface IMurHasherConstructor {
     /**
      * Creates MurmurHash utility.
      *
+     * If not provided, the endianness is set to "BE".
+     *
      * @param seed initial murmur hash seed as an unsigned 32-bit integer.
      * @param endianness digest byte order: "BE", "LE" or "platform", optional. Default is "BE".
      */
@@ -157,7 +176,7 @@ export interface IMurHasherConstructor {
     new(hash: IMurHasher, endianness?: Endianness): IMurHasher;
 }
 
-/** An abstract base class for the murmurhash incremental utility. */
+/** @hidden An abstract base class for the murmurhash incremental utility. */
 declare abstract class IMurHasherBase implements IMurHasher {
     /** Size in bytes of the serialized hasher. */
     static readonly SERIAL_BYTE_LENGTH: number;
@@ -170,6 +189,8 @@ declare abstract class IMurHasherBase implements IMurHasher {
     constructor();
     /**
      * Creates MurmurHash utility.
+     *
+     * If not provided, the endianness is set to "BE".
      *
      * @param seed initial murmur hash seed as an unsigned 32-bit integer.
      * @param endianness digest byte order: "BE", "LE" or "platform", optional. Default is "BE".
