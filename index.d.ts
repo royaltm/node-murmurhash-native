@@ -117,34 +117,34 @@ export const murmurHash128x64: MurmurHashFnH;
 export const murmurHash128x86: MurmurHashFnH;
 
 export namespace BE {
-    const murmurHash: MurmurHashFnI;
-    const murmurHash32: MurmurHashFnI;
-    const murmurHash64: MurmurHashFnH;
-    const murmurHash64x64: MurmurHashFnH;
-    const murmurHash64x86: MurmurHashFnH;
-    const murmurHash128: MurmurHashFnH;
-    const murmurHash128x64: MurmurHashFnH;
-    const murmurHash128x86: MurmurHashFnH;
+    export const murmurHash: MurmurHashFnI;
+    export const murmurHash32: MurmurHashFnI;
+    export const murmurHash64: MurmurHashFnH;
+    export const murmurHash64x64: MurmurHashFnH;
+    export const murmurHash64x86: MurmurHashFnH;
+    export const murmurHash128: MurmurHashFnH;
+    export const murmurHash128x64: MurmurHashFnH;
+    export const murmurHash128x86: MurmurHashFnH;
 }
 
 export namespace LE {
-    const murmurHash: MurmurHashFnI;
-    const murmurHash32: MurmurHashFnI;
-    const murmurHash64: MurmurHashFnH;
-    const murmurHash64x64: MurmurHashFnH;
-    const murmurHash64x86: MurmurHashFnH;
-    const murmurHash128: MurmurHashFnH;
-    const murmurHash128x64: MurmurHashFnH;
-    const murmurHash128x86: MurmurHashFnH;
+    export const murmurHash: MurmurHashFnI;
+    export const murmurHash32: MurmurHashFnI;
+    export const murmurHash64: MurmurHashFnH;
+    export const murmurHash64x64: MurmurHashFnH;
+    export const murmurHash64x86: MurmurHashFnH;
+    export const murmurHash128: MurmurHashFnH;
+    export const murmurHash128x64: MurmurHashFnH;
+    export const murmurHash128x86: MurmurHashFnH;
 }
 
 export namespace platform {
-    const murmurHash: MurmurHashFnI;
-    const murmurHash32: MurmurHashFnI;
-    const murmurHash64: MurmurHashFnH;
-    const murmurHash64x64: MurmurHashFnH;
-    const murmurHash64x86: MurmurHashFnH;
-    const murmurHash128: MurmurHashFnH;
-    const murmurHash128x64: MurmurHashFnH;
-    const murmurHash128x86: MurmurHashFnH;
+    export const murmurHash: MurmurHashFnI;
+    export const murmurHash32: MurmurHashFnI;
+    export const murmurHash64: MurmurHashFnH;
+    export const murmurHash64x64: MurmurHashFnH;
+    export const murmurHash64x86: MurmurHashFnH;
+    export const murmurHash128: MurmurHashFnH;
+    export const murmurHash128x64: MurmurHashFnH;
+    export const murmurHash128x86: MurmurHashFnH;
 }
