@@ -1,4 +1,4 @@
-v3.2.6
+v3.3.0
 
 * TypeScript declarations, documentation and tests
 * bump bluebird to 3.5.3, commander to 2.19.0 and tap to 12.1.0
