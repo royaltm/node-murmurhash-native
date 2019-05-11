@@ -29,19 +29,9 @@
             'VCCLCompilerTool': {
               'ExceptionHandling': 1,
               'AdditionalOptions': ['/EHsc'], # pre 1.0 node compiler complaining
-              'DisableSpecificWarnings': ['4506', '4996']
+              'DisableSpecificWarnings': ['4506']
             }
           }
-        }],
-        ['OS!="win"', {
-          "cflags": [
-            "-Wno-deprecated-declarations",
-          ],
-          "xcode_settings": {
-            "OTHER_CFLAGS": [
-              "-Wno-deprecated-declarations",
-            ],
-          },
         }]
       ]
     },
@@ -74,19 +64,9 @@
             'VCCLCompilerTool': {
               'ExceptionHandling': 1,
               'AdditionalOptions': ['/EHsc'], # pre 1.0 node compiler complaining
-              'DisableSpecificWarnings': ['4506', '4996']
+              'DisableSpecificWarnings': ['4506']
             }
           }
-        }],
-        ['OS!="win"', {
-          "cflags": [
-            "-Wno-deprecated-declarations",
-          ],
-          "xcode_settings": {
-            "OTHER_CFLAGS": [
-              "-Wno-deprecated-declarations",
-            ],
-          },
         }]
       ]
     },
