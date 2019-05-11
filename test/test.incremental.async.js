@@ -1,6 +1,6 @@
 "use strict";
 
-var test = require('tap').test
+var test = require('./uncaughtexceptionwrap_tap').test
   , incr = require('../incremental')
   , strm = require('../stream')
   , hash = require('..')
@@ -134,7 +134,7 @@ function wrapStream(name) {
 
     t.test('should not bail on error throw in a callback', function(t) {
       t.plan(3);
-      t.expectUncaughtException(new Error("mana mana"));
+      t.throwsUncaughtException(new Error("mana mana"));
       t.strictEqual(undefined, MurmurHash(void(0), endian).update('', function(err) {
         t.error(err);
         throw new Error("mana mana");

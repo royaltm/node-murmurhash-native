@@ -1,6 +1,6 @@
 "use strict";
 
-var test = require('tap').test
+var test = require('./uncaughtexceptionwrap_tap').test
   , hash = require('..')
 ;
 
@@ -114,7 +114,7 @@ test("should have murmurHash functions", function(t) {
 
     t.test('should not bail on error throw in a callback', function(t) {
       t.plan(4);
-      t.expectUncaughtException(new Error("mana mana"));
+      t.throwsUncaughtException(new Error("mana mana"));
       t.strictEqual(undefined, murmurHash('', function(err, foo) {
         t.error(err);
         t.strictEqual(foo, seedZeroDefault);
