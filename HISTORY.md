@@ -1,3 +1,11 @@
+v3.4.0
+* bump nan to 2.13 and remove v8 deprecation warnings suppression introduced in v3.2.5
+* bump node-pre-gyp to 0.13 and node-pre-gyp-github to 1.4.3
+* bump development dependencies
+* bump typescript and typedoc dependencies
+* added tests and binaries for node v12
+* dropped support for node pre v6
+
 v3.3.0
 
 * TypeScript declarations, documentation and tests
