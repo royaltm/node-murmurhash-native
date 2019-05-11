@@ -1,3 +1,6 @@
+v3.4.1
+* restrict node to v6 or later
+
 v3.4.0
 * bump nan to 2.13 and remove v8 deprecation warnings suppression introduced in v3.2.5
 * bump node-pre-gyp to 0.13 and node-pre-gyp-github to 1.4.3
