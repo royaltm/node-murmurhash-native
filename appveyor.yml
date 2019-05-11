@@ -32,7 +32,9 @@ matrix:
   fast_finish: true
 
 install:
-- ps: Install-Product node $env:nodejs_version $env:platform;
+# https://www.appveyor.com/docs/lang/nodejs-iojs/#installing-any-version-of-nodejs-or-iojs
+- ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform
+# - ps: Install-Product node $env:nodejs_version $env:platform;
 - npm -g install npm@%NPM_VERSION%
 - ps: $env:Path += ";$(pwd)\node_modules\.bin;$env:AppData\npm";
 - ps: >
