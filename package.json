@@ -42,7 +42,7 @@
   "types": "index.d.ts",
   "typeScriptVersion": "2.0",
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   },
   "dependencies": {
     "nan": "^2.13.2",
