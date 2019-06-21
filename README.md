@@ -131,6 +131,11 @@ murmurHash(data{string}, encoding, seed, output_type[, callback])
     - "base64" - base64 string
     - "binary" - binary string
     - "buffer" - a new Buffer object;
+* `@param` `{string}` `encoding|output_type` - data string encoding
+   or a return type; because some valid return types are also valid
+   encodings, the only values recognized here for `output_type` are:
+    - "number"
+    - "buffer"
 * `@param` `{Function}` `callback` - optional callback(err, result)
     if provided the hash will be calculated asynchronously using libuv
     worker queue, the return value in this instance will be `undefined`
