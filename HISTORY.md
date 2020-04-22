@@ -1,3 +1,9 @@
+v3.5.0
+* bump nan to 2.14.1, node-pre-gyp to 0.14.0
+* bump development dependencies
+* added binaries for node v13 and v14
+* dropped support for node pre v8
+
 v3.4.1
 * restrict node to v6 or later
 
