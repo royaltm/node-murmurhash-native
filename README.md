@@ -304,7 +304,10 @@ The hash functions optimized for x64 and x86 produce different results.
 
 Tested on Linux (x64), OS X (x64) and MS Windows (x64 and x86).
 
-Binaries are provided for nodejs: v10, v11, v12, v13 and v14.
+This version provides binaries for nodejs: v10, v11, v12, v13 and v14.
+
+For binaries of murmurhash-native for previous versions of nodejs, use version
+3.4.1 or 3.3.0 of this module.
 
 [Travis Status]: https://travis-ci.org/royaltm/node-murmurhash-native
 [Travis img]: https://img.shields.io/travis/royaltm/node-murmurhash-native.svg?maxAge=86400&style=flat-square&label=unix
