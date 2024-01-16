@@ -45,7 +45,7 @@
     "node": ">=6"
   },
   "dependencies": {
-    "nan": "^2.14.1",
+    "nan": "^2.18.0",
     "node-pre-gyp": "^0.17.0"
   },
   "devDependencies": {
