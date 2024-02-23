@@ -312,6 +312,23 @@ namespace MurmurHash {
                   static_cast<PropertyAttribute>(ReadOnly | DontDelete) ).FromJust();
   }
 
+
+
+ NODE_MODULE_INIT() {
+   Local<Object> bigEndian = Nan::New<Object>();
+   InitWithOrder<MSBFirst>(bigEndian);
+   Nan::Set(exports, Nan::New<String>("BE").ToLocalChecked(), bigEndian);
+
+   Local<Object> littleEndian = Nan::New<Object>();
+   InitWithOrder<LSBFirst>(littleEndian);
+   Nan::Set(exports, Nan::New<String>("LE").ToLocalChecked(), littleEndian);
+
+   Nan::Set(exports, Nan::New<String>("platform").ToLocalChecked(),
+            IsBigEndian() ? bigEndian : littleEndian);
+
+   InitWithOrder<MSBFirst>(exports);
+ }
+
 }
 
-NODE_MODULE(murmurhash, MurmurHash::Init)
+//NODE_MODULE(murmurhash, MurmurHash::Init)
