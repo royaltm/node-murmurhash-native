@@ -1,5 +1,5 @@
 {
-  "name": "murmurhash-native",
+  "name": "@northpool/murmurhash-native",
   "description": "MurmurHash (32,64,128)bit native bindings for nodejs",
   "keywords": [
     "murmurhash",
@@ -15,12 +15,18 @@
   ],
   "version": "3.5.1",
   "license": "MIT",
-  "author": "Rafał Michalski <royal@yeondir.com>",
+  "author": "luz",
   "contributors": [],
   "homepage": "http://github.com/royaltm/node-murmurhash-native",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/royaltm/node-murmurhash-native.git"
+  },
+  "binary": {
+    "module_name": "murmurhash",
+    "module_path": "./lib/{configuration}/",
+    "host": "https://gitee.com/lz_code/murmurhash-native-prebuilt/releases/download/v{version}/",
+    "package_name": "{platform}-{arch}.zip"
   },
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
@@ -31,12 +37,6 @@
     "rebuild": "node-pre-gyp rebuild",
     "tsc": "tsc -p test/types",
     "typedoc": "typedoc --tsconfig test/types/tsconfig.json index.d.ts promisify.d.ts incremental.d.ts stream.d.ts"
-  },
-  "binary": {
-    "module_name": "murmurhash",
-    "module_path": "./lib/{configuration}/",
-    "host": "https://github.com/royaltm/node-murmurhash-native/releases/download/",
-    "remote_path": "v{version}"
   },
   "main": "index.js",
   "types": "index.d.ts",
