@@ -1,3 +1,7 @@
+v3.5.2
+* allow compilation in V8 >=14.2 (@yurii-miggo)
+* bump nan to 2.27.0
+
 v3.5.1
 * CI moved to GitHub Actions (@alesblaznik)
 * bump @mapbox/node-pre-gyp

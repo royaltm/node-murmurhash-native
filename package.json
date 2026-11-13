@@ -13,7 +13,7 @@
     "PMurHash128",
     "hash"
   ],
-  "version": "3.5.1",
+  "version": "3.5.2",
   "license": "MIT",
   "author": "Rafał Michalski <royal@yeondir.com>",
   "contributors": [],
