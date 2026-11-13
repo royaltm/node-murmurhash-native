@@ -19,6 +19,13 @@ namespace MurmurHash {
 
   #define SINGLE_ARG(...) __VA_ARGS__
 
+  // v8::AccessControl was removed in V8 14.2 (Node 26); nan provides Nan::DEFAULT instead
+  #if V8_MAJOR_VERSION > 14 || (V8_MAJOR_VERSION == 14 && V8_MINOR_VERSION >= 2)
+    #define ACCESS_CONTROL_DEFAULT Nan::DEFAULT
+  #else
+    #define ACCESS_CONTROL_DEFAULT v8::DEFAULT
+  #endif
+
   namespace {
     static const char * const MESSAGE_ERROR_PENDING_UPDATE = "Asynchronous update still in progress";
   }
@@ -606,13 +613,13 @@ namespace MurmurHash {
     i_t->SetInternalFieldCount(1);
 
     Nan::SetAccessor( i_t, Nan::New<String>("isBusy").ToLocalChecked(),
-                          GetIsBusy, NULL, Local<Value>(), v8::DEFAULT,
+                          GetIsBusy, NULL, Local<Value>(), ACCESS_CONTROL_DEFAULT,
                           static_cast<PropertyAttribute>(DontEnum | DontDelete));
     Nan::SetAccessor( i_t, Nan::New<String>("total").ToLocalChecked(),
-                          GetTotal, NULL, Local<Value>(), v8::DEFAULT,
+                          GetTotal, NULL, Local<Value>(), ACCESS_CONTROL_DEFAULT,
                           static_cast<PropertyAttribute>(DontDelete));
     Nan::SetAccessor( i_t, Nan::New<String>("endianness").ToLocalChecked(),
-                          GetEndianness, SetEndianness, Local<Value>(), v8::DEFAULT,
+                          GetEndianness, SetEndianness, Local<Value>(), ACCESS_CONTROL_DEFAULT,
                           static_cast<PropertyAttribute>(DontDelete));
    
     Nan::SetTemplate(tpl, Nan::New<String>("SERIAL_BYTE_LENGTH").ToLocalChecked(),
